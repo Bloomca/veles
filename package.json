@@ -1,0 +1,29 @@
+{
+  "name": "veles",
+  "version": "0.0.1",
+  "description": "UI library with main focus on performance",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "vitest",
+    "build": "tsup src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Bloomca/veles.git"
+  },
+  "keywords": [
+    "JavaScript",
+    "UI",
+    "library"
+  ],
+  "author": "Seva Zaikov <mail@bloomca.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Bloomca/veles/issues"
+  },
+  "homepage": "https://github.com/Bloomca/veles#readme",
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "vitest": "^1.3.1"
+  }
+}
