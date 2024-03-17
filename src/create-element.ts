@@ -10,7 +10,12 @@ function createElement(
     const { children, ref, onClick, ...otherProps } = props;
     const newElement = document.createElement(element);
     Object.entries(otherProps).forEach(([key, value]) => {
-      newElement.setAttribute(key, value);
+      if (typeof value === "function" && value.velesAttribute === true) {
+        const attributeValue = value(newElement, key);
+        newElement.setAttribute(key, attributeValue);
+      } else {
+        newElement.setAttribute(key, value);
+      }
     });
 
     if (onClick) {

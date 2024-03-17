@@ -10,6 +10,12 @@ function createState<T>(initialValue: T) {
     selectedValue: any;
   }[] = [];
 
+  let trackingAttributes: {
+    cb: Function;
+    htmlElement: HTMLElement;
+    attributeName: string;
+  }[] = [];
+
   const result = {
     initialValue,
     useValue: (cb) => {
@@ -44,8 +50,30 @@ function createState<T>(initialValue: T) {
       // 4. provide a way to listen to position value.
       //    It should be a separate subscription.
     },
-    useAttribute: () => {
-      // change attributes in-place
+    useAttribute: (cb) => {
+      const attributeValue = cb(value);
+
+      const attributeHelper = (htmlElement, attributeName) => {
+        // save it to the attribute array
+        // read that array on `_triggerUpdates`
+        // and change inline
+        // we need to save the HTML element and the name of the attribute
+
+        trackingAttributes.push({ cb, htmlElement, attributeName });
+
+        // TODO: not implemented yet
+        // node._addUnmountHandler(() => {
+        //   trackingAttributes = trackingAttributes.filter(
+        //     (trackingAttribute) => trackingAttribute.cb !== cb
+        //   );
+        // });
+
+        return attributeValue;
+      };
+      // we need to
+      attributeHelper.velesAttribute = true;
+
+      return attributeHelper;
     },
     // useful for stuff like callbacks
     getValue: () => {
@@ -110,6 +138,14 @@ function createState<T>(initialValue: T) {
           };
         }
       );
+
+      // attributes
+      // the HTML node does not change, so we don't need to modify the array
+      trackingAttributes.forEach(({ cb, htmlElement, attributeName }) => {
+        const newAttributeValue = cb(value);
+
+        htmlElement.setAttribute(attributeName, newAttributeValue);
+      });
     },
   };
 
