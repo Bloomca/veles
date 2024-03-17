@@ -2,7 +2,10 @@ import type { VelesElement } from "./types";
 
 function createState<T>(initialValue: T) {
   let value = initialValue;
-  let trackingElements: { cb: Function; node: VelesElement }[] = [];
+  let trackingElements: {
+    cb: (value: T) => VelesElement;
+    node: VelesElement;
+  }[] = [];
   let trackingSelectorElements: {
     cb: Function;
     node: VelesElement;
@@ -18,28 +21,29 @@ function createState<T>(initialValue: T) {
 
   const result = {
     initialValue,
-    useValue: (cb) => {
+    useValue: (cb: (value: T) => VelesElement) => {
       const node = cb(value);
       trackingElements.push({ cb, node });
-      // TODO: not implemented yet
-      // node._addUnmountHandler(() => {
-      //   trackingElements = trackingElements.filter(
-      //     (trackingElement) => trackingElement.cb !== cb
-      //   );
-      // });
+      node._addUnmountHandler(() => {
+        trackingElements = trackingElements.filter(
+          (trackingElement) => trackingElement.cb !== cb
+        );
+      });
 
       return node;
     },
-    useValueSelector: (selector, cb) => {
+    useValueSelector<F>(
+      selector: (value: T) => F,
+      cb: (value: F) => VelesElement
+    ) {
       const selectedValue = selector(value);
       const node = cb(selectedValue);
       trackingSelectorElements.push({ selector, selectedValue, cb, node });
-      // TODO: not implemented yet
-      // node._addUnmountHandler(() => {
-      //   trackingElements = trackingElements.filter(
-      //     (trackingElement) => trackingElement.cb !== cb
-      //   );
-      // });
+      node._addUnmountHandler(() => {
+        trackingSelectorElements = trackingSelectorElements.filter(
+          (trackingSelectorElement) => trackingSelectorElement.cb !== cb
+        );
+      });
       return node;
     },
     useValueIterator: () => {
@@ -50,10 +54,13 @@ function createState<T>(initialValue: T) {
       // 4. provide a way to listen to position value.
       //    It should be a separate subscription.
     },
-    useAttribute: (cb) => {
+    useAttribute: (cb: (value: T) => string) => {
       const attributeValue = cb(value);
 
-      const attributeHelper = (htmlElement, attributeName) => {
+      const attributeHelper = (
+        htmlElement: HTMLElement,
+        attributeName: string
+      ) => {
         // save it to the attribute array
         // read that array on `_triggerUpdates`
         // and change inline
@@ -94,17 +101,34 @@ function createState<T>(initialValue: T) {
       trackingElements = trackingElements.map(({ cb, node }) => {
         const newNode = cb(value);
 
-        const parentNode = node.parentNode;
+        const parentVelesElement = node.parentVelesElement;
 
-        if (parentNode) {
-          newNode.parentNode = parentNode;
-          parentNode.replaceChild(newNode.html, node.html);
+        if (parentVelesElement) {
+          newNode.parentVelesElement = parentVelesElement;
+          parentVelesElement.html.replaceChild(newNode.html, node.html);
+          // we need to update `childComponents` so that after the update
+          // if the parent node is removed from DOM, it calls correct unmount
+          // callbacks
+          parentVelesElement.childComponents =
+            parentVelesElement.childComponents.map((childComponent) =>
+              childComponent === node ? newNode : node
+            );
+          // we call unmount handlers right after we replace it
+          node._callUnmountHandlers();
+
+          // right after that, we add the callback back
+          // the top level node is guaranteed to be rendered again (at least right now)
+          // if there were children listening, they should be cleared
+          // and added back into their respective unmount listeners if it is still viable
+          trackingElements.push({ cb, node: newNode });
+          newNode._addUnmountHandler(() => {
+            trackingElements = trackingElements.filter(
+              (trackingElement) => trackingElement.cb !== cb
+            );
+          });
         } else {
           console.log("parent node was not found");
         }
-
-        // TODO: iterate over `node.childComponents` recursively, and execute
-        // every `onUnmount` operation
 
         return { cb, node: newNode };
       });
@@ -119,16 +143,39 @@ function createState<T>(initialValue: T) {
           }
 
           const newNode = cb(newSelectedValue);
-          const parentNode = node.parentNode;
+          const parentVelesElement = node.parentVelesElement;
 
-          if (parentNode) {
-            parentNode.replaceChild(node.html, newNode);
+          if (parentVelesElement) {
+            newNode.parentVelesElement = parentVelesElement;
+            parentVelesElement.html.replaceChild(node.html, newNode);
+            // we need to update `childComponents` so that after the update
+            // if the parent node is removed from DOM, it calls correct unmount
+            // callbacks
+            parentVelesElement.childComponents =
+              parentVelesElement.childComponents.map((childComponent) =>
+                childComponent === node ? newNode : node
+              );
+            // we call unmount handlers right after we replace it
+            node._callUnmountHandlers();
+
+            // right after that, we add the callback back
+            // the top level node is guaranteed to be rendered again (at least right now)
+            // if there were children listening, they should be cleared
+            // and added back into their respective unmount listeners if it is still viable
+            trackingSelectorElements.push({
+              selector,
+              selectedValue: newSelectedValue,
+              cb,
+              node: newNode,
+            });
+            newNode._addUnmountHandler(() => {
+              trackingSelectorElements = trackingSelectorElements.filter(
+                (trackingSelectorElement) => trackingSelectorElement.cb !== cb
+              );
+            });
           } else {
             console.log("parent node was not found");
           }
-
-          // TODO: iterate over `node.childComponents` recursively, and execute
-          // every `onUnmount` operation
 
           return {
             selectedValue: newSelectedValue,

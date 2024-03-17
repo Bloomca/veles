@@ -1,7 +1,5 @@
 import type { VelesElement, VelesElementProps } from "./types";
 
-// convert components into regular DOM elements
-// supports nested components
 function createElement(
   element: string | Function,
   props: VelesElementProps = {}
@@ -9,6 +7,7 @@ function createElement(
   if (typeof element === "string") {
     const { children, ref, onClick, ...otherProps } = props;
     const newElement = document.createElement(element);
+    const velesNode = {} as VelesElement;
     Object.entries(otherProps).forEach(([key, value]) => {
       if (typeof value === "function" && value.velesAttribute === true) {
         const attributeValue = value(newElement, key);
@@ -38,22 +37,36 @@ function createElement(
       ) {
         // TODO: check that it is a valid DOM Node
         newElement.appendChild(childComponent.html);
-        childComponent.parentNode = newElement;
+        childComponent.parentVelesElement = velesNode;
         childComponents.push(childComponent);
-
-        // our state tracker added that
-        // if (childComponent._addUnmountHandler) {
-        //   // add them to an array
-        //   // add that array to the output
-        //   // when we use `_triggerUpdates`,
-        //   // call `unmount` handlers recursively
-
-        //   delete childComponent._addUnmountHandler;
-        // }
       }
     });
 
-    return { html: newElement, velesNode: true, childComponents };
+    // these handlers are attached directly to the DOM element
+    // specifically, the top level node which is rendered after
+    // using `useValue` function and also listeners from
+    // `useAttribute`
+    let unmountHandlers: Function[] = [];
+    const callUnmountHandlers = () => {
+      unmountHandlers.forEach((cb) => cb());
+      unmountHandlers = [];
+
+      childComponents.forEach((childComponent) => {
+        childComponent._callUnmountHandlers();
+      });
+    };
+
+    Object.assign(velesNode, {
+      html: newElement,
+      velesNode: true,
+      childComponents,
+      _addUnmountHandler: (cb: Function) => {
+        unmountHandlers.push(cb);
+      },
+      _callUnmountHandlers: callUnmountHandlers,
+    });
+
+    return velesNode;
 
     // functions mean that we want to render another component
   } else if (typeof element === "function") {
