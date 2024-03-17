@@ -59,7 +59,8 @@ function createState<T>(initialValue: T) {
 
       const attributeHelper = (
         htmlElement: HTMLElement,
-        attributeName: string
+        attributeName: string,
+        node: VelesElement
       ) => {
         // save it to the attribute array
         // read that array on `_triggerUpdates`
@@ -68,12 +69,11 @@ function createState<T>(initialValue: T) {
 
         trackingAttributes.push({ cb, htmlElement, attributeName });
 
-        // TODO: not implemented yet
-        // node._addUnmountHandler(() => {
-        //   trackingAttributes = trackingAttributes.filter(
-        //     (trackingAttribute) => trackingAttribute.cb !== cb
-        //   );
-        // });
+        node._addUnmountHandler(() => {
+          trackingAttributes = trackingAttributes.filter(
+            (trackingAttribute) => trackingAttribute.cb !== cb
+          );
+        });
 
         return attributeValue;
       };

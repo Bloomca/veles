@@ -8,18 +8,6 @@ function createElement(
     const { children, ref, onClick, ...otherProps } = props;
     const newElement = document.createElement(element);
     const velesNode = {} as VelesElement;
-    Object.entries(otherProps).forEach(([key, value]) => {
-      if (typeof value === "function" && value.velesAttribute === true) {
-        const attributeValue = value(newElement, key);
-        newElement.setAttribute(key, attributeValue);
-      } else {
-        newElement.setAttribute(key, value);
-      }
-    });
-
-    if (onClick) {
-      newElement.addEventListener("click", onClick);
-    }
 
     if (ref?.velesRef) {
       ref.current = newElement;
@@ -65,6 +53,21 @@ function createElement(
       },
       _callUnmountHandlers: callUnmountHandlers,
     });
+
+    // we need to assign attributes after `velesNode` is initialized
+    // so that we can correctly handle unmount callbacks
+    Object.entries(otherProps).forEach(([key, value]) => {
+      if (typeof value === "function" && value.velesAttribute === true) {
+        const attributeValue = value(newElement, key, velesNode);
+        newElement.setAttribute(key, attributeValue);
+      } else {
+        newElement.setAttribute(key, value);
+      }
+    });
+
+    if (onClick) {
+      newElement.addEventListener("click", onClick);
+    }
 
     return velesNode;
 
