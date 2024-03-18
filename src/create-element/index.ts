@@ -1,13 +1,14 @@
-import { getComponentVelesNode } from "./utils";
+import { parseChildren } from "./parse-children";
+import { assignAttributes } from "./assign-attributes";
 
-import type { VelesComponent, VelesElement, VelesElementProps } from "./types";
+import type { VelesComponent, VelesElement, VelesElementProps } from "../types";
 
 function createElement(
   element: string | Function,
   props: VelesElementProps = {}
 ): VelesElement | VelesComponent {
   if (typeof element === "string") {
-    const { children, ref, onClick, ...otherProps } = props;
+    const { children, ref, ...otherProps } = props;
     const newElement = document.createElement(element);
     const velesNode = {} as VelesElement;
 
@@ -15,44 +16,10 @@ function createElement(
       ref.current = newElement;
     }
 
-    const childComponents: (VelesElement | VelesComponent)[] = [];
-
-    (children || []).forEach((childComponent) => {
-      if (typeof childComponent === "string") {
-        const text = document.createTextNode(childComponent);
-        newElement.appendChild(text);
-      } else if (
-        typeof childComponent === "object" &&
-        childComponent &&
-        "velesNode" in childComponent &&
-        childComponent?.velesNode
-      ) {
-        // TODO: check that it is a valid DOM Node
-        newElement.appendChild(childComponent.html);
-        childComponent.parentVelesElement = velesNode;
-        childComponents.push(childComponent);
-      } else if (
-        typeof childComponent === "object" &&
-        childComponent &&
-        "velesComponent" in childComponent &&
-        childComponent?.velesComponent
-      ) {
-        // we need to save the whole components chain, so that
-        // we can trigger `mount` hooks on all of them correctly
-        const { componentsTree, velesElementNode } =
-          getComponentVelesNode(childComponent);
-
-        if (!velesElementNode) {
-          console.error("can't find HTML tree in a component chain");
-        } else {
-          newElement.appendChild(velesElementNode.html);
-          componentsTree.forEach((component) => {
-            component._privateMethods._callMountHandlers();
-          });
-          velesElementNode.parentVelesElement = velesNode;
-          childComponents.push(childComponent);
-        }
-      }
+    const childComponents = parseChildren({
+      children,
+      htmlElement: newElement,
+      velesNode,
     });
 
     // these handlers are attached directly to the DOM element
@@ -79,20 +46,8 @@ function createElement(
       _callUnmountHandlers: callUnmountHandlers,
     };
 
-    // we need to assign attributes after `velesNode` is initialized
-    // so that we can correctly handle unmount callbacks
-    Object.entries(otherProps).forEach(([key, value]) => {
-      if (typeof value === "function" && value.velesAttribute === true) {
-        const attributeValue = value(newElement, key, velesNode);
-        newElement.setAttribute(key, attributeValue);
-      } else {
-        newElement.setAttribute(key, value);
-      }
-    });
-
-    if (onClick) {
-      newElement.addEventListener("click", onClick);
-    }
+    // assign all the DOM attributes, including event listeners
+    assignAttributes({ props: otherProps, htmlElement: newElement, velesNode });
 
     return velesNode;
 
@@ -111,9 +66,12 @@ function createElement(
         componentUnmountCbs.push(cb);
       },
     };
+    // at this moment we enter new context
+    const componentTree = element(props, componentAPI);
+    // here we exit our context
     const velesComponent: VelesComponent = {
       velesComponent: true,
-      tree: element(props, componentAPI),
+      tree: componentTree,
       _privateMethods: {
         _addUnmountHandler: (cb: Function) => {
           componentAPI.onUnmount(cb);
