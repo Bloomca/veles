@@ -1,14 +1,16 @@
-import type { VelesElement } from "./types";
+import { getComponentVelesNode } from "./utils";
+
+import type { VelesElement, VelesComponent } from "./types";
 
 function createState<T>(initialValue: T) {
   let value = initialValue;
   let trackingElements: {
-    cb: (value: T) => VelesElement;
-    node: VelesElement;
+    cb: (value: T) => VelesElement | VelesComponent;
+    node: VelesElement | VelesComponent;
   }[] = [];
   let trackingSelectorElements: {
     cb: Function;
-    node: VelesElement;
+    node: VelesElement | VelesComponent;
     selector: Function;
     selectedValue: any;
   }[] = [];
@@ -21,10 +23,10 @@ function createState<T>(initialValue: T) {
 
   const result = {
     initialValue,
-    useValue: (cb: (value: T) => VelesElement) => {
+    useValue: (cb: (value: T) => VelesElement | VelesComponent) => {
       const node = cb(value);
       trackingElements.push({ cb, node });
-      node._addUnmountHandler(() => {
+      node._privateMethods._addUnmountHandler(() => {
         trackingElements = trackingElements.filter(
           (trackingElement) => trackingElement.cb !== cb
         );
@@ -34,12 +36,12 @@ function createState<T>(initialValue: T) {
     },
     useValueSelector<F>(
       selector: (value: T) => F,
-      cb: (value: F) => VelesElement
+      cb: (value: F) => VelesElement | VelesComponent
     ) {
       const selectedValue = selector(value);
       const node = cb(selectedValue);
       trackingSelectorElements.push({ selector, selectedValue, cb, node });
-      node._addUnmountHandler(() => {
+      node._privateMethods._addUnmountHandler(() => {
         trackingSelectorElements = trackingSelectorElements.filter(
           (trackingSelectorElement) => trackingSelectorElement.cb !== cb
         );
@@ -69,7 +71,7 @@ function createState<T>(initialValue: T) {
 
         trackingAttributes.push({ cb, htmlElement, attributeName });
 
-        node._addUnmountHandler(() => {
+        node._privateMethods._addUnmountHandler(() => {
           trackingAttributes = trackingAttributes.filter(
             (trackingAttribute) => trackingAttribute.cb !== cb
           );
@@ -101,11 +103,19 @@ function createState<T>(initialValue: T) {
       trackingElements = trackingElements.map(({ cb, node }) => {
         const newNode = cb(value);
 
-        const parentVelesElement = node.parentVelesElement;
+        const { velesElementNode: oldVelesElementNode } =
+          getComponentVelesNode(node);
+        const { velesElementNode: newVelesElementNode } =
+          getComponentVelesNode(newNode);
+
+        const parentVelesElement = oldVelesElementNode.parentVelesElement;
 
         if (parentVelesElement) {
-          newNode.parentVelesElement = parentVelesElement;
-          parentVelesElement.html.replaceChild(newNode.html, node.html);
+          newVelesElementNode.parentVelesElement = parentVelesElement;
+          parentVelesElement.html.replaceChild(
+            newVelesElementNode.html,
+            oldVelesElementNode.html
+          );
           // we need to update `childComponents` so that after the update
           // if the parent node is removed from DOM, it calls correct unmount
           // callbacks
@@ -114,14 +124,14 @@ function createState<T>(initialValue: T) {
               childComponent === node ? newNode : node
             );
           // we call unmount handlers right after we replace it
-          node._callUnmountHandlers();
+          node._privateMethods._callUnmountHandlers();
 
           // right after that, we add the callback back
           // the top level node is guaranteed to be rendered again (at least right now)
           // if there were children listening, they should be cleared
           // and added back into their respective unmount listeners if it is still viable
           trackingElements.push({ cb, node: newNode });
-          newNode._addUnmountHandler(() => {
+          newNode._privateMethods._addUnmountHandler(() => {
             trackingElements = trackingElements.filter(
               (trackingElement) => trackingElement.cb !== cb
             );
@@ -143,11 +153,20 @@ function createState<T>(initialValue: T) {
           }
 
           const newNode = cb(newSelectedValue);
-          const parentVelesElement = node.parentVelesElement;
+
+          const { velesElementNode: oldVelesElementNode } =
+            getComponentVelesNode(node);
+          const { velesElementNode: newVelesElementNode } =
+            getComponentVelesNode(newNode);
+
+          const parentVelesElement = oldVelesElementNode.parentVelesElement;
 
           if (parentVelesElement) {
             newNode.parentVelesElement = parentVelesElement;
-            parentVelesElement.html.replaceChild(node.html, newNode);
+            parentVelesElement.html.replaceChild(
+              newVelesElementNode.html,
+              oldVelesElementNode.html
+            );
             // we need to update `childComponents` so that after the update
             // if the parent node is removed from DOM, it calls correct unmount
             // callbacks
@@ -156,7 +175,7 @@ function createState<T>(initialValue: T) {
                 childComponent === node ? newNode : node
               );
             // we call unmount handlers right after we replace it
-            node._callUnmountHandlers();
+            node._privateMethods._callUnmountHandlers();
 
             // right after that, we add the callback back
             // the top level node is guaranteed to be rendered again (at least right now)
