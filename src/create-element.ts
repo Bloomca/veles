@@ -99,9 +99,14 @@ function createElement(
     // functions mean that we want to render another component
   } else if (typeof element === "function") {
     const componentUnmountCbs: Function[] = [];
+    const componentMountCbs: Function[] = [];
     const componentAPI: {
+      onMount: (cb: Function) => void;
       onUnmount: (cb: Function) => void;
     } = {
+      onMount: (cb) => {
+        componentMountCbs.push(cb);
+      },
       onUnmount: (cb) => {
         componentUnmountCbs.push(cb);
       },
@@ -114,7 +119,7 @@ function createElement(
           componentAPI.onUnmount(cb);
         },
         _callMountHandlers: () => {
-          // pass for now
+          componentMountCbs.forEach((cb) => cb());
         },
         _callUnmountHandlers: () => {
           componentUnmountCbs.forEach((cb) => cb());
