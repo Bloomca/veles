@@ -1,4 +1,6 @@
-import type { VelesComponent, VelesElement, VelesElementProps } from "../types";
+import { addContext, popContext } from "../hooks/lifecycle";
+
+import type { VelesComponent, VelesElementProps, ComponentAPI } from "../types";
 
 function parseComponent({
   element,
@@ -9,10 +11,7 @@ function parseComponent({
 }) {
   const componentUnmountCbs: Function[] = [];
   const componentMountCbs: Function[] = [];
-  const componentAPI: {
-    onMount: (cb: Function) => void;
-    onUnmount: (cb: Function) => void;
-  } = {
+  const componentAPI: ComponentAPI = {
     onMount: (cb) => {
       componentMountCbs.push(cb);
     },
@@ -21,8 +20,10 @@ function parseComponent({
     },
   };
   // at this moment we enter new context
+  addContext(componentAPI);
   const componentTree = element(props, componentAPI);
   // here we exit our context
+  popContext();
   const velesComponent: VelesComponent = {
     velesComponent: true,
     tree: componentTree,

@@ -47,3 +47,8 @@ export type VelesElementProps = {
   // TODO: we can improve these types
   [htmlAttribute: string]: any;
 };
+
+export type ComponentAPI = {
+  onMount: (cb: Function) => void;
+  onUnmount: (cb: Function) => void;
+};

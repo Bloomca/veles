@@ -1,6 +1,6 @@
-import { getComponentVelesNode } from "./utils";
+import { getComponentVelesNode } from "../utils";
 
-import type { VelesElement, VelesComponent } from "./types";
+import type { VelesElement, VelesComponent } from "../types";
 
 function createState<T>(initialValue: T) {
   let value = initialValue;
@@ -79,7 +79,6 @@ function createState<T>(initialValue: T) {
 
         return attributeValue;
       };
-      // we need to
       attributeHelper.velesAttribute = true;
 
       return attributeHelper;
