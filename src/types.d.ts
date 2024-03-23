@@ -6,6 +6,8 @@ export type VelesElement = {
 
   html: HTMLElement;
 
+  phantom?: boolean;
+
   // every element except the most top one should have one
   parentVelesElement?: VelesElement;
   childComponents: (VelesElement | VelesComponent)[];

@@ -21,17 +21,45 @@ function parseChildren({
     (childComponent) => {
       if (typeof childComponent === "string") {
         const text = document.createTextNode(childComponent);
-        htmlElement.appendChild(text);
+        htmlElement.append(text);
       } else if (
         typeof childComponent === "object" &&
         childComponent &&
         "velesNode" in childComponent &&
         childComponent?.velesNode
       ) {
-        // TODO: check that it is a valid DOM Node
-        htmlElement.appendChild(childComponent.html);
-        childComponent.parentVelesElement = velesNode;
-        childComponents.push(childComponent);
+        if (childComponent.phantom) {
+          // we need to get ALL the children of it and attach it to this node
+          childComponent.childComponents.forEach((childComponentofPhantom) => {
+            if ("velesNode" in childComponentofPhantom) {
+              htmlElement.append(childComponentofPhantom.html);
+              childComponentofPhantom.parentVelesElement = velesNode;
+            } else {
+              const { componentsTree, velesElementNode } =
+                getComponentVelesNode(childComponentofPhantom);
+
+              if (!velesElementNode) {
+                console.error("can't find HTML tree in a component chain");
+              } else {
+                htmlElement.append(velesElementNode.html);
+
+                // TODO: address the same concern as below
+                componentsTree.forEach((component) => {
+                  component._privateMethods._callMountHandlers();
+                });
+
+                velesElementNode.parentVelesElement = velesNode;
+              }
+            }
+          });
+          childComponent.parentVelesElement = velesNode;
+          childComponents.push(childComponent);
+        } else {
+          // TODO: check that it is a valid DOM Node
+          htmlElement.append(childComponent.html);
+          childComponent.parentVelesElement = velesNode;
+          childComponents.push(childComponent);
+        }
       } else if (
         typeof childComponent === "object" &&
         childComponent &&
@@ -46,7 +74,35 @@ function parseChildren({
         if (!velesElementNode) {
           console.error("can't find HTML tree in a component chain");
         } else {
-          htmlElement.appendChild(velesElementNode.html);
+          if (velesElementNode.phantom) {
+            // we need to get ALL the children of it and attach it to this node
+            velesElementNode.childComponents.forEach(
+              (childComponentofPhantom) => {
+                if ("velesNode" in childComponentofPhantom) {
+                  htmlElement.append(childComponentofPhantom.html);
+                  childComponentofPhantom.parentVelesElement = velesNode;
+                } else {
+                  const { componentsTree, velesElementNode } =
+                    getComponentVelesNode(childComponentofPhantom);
+
+                  if (!velesElementNode) {
+                    console.error("can't find HTML tree in a component chain");
+                  } else {
+                    htmlElement.append(velesElementNode.html);
+
+                    // TODO: address the same concern as below
+                    componentsTree.forEach((component) => {
+                      component._privateMethods._callMountHandlers();
+                    });
+
+                    velesElementNode.parentVelesElement = velesNode;
+                  }
+                }
+              }
+            );
+          } else {
+            htmlElement.append(velesElementNode.html);
+          }
 
           /**
            * TODO: rethink this

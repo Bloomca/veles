@@ -9,7 +9,7 @@ function createElement(
   props: VelesElementProps = {}
 ): VelesElement | VelesComponent {
   if (typeof element === "string") {
-    const { children, ref, ...otherProps } = props;
+    const { children, ref, phantom = false, ...otherProps } = props;
     const newElement = document.createElement(element);
     const velesNode = {} as VelesElement;
 
@@ -40,6 +40,7 @@ function createElement(
     velesNode.html = newElement;
     velesNode.velesNode = true;
     velesNode.childComponents = childComponents;
+    velesNode.phantom = phantom;
     velesNode._privateMethods = {
       _addUnmountHandler: (cb: Function) => {
         unmountHandlers.push(cb);
