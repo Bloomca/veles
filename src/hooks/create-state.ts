@@ -3,7 +3,12 @@ import { onUnmount } from "./lifecycle";
 
 import type { VelesElement, VelesComponent } from "../types";
 
-function createState<T>(initialValue: T) {
+function createState<T>(
+  initialValue: T,
+  subscribeCallback?: (
+    setValue: ReturnType<typeof createState<T>>["setValue"]
+  ) => Function
+) {
   let value = initialValue;
   let trackingEffects: { (value: T): void }[] = [];
   let trackingElements: {
@@ -106,7 +111,7 @@ function createState<T>(initialValue: T) {
     // set up new value only through the callback which
     // gives the latest value to ensure no outdated data
     // can be used for the state
-    setValue: (newValueCB) => {
+    setValue: (newValueCB: (currentValue: T) => T): void => {
       const newValue = newValueCB(value);
 
       if (newValue !== value) {
@@ -234,6 +239,14 @@ function createState<T>(initialValue: T) {
       });
     },
   };
+
+  if (subscribeCallback) {
+    const unsubscribe = subscribeCallback(result.setValue);
+
+    if (unsubscribe) {
+      onUnmount(unsubscribe);
+    }
+  }
 
   return result;
 }
