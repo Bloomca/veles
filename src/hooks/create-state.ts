@@ -1,9 +1,11 @@
 import { getComponentVelesNode } from "../utils";
+import { onUnmount } from "./lifecycle";
 
 import type { VelesElement, VelesComponent } from "../types";
 
 function createState<T>(initialValue: T) {
   let value = initialValue;
+  let trackingEffects: { (value: T): void }[] = [];
   let trackingElements: {
     cb: (value: T) => VelesElement | VelesComponent;
     node: VelesElement | VelesComponent;
@@ -22,8 +24,22 @@ function createState<T>(initialValue: T) {
   }[] = [];
 
   const result = {
-    initialValue,
-    useValue: (cb: (value: T) => VelesElement | VelesComponent) => {
+    // supposed to be used at the component level
+    trackValue: (cb: (value: T) => void | Function) => {
+      trackingEffects.push(cb);
+      // trigger the callback first time
+      // maybe provide an option to skip it first time?
+      cb(value);
+      // track value is attached at the component level
+      onUnmount(() => {
+        trackingEffects = trackingEffects.filter(
+          (trackingCallback) => trackingCallback !== cb
+        );
+      });
+    },
+    useValue: (
+      cb: (value: T) => VelesElement | VelesComponent
+    ): VelesElement | VelesComponent => {
       const node = cb(value);
       trackingElements.push({ cb, node });
       node._privateMethods._addUnmountHandler(() => {
@@ -37,7 +53,7 @@ function createState<T>(initialValue: T) {
     useValueSelector<F>(
       selector: (value: T) => F,
       cb: (value: F) => VelesElement | VelesComponent
-    ) {
+    ): VelesElement | VelesComponent {
       const selectedValue = selector(value);
       const node = cb(selectedValue);
       trackingSelectorElements.push({ selector, selectedValue, cb, node });
@@ -210,6 +226,11 @@ function createState<T>(initialValue: T) {
         const newAttributeValue = cb(value);
 
         htmlElement.setAttribute(attributeName, newAttributeValue);
+      });
+
+      // tracked values
+      trackingEffects.forEach((trackingCallback) => {
+        trackingCallback(value);
       });
     },
   };
