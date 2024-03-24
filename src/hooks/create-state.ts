@@ -66,7 +66,7 @@ function createState<T>(
     node: VelesElement | VelesComponent;
   }[] = [];
   let trackingSelectorElements: {
-    cb: Function;
+    cb: (value: any) => VelesElement | VelesComponent;
     node: VelesElement | VelesComponent;
     selector: Function;
     selectedValue: any;
@@ -312,7 +312,7 @@ function createState<T>(
           const parentVelesElement = oldVelesElementNode.parentVelesElement;
 
           if (parentVelesElement) {
-            newNode.parentVelesElement = parentVelesElement;
+            newVelesElementNode.parentVelesElement = parentVelesElement;
             parentVelesElement.html.replaceChild(
               newVelesElementNode.html,
               oldVelesElementNode.html
@@ -337,7 +337,7 @@ function createState<T>(
               cb,
               node: newNode,
             });
-            newNode._addUnmountHandler(() => {
+            newNode._privateMethods._addUnmountHandler(() => {
               trackingSelectorElements = trackingSelectorElements.filter(
                 (trackingSelectorElement) => trackingSelectorElement.cb !== cb
               );
