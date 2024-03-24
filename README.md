@@ -79,6 +79,33 @@ function Counter() {
 }
 ```
 
+### createState and partial subscriptions
+
+If you have an object in your store, even atomic updates will be wasteful. Let's say you have an object with several fields, but you are only interested in the `title` property. If you use `useValue`, it will do unnecessary work. To help with that, there is a `useValueSelector` state method, which accepts a selector function as the first parameter. Here is an example:
+
+```js
+import { createElement, createState } from "veles";
+
+function App() {
+  const taskState = createState({
+    id: 5,
+    title: "title",
+    description: "long description",
+  });
+  return createElement("div", {
+    children: [
+      createElement("h1", { children: "App" }),
+      taskState.useSelectorValue(
+        (task) => task.title,
+        (title) => createElement("div", { children: `task title: ${title}` })
+      ),
+    ],
+  });
+}
+```
+
+The component which listens for `title` will only be rendered again when the title changes.
+
 ### createState and lists
 
 Lists performance is one of the cornerstones of this library, and to help with that, it provides a special state method `useValueIterator`. This method ensures that when the state changes, instead of re-rendering the whole list, it checks each list element individually, moves them into correct order without unnecessary re-renders, and in case of changes element data, it will update the passed state object, so that only subscribed parts will re-render.
@@ -105,8 +132,8 @@ function List() {
         ({ elementState }) => {
           return createElement("div", {
             children: [
-              elementState.useValue((element) =>
-                createElement("div", { children: element.name })
+              elementState.useValueSelector((element) => element.name, (name) =>
+                createElement("div", { children: name })
               ),
             ],
           });
@@ -262,45 +289,5 @@ function App(_props, componentAPI) {
   return createElement("div", {
     children: "Application",
   });
-}
-```
-
-## Example
-
-Here is a rough example of a counter application (right now in plain JavaScript, but it should be possible to use JSX by specifying custom pragma):
-
-```js
-import { attachComponent, createElement, createState } from "veles";
-
-function App() {
-  const counterState = createState(0);
-  return createElement("div", {
-    children: [
-      "Veles app with a counter",
-      counterState.useValue((value) =>
-        createElement("div", { children: [`current counter value: ${value}`] })
-      ),
-      createElement("div", { children: ["test"] }),
-      createElement(Button, { counterState }),
-    ],
-  });
-}
-
-function Button({ counterState }) {
-  return createElement("button", {
-    onClick: () => {
-      counterState.setValue((currentValue) => currentValue + 1);
-    },
-    children: ["+", createElement("div", { children: ["hello"] })],
-    style: counterState.useAttribute(
-      (currentValue) => `width: ${50 + currentValue}px;`
-    ),
-  });
-}
-
-const appContainer = document.getElementById("app");
-
-if (appContainer) {
-  attachComponent({ htmlElement: appContainer, component: createElement(App) });
 }
 ```
