@@ -16,6 +16,12 @@ function attachComponent({
   const wrappedApp = createElement("div", { children: [component] });
   const { velesElementNode } = getComponentVelesNode(wrappedApp);
   htmlElement.appendChild(velesElementNode.html);
+
+  // TODO: iterate over every child and call their `onUnmout` method
+  // and add tests for that
+  return () => {
+    velesElementNode.html.remove();
+  };
 }
 
 export { attachComponent };

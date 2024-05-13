@@ -9,7 +9,7 @@ type AttributeHelper = {
   velesAttribute: boolean;
 };
 
-type State<ValueType> = {
+export type State<ValueType> = {
   trackValue(cb: (value: ValueType) => void | Function): void;
   useValue(
     cb: (value: ValueType) => VelesElement | VelesComponent
@@ -166,7 +166,9 @@ function createState<T>(
           return;
         }
 
-        const node = cb({ elementState, index });
+        // we have to wrap it into our own component
+        // to make sure that the unmount handler will have correct context
+        let node = createElement(() => cb({ elementState, index }));
 
         elementsByKey[calculatedKey] = {
           node,
@@ -249,6 +251,8 @@ function createState<T>(
         result._triggerUpdates();
       }
     },
+    // TODO: remove it from this object completely
+    // and access it from closure
     _triggerUpdates: () => {
       trackingElements = trackingElements.map(({ cb, node }) => {
         const newNode = cb(value);
@@ -448,7 +452,9 @@ function createState<T>(
               };
             } else {
               const elementState = createState(element);
-              const node = cb({ elementState, index });
+              // we have to wrap it into our own component
+              // to make sure that the unmount handler will have correct context
+              const node = createElement(() => cb({ elementState, index }));
 
               newRenderedElements.push([node, calculatedKey, elementState]);
               newElementsByKey[calculatedKey] = {
