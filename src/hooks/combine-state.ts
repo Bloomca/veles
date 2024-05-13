@@ -11,6 +11,7 @@ export function combineState<T>(
   const combinedState = createState(initialValue);
 
   states.forEach((state) => {
+    // TODO: add support for trackValueSelector
     state.trackValue(() => {
       // by the time trackValue callback is called
       // it is guaranteed that reading `state.getValue` will

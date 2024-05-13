@@ -1,2 +1,4 @@
 node_modules/
 test-app/
+src/**/*.js
+integration-tests/**/*.js
