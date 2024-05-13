@@ -250,17 +250,18 @@ describe("createState", () => {
             "data-testid": "listComponent",
             children: [
               state.useValueIterator<Item>(
-                ({ elementState }) => {
-                  onUnmount(unmountSpy);
-                  return createElement("li", {
-                    children: [
-                      elementState.useValueSelector(
-                        (element) => element.text,
-                        (text) => createElement("span", { children: text })
-                      ),
-                    ],
-                  });
-                },
+                ({ elementState }) =>
+                  createElement(() => {
+                    onUnmount(unmountSpy);
+                    return createElement("li", {
+                      children: [
+                        elementState.useValueSelector(
+                          (element) => element.text,
+                          (text) => createElement("span", { children: text })
+                        ),
+                      ],
+                    });
+                  }),
                 { key: "id" }
               ),
             ],

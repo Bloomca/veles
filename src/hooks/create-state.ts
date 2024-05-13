@@ -166,9 +166,7 @@ function createState<T>(
           return;
         }
 
-        // we have to wrap it into our own component
-        // to make sure that the unmount handler will have correct context
-        let node = createElement(() => cb({ elementState, index }));
+        let node = cb({ elementState, index });
 
         elementsByKey[calculatedKey] = {
           node,
@@ -452,9 +450,7 @@ function createState<T>(
               };
             } else {
               const elementState = createState(element);
-              // we have to wrap it into our own component
-              // to make sure that the unmount handler will have correct context
-              const node = createElement(() => cb({ elementState, index }));
+              const node = cb({ elementState, index });
 
               newRenderedElements.push([node, calculatedKey, elementState]);
               newElementsByKey[calculatedKey] = {
