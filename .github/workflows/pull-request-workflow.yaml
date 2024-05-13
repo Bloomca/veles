@@ -1,6 +1,10 @@
-name: pull-request-workflow
-run-name: Veles PR checks
-on: [pull_request]
+name: test-workflow
+run-name: Veles test checks
+on:
+  push:
+        branches:
+            - main
+  pull_request:
 
 jobs:
   run-tests:
