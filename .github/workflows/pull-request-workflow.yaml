@@ -2,18 +2,13 @@ name: pull-request-workflow
 run-name: Veles PR checks
 on: [pull_request]
 
-permissions:
-  actions: read
-  contents: read
-  packages: read
-
 jobs:
   run-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: action/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-            ref: ${{ github.head_ref }}
-            fetch-depth: 0
-
+          node-version: "22"
+      - run: npm install
+      - run: npm run test
