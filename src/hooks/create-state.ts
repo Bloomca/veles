@@ -188,7 +188,7 @@ function createState<T>(
         });
         return createElement("div", {
           phantom: true,
-          children: children.map((child) => (child ? child[0] : child)),
+          children: children.map((child) => child[0]),
         });
       });
 
