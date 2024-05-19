@@ -191,4 +191,57 @@ describe("createElement", () => {
         .join("")
     );
   });
+
+  test("supports returning string from a component", async () => {
+    function StringComponent() {
+      return "hello, world";
+    }
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StringComponent),
+    });
+
+    expect(await screen.findByText("hello, world")).toBeVisible();
+  });
+
+  test("support returning a string from a nested component", async () => {
+    function StringComponent() {
+      return "hello, world";
+    }
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: ["parent component"] }),
+          createElement(StringComponent),
+        ],
+      });
+    }
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(await screen.findByText("parent component")).toBeVisible();
+    expect(await screen.findByText("hello, world")).toBeVisible();
+  });
+
+  test("support returning null from a component", async () => {
+    function StringComponent() {
+      return null;
+    }
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: ["parent component"] }),
+          createElement(StringComponent),
+        ],
+      });
+    }
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(await screen.findByText("parent component")).toBeVisible();
+  });
 });

@@ -1,7 +1,7 @@
-import type { VelesComponent, VelesElement } from "./types";
+import type { VelesComponent, VelesElement, VelesStringElement } from "./types";
 
 function getComponentVelesNode(component: VelesComponent | VelesElement): {
-  velesElementNode: VelesElement;
+  velesElementNode: VelesElement | VelesStringElement;
   componentsTree: VelesComponent[];
 } {
   const componentsTree: VelesComponent[] = [];
@@ -10,7 +10,14 @@ function getComponentVelesNode(component: VelesComponent | VelesElement): {
   // to the actual HTML to attach it
   while ("velesComponent" in childNode) {
     componentsTree.push(childNode);
-    childNode = childNode.tree;
+    if ("velesStringElement" in childNode.tree) {
+      return {
+        velesElementNode: childNode.tree,
+        componentsTree,
+      };
+    } else {
+      childNode = childNode.tree;
+    }
   }
 
   return { velesElementNode: childNode, componentsTree };

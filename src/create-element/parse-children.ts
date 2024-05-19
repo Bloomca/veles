@@ -74,7 +74,7 @@ function parseChildren({
         if (!velesElementNode) {
           console.error("can't find HTML tree in a component chain");
         } else {
-          if (velesElementNode.phantom) {
+          if ("velesNode" in velesElementNode && velesElementNode.phantom) {
             // we need to get ALL the children of it and attach it to this node
             velesElementNode.childComponents.forEach(
               (childComponentofPhantom) => {

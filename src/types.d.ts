@@ -19,11 +19,17 @@ export type VelesElement = {
   };
 };
 
+export type VelesStringElement = {
+  velesStringElement: true;
+  html: Text;
+  parentVelesElement?: VelesElement;
+};
+
 // an internal representation of components in the tree
 export type VelesComponent = {
   velesComponent: true;
 
-  tree: VelesElement | VelesComponent;
+  tree: VelesElement | VelesComponent | VelesStringElement;
 
   // not intended to be used directly
   _privateMethods: {
@@ -55,3 +61,8 @@ export type ComponentAPI = {
   onMount: (cb: Function) => void;
   onUnmount: (cb: Function) => void;
 };
+
+export type ComponentFunction = (
+  props: VelesElementProps,
+  componentAPI: ComponentAPI
+) => VelesElement | VelesComponent | string | null;

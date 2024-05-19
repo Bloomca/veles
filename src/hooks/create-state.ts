@@ -486,7 +486,7 @@ function createState<T>(
           let newElementsCount: number = 0;
           // to avoid unnecessary shuffling of the DOM elements
           let offset: number = 0;
-          let currentElement: HTMLElement | null = null;
+          let currentElement: HTMLElement | Text | null = null;
           newRenderedElements.forEach((newRenderedElement, index) => {
             // if we needed to adjust offset until we reach the original position of the item
             // we need to return it back once we reach the position after it
@@ -596,10 +596,14 @@ function createState<T>(
                 oldRenderedVelesNode.html.remove();
                 oldNode._privateMethods._callUnmountHandlers();
 
-                wrapperVelesElementNode.childComponents =
-                  wrapperVelesElementNode.childComponents.filter(
-                    (childComponent) => childComponent !== oldNode
-                  );
+                if ("velesNode" in wrapperVelesElementNode) {
+                  wrapperVelesElementNode.childComponents =
+                    wrapperVelesElementNode.childComponents.filter(
+                      (childComponent) => childComponent !== oldNode
+                    );
+                } else {
+                  throw new Error("Wrapper iterator element is a string");
+                }
               }
             });
           }
