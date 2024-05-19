@@ -35,9 +35,10 @@ export type VelesComponent = {
 
 // all supported child options
 type velesChild = string | VelesElement | VelesComponent;
+export type VelesChildren = velesChild | velesChild[] | undefined | null;
 
 export type VelesElementProps = {
-  children?: velesChild | velesChild[] | undefined | null;
+  children?: VelesChildren;
   ref?: {
     velesRef: true;
     current: any;
