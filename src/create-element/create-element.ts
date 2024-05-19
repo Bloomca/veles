@@ -2,10 +2,15 @@ import { parseChildren } from "./parse-children";
 import { assignAttributes } from "./assign-attributes";
 import { parseComponent } from "./parse-component";
 
-import type { VelesComponent, VelesElement, VelesElementProps } from "../types";
+import type {
+  VelesComponent,
+  VelesElement,
+  VelesElementProps,
+  ComponentFunction,
+} from "../types";
 
 function createElement(
-  element: string | Function,
+  element: string | ComponentFunction,
   props: VelesElementProps = {}
 ): VelesElement | VelesComponent {
   if (typeof element === "string") {

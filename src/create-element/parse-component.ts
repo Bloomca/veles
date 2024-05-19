@@ -1,12 +1,18 @@
 import { addContext, popContext } from "../hooks/lifecycle";
 
-import type { VelesComponent, VelesElementProps, ComponentAPI } from "../types";
+import type {
+  VelesComponent,
+  VelesStringElement,
+  VelesElementProps,
+  ComponentAPI,
+  ComponentFunction,
+} from "../types";
 
 function parseComponent({
   element,
   props,
 }: {
-  element: Function;
+  element: ComponentFunction;
   props: VelesElementProps;
 }) {
   const componentUnmountCbs: Function[] = [];
@@ -21,7 +27,18 @@ function parseComponent({
   };
   // at this moment we enter new context
   addContext(componentAPI);
-  const componentTree = element(props, componentAPI);
+  const _componentTree = element(props, componentAPI);
+
+  const componentTree =
+    typeof _componentTree === "string" || !_componentTree
+      ? ({
+          velesStringElement: true,
+          html: document.createTextNode(
+            typeof _componentTree === "string" ? _componentTree : ""
+          ),
+        } as VelesStringElement)
+      : _componentTree;
+
   // here we exit our context
   popContext();
   const velesComponent: VelesComponent = {
@@ -36,9 +53,11 @@ function parseComponent({
       },
       _callUnmountHandlers: () => {
         componentUnmountCbs.forEach((cb) => cb());
-        // this should trigger recursive checks,
-        // whether it is a VelesNode or VelesComponent
-        velesComponent.tree._privateMethods._callUnmountHandlers();
+        // this should trigger recursive checks, whether it is a VelesNode or VelesComponent
+        // string Nodes don't have lifecycle handlers
+        if ("_privateMethods" in velesComponent.tree) {
+          velesComponent.tree._privateMethods._callUnmountHandlers();
+        }
       },
     },
   };
