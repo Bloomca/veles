@@ -217,7 +217,7 @@ This subscription will not cause any re-renders.
 
 ### Combining different states
 
-Since `createState` is the only way to add dynamic behaviour to the application, sooner or later you'll need to build UI which depends on several states. To do so, you can use `combineState` function which accepts any amount of state objects, and returns a state object with combined values.
+Since `createState` is the only way to add dynamic behaviour to the application, sooner or later you'll need to build UI which depends on several states. To do so, you can use `combineState` function which accepts any amount of state objects, and returns an array with all combined values in it.
 
 ```js
 import { createElement, createState } from "veles";
@@ -226,7 +226,6 @@ function Counter() {
   const firstcounterState = createState(0);
   const secondCounterState = createState(0);
   const combinedCounterState = combineState(
-    (firstValue: number, secondValue) => firstValue + secondValue,
     firstcounterState,
     secondCounterState
   );
@@ -243,10 +242,12 @@ function Counter() {
           children: `second counter value is: ${counterValue}`,
         })
       ),
-      combinedCounterState.useValue((counterValue) =>
-        createElement("div", {
-          children: `combined counter value is: ${counterValue}`,
-        })
+      combinedCounterState.useValueSelector(
+        ([firstValue, secondValue]) => firstValue + secondValue,
+        (counterValue) =>
+          createElement("div", {
+            children: `combined counter value is: ${counterValue}`,
+          })
       ),
       createElement("button", {
         onClick: () => {
