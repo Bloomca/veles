@@ -5,6 +5,13 @@ import { attachComponent, createElement, createState, onUnmount } from "../src";
 
 import type { State } from "../src";
 
+function shallow(obj1: Record<string, any>, obj2: Record<string, any>) {
+  return (
+    Object.keys(obj1).length === Object.keys(obj2).length &&
+    Object.keys(obj1).every((key) => obj1[key] === obj2[key])
+  );
+}
+
 describe("createState", () => {
   let cleanup: Function | undefined;
 
@@ -206,6 +213,79 @@ describe("createState", () => {
     await user.click(screen.getByTestId("secondValueButton"));
     expect(await screen.findByText("second value is 2")).toBeVisible();
     expect(unmountSpy).toHaveBeenCalledTimes(2);
+  });
+
+  test("supports custom comparator in useValue", async () => {
+    const user = userEvent.setup();
+    function StateComponent() {
+      const valueState = createState({
+        firstValue: 0,
+        secondValue: 0,
+      });
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "firstValueButton",
+            onClick: () => {
+              valueState.setValue((currentValue) => ({
+                ...currentValue,
+                firstValue: currentValue.firstValue + 1,
+              }));
+            },
+          }),
+          createElement("button", {
+            "data-testid": "secondValueButton",
+            onClick: () => {
+              valueState.setValue((currentValue) => ({
+                ...currentValue,
+                secondValue: currentValue.secondValue + 1,
+              }));
+            },
+          }),
+          createElement("button", {
+            "data-testid": "fakeValueButton",
+            onClick: () => {
+              valueState.setValue((currentValue) => ({
+                ...currentValue,
+              }));
+            },
+          }),
+          valueState.useValue(
+            (value) =>
+              createElement(ValueComponent, {
+                value: value.firstValue + value.secondValue,
+              }),
+            shallow
+          ),
+        ],
+      });
+    }
+
+    const unmountSpy = jest.fn();
+    function ValueComponent({ value }: { value: number }) {
+      onUnmount(unmountSpy);
+      return createElement("div", {
+        children: `total value is ${value}`,
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(await screen.findByText("total value is 0")).toBeVisible();
+    await user.click(screen.getByTestId("secondValueButton"));
+    expect(await screen.findByText("total value is 1")).toBeVisible();
+    expect(unmountSpy).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByTestId("firstValueButton"));
+    expect(unmountSpy).toHaveBeenCalledTimes(2);
+    await user.click(screen.getByTestId("secondValueButton"));
+    expect(await screen.findByText("total value is 3")).toBeVisible();
+    expect(unmountSpy).toHaveBeenCalledTimes(3);
+    await user.click(screen.getByTestId("fakeValueButton"));
+    expect(await screen.findByText("total value is 3")).toBeVisible();
+    expect(unmountSpy).toHaveBeenCalledTimes(3);
   });
 
   test("useValueIterator does not re-mount values which did not change their keys", async () => {

@@ -1,4 +1,4 @@
-import { getComponentVelesNode } from "../utils";
+import { getComponentVelesNode, identity } from "../utils";
 import { onUnmount } from "./lifecycle";
 import { createElement } from "../create-element/create-element";
 
@@ -12,11 +12,16 @@ type AttributeHelper = {
 export type State<ValueType> = {
   trackValue(cb: (value: ValueType) => void | Function): void;
   useValue(
-    cb: (value: ValueType) => VelesElement | VelesComponent
+    cb: (value: ValueType) => VelesElement | VelesComponent,
+    comparator?: (value1: ValueType, value2: ValueType) => boolean
   ): VelesElement | VelesComponent;
   useValueSelector<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
-    cb: (value: SelectorValueType) => VelesElement | VelesComponent
+    cb: (value: SelectorValueType) => VelesElement | VelesComponent,
+    comparator?: (
+      value1: SelectorValueType,
+      value2: SelectorValueType
+    ) => boolean
   ): VelesElement | VelesComponent;
   useAttribute(cb: (value: ValueType) => string): AttributeHelper;
   useValueIterator<Element>(
@@ -29,6 +34,7 @@ export type State<ValueType> = {
     }
   ): VelesComponent | VelesElement;
   getValue(): ValueType;
+  getPreviousValue(): undefined | ValueType;
   setValue(newValueCB: (currentValue: ValueType) => ValueType): void;
 
   // private method, don't use directly
@@ -60,16 +66,14 @@ function createState<T>(
   ) => Function
 ): State<T> {
   let value = initialValue;
+  let previousValue: undefined | T = undefined;
   let trackingEffects: { (value: T): void }[] = [];
-  let trackingElements: {
-    cb: (value: T) => VelesElement | VelesComponent;
-    node: VelesElement | VelesComponent;
-  }[] = [];
   let trackingSelectorElements: {
     cb: (value: any) => VelesElement | VelesComponent;
     node: VelesElement | VelesComponent;
-    selector: Function;
+    selector?: Function;
     selectedValue: any;
+    comparator: (value1: any, value2: any) => boolean;
   }[] = [];
 
   let trackingAttributes: {
@@ -95,24 +99,24 @@ function createState<T>(
         );
       });
     },
-    useValue: (cb) => {
-      const node = cb(value);
-      trackingElements.push({ cb, node });
-      node._privateMethods._addUnmountHandler(() => {
-        trackingElements = trackingElements.filter(
-          (trackingElement) => trackingElement.cb !== cb
-        );
-      });
-
-      return node;
+    useValue: (cb, comparator) => {
+      return result.useValueSelector<T>(undefined, cb, comparator);
     },
     useValueSelector<F>(
-      selector: (value: T) => F,
-      cb: (value: F) => VelesElement | VelesComponent
+      selector: ((value: T) => F) | undefined,
+      cb: (value: F) => VelesElement | VelesComponent,
+      comparator: (value1: F, value2: F) => boolean = identity
     ): VelesElement | VelesComponent {
-      const selectedValue = selector(value);
+      // @ts-expect-error
+      const selectedValue = selector ? selector(value) : (value as F);
       const node = cb(selectedValue);
-      trackingSelectorElements.push({ selector, selectedValue, cb, node });
+      trackingSelectorElements.push({
+        selector,
+        selectedValue,
+        cb,
+        node,
+        comparator,
+      });
       node._privateMethods._addUnmountHandler(() => {
         trackingSelectorElements = trackingSelectorElements.filter(
           (trackingSelectorElement) => trackingSelectorElement.cb !== cb
@@ -238,6 +242,9 @@ function createState<T>(
     getValue: () => {
       return value;
     },
+    getPreviousValue: () => {
+      return previousValue;
+    },
     // set up new value only through the callback which
     // gives the latest value to ensure no outdated data
     // can be used for the state
@@ -245,6 +252,7 @@ function createState<T>(
       const newValue = newValueCB(value);
 
       if (newValue !== value) {
+        previousValue = value;
         value = newValue;
         result._triggerUpdates();
       }
@@ -252,55 +260,13 @@ function createState<T>(
     // TODO: remove it from this object completely
     // and access it from closure
     _triggerUpdates: () => {
-      trackingElements = trackingElements.map(({ cb, node }) => {
-        const newNode = cb(value);
-
-        const { velesElementNode: oldVelesElementNode } =
-          getComponentVelesNode(node);
-        const { velesElementNode: newVelesElementNode } =
-          getComponentVelesNode(newNode);
-
-        const parentVelesElement = oldVelesElementNode.parentVelesElement;
-
-        if (parentVelesElement) {
-          newVelesElementNode.parentVelesElement = parentVelesElement;
-          parentVelesElement.html.replaceChild(
-            newVelesElementNode.html,
-            oldVelesElementNode.html
-          );
-          // we need to update `childComponents` so that after the update
-          // if the parent node is removed from DOM, it calls correct unmount
-          // callbacks
-          parentVelesElement.childComponents =
-            parentVelesElement.childComponents.map((childComponent) =>
-              childComponent === node ? newNode : node
-            );
-          // we call unmount handlers right after we replace it
-          node._privateMethods._callUnmountHandlers();
-
-          // right after that, we add the callback back
-          // the top level node is guaranteed to be rendered again (at least right now)
-          // if there were children listening, they should be cleared
-          // and added back into their respective unmount listeners if it is still viable
-          trackingElements.push({ cb, node: newNode });
-          newNode._privateMethods._addUnmountHandler(() => {
-            trackingElements = trackingElements.filter(
-              (trackingElement) => trackingElement.cb !== cb
-            );
-          });
-        } else {
-          console.log("parent node was not found");
-        }
-
-        return { cb, node: newNode };
-      });
-
       trackingSelectorElements = trackingSelectorElements.map(
         (selectorTrackingElement) => {
-          const { selectedValue, selector, cb, node } = selectorTrackingElement;
-          const newSelectedValue = selector(value);
+          const { selectedValue, selector, cb, node, comparator } =
+            selectorTrackingElement;
+          const newSelectedValue = selector ? selector(value) : value;
 
-          if (selectedValue === newSelectedValue) {
+          if (comparator(selectedValue, newSelectedValue)) {
             return selectorTrackingElement;
           }
 
@@ -338,6 +304,7 @@ function createState<T>(
               selectedValue: newSelectedValue,
               cb,
               node: newNode,
+              comparator,
             });
             newNode._privateMethods._addUnmountHandler(() => {
               trackingSelectorElements = trackingSelectorElements.filter(
@@ -353,6 +320,7 @@ function createState<T>(
             selector,
             cb,
             node: newNode,
+            comparator,
           };
         }
       );

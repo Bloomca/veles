@@ -23,4 +23,8 @@ function getComponentVelesNode(component: VelesComponent | VelesElement): {
   return { velesElementNode: childNode, componentsTree };
 }
 
-export { getComponentVelesNode };
+function identity<T>(value1: T, value2: T) {
+  return value1 === value2;
+}
+
+export { getComponentVelesNode, identity };
