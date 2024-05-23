@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/dom";
+import { screen, waitFor } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -17,7 +17,7 @@ describe("lifecycle hooks", () => {
     cleanup = undefined;
   });
 
-  test("triggers onMount hook on all components in the tree", () => {
+  test("triggers onMount hook on all components in the tree", async () => {
     const appMountSpy = jest.fn();
     const firstComponentMountSpy = jest.fn();
     const secondComponentMountSpy = jest.fn();
@@ -48,6 +48,11 @@ describe("lifecycle hooks", () => {
     cleanup = attachComponent({
       htmlElement: document.body,
       component: createElement(App),
+    });
+
+    // hacky way to wait until the next tick so that mount hooks are executed
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
     });
 
     expect(appMountSpy).toHaveBeenCalledTimes(1);
@@ -109,5 +114,37 @@ describe("lifecycle hooks", () => {
 
     expect(firstComponentUnmountSpy).toHaveBeenCalledTimes(1);
     expect(secondComponentUnmountSpy).toHaveBeenCalledTimes(1);
+  });
+
+  test("onMount hooks are executed when the markup is in DOM", async () => {
+    let isElementFound = false;
+    const appMountSpy = () => {
+      const appComponentElement = document.querySelector(
+        '[data-testid="appComponent"]'
+      );
+
+      if (appComponentElement) {
+        isElementFound = true;
+      }
+    };
+    function App() {
+      onMount(appMountSpy);
+      return createElement("div", {
+        "data-testid": "appComponent",
+        children: ["app component"],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    // hacky way to wait until the next tick so that mount hooks are executed
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(isElementFound).toBe(true);
   });
 });
