@@ -90,11 +90,12 @@ function parseChildren({
                   } else {
                     htmlElement.append(velesElementNode.html);
 
-                    // TODO: address the same concern as below
-                    componentsTree.forEach((component) => {
-                      component._privateMethods._callMountHandlers();
-                    });
-
+                    // Same explanation as below. Components are mounted synchronously
+                    setTimeout(() => {
+                      componentsTree.forEach((component) => {
+                        component._privateMethods._callMountHandlers();
+                      });
+                    }, 0);
                     velesElementNode.parentVelesElement = velesNode;
                   }
                 }
@@ -105,21 +106,14 @@ function parseChildren({
           }
 
           /**
-           * TODO: rethink this
-           * this is not 100% correct. the mount process here is that
-           * it attaches the child component to the parent HTML component
-           * the thing is, the process is recursive and goes up, not down,
-           * so it ends in the actual DOM only when all of them are executed.
-           *
-           * It is possible to put the callbacks into the queue and then execute
-           * it in the opposite order when the context stack is empty, which would
-           * mean we process all components, but that approach would complicate
-           * adding async rendering in the future.
+           * Components are mounted synchronously, so we can safely wait for the next
+           * CPU tick and be sure that new markup is attached to DOM.
            */
-          componentsTree.forEach((component) => {
-            component._privateMethods._callMountHandlers();
-          });
-
+          setTimeout(() => {
+            componentsTree.forEach((component) => {
+              component._privateMethods._callMountHandlers();
+            });
+          }, 0);
           velesElementNode.parentVelesElement = velesNode;
           childComponents.push(childComponent);
         }
