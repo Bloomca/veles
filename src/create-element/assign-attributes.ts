@@ -9,21 +9,26 @@ function assignAttributes({
   htmlElement: HTMLElement;
   velesNode: VelesElement;
 }) {
-  const { onClick, ...otherProps } = props;
-  // we need to assign attributes after `velesNode` is initialized
-  // so that we can correctly handle unmount callbacks
-  Object.entries(otherProps).forEach(([key, value]) => {
-    if (typeof value === "function" && value.velesAttribute === true) {
+  Object.entries(props).forEach(([key, value]) => {
+    const isFunction = typeof value === "function";
+    if (isFunction && value.velesAttribute === true) {
       const attributeValue = value(htmlElement, key, velesNode);
       htmlElement.setAttribute(key, attributeValue);
+    } else if (
+      // basically, any form of `on` handlers, like `onClick`, `onCopy`, etc
+      isFunction &&
+      key.length > 2 &&
+      key.startsWith("on")
+    ) {
+      // TODO: think if this is robust enough
+      htmlElement.addEventListener(
+        key[2].toLocaleLowerCase() + key.slice(3),
+        value
+      );
     } else {
       htmlElement.setAttribute(key, value);
     }
   });
-
-  if (onClick) {
-    htmlElement.addEventListener("click", onClick);
-  }
 }
 
 export { assignAttributes };

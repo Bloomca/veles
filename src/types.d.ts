@@ -1,3 +1,5 @@
+import { VelesDOMElementProps } from "./dom-types";
+
 // an internal representation of DOM nodes in the tree
 // despite being DOM nodes, we still can track mounting/unmounting
 // (although it is not exposed at the moment)
@@ -55,7 +57,7 @@ export type VelesElementProps = {
   // or a function in case we support reactivity
   // TODO: we can improve these types
   [htmlAttribute: string]: any;
-};
+} & VelesDOMElementProps;
 
 export type ComponentAPI = {
   onMount: (cb: Function) => void;
