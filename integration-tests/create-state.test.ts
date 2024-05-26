@@ -154,6 +154,89 @@ describe("createState", () => {
     expect(onUnmountCheck).not.toHaveBeenCalled();
   });
 
+  it("supports custom subscriptions with state.trackValue with skipFirstCall option", async () => {
+    const user = userEvent.setup();
+    const spyFn = jest.fn();
+    function StateComponent() {
+      const valueState = createState(0);
+      valueState.trackValue((value) => spyFn(value), { skipFirstCall: true });
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              valueState.setValue((currentValue) => currentValue + 1);
+            },
+          }),
+          valueState.useValue((value) =>
+            createElement("div", { children: [`current value is ${value}`] })
+          ),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(spyFn).toHaveBeenCalledTimes(0);
+
+    const btn = screen.getByTestId("button");
+    await user.click(btn);
+    expect(spyFn).toHaveBeenCalledTimes(1);
+    expect(spyFn).toHaveBeenLastCalledWith(1);
+    await user.click(btn);
+    expect(spyFn).toHaveBeenCalledTimes(2);
+    expect(spyFn).toHaveBeenLastCalledWith(2);
+  });
+
+  it("supports custom subscriptions with state.trackValue with callOnMount option", async () => {
+    const user = userEvent.setup();
+    const spyFn = jest.fn();
+    function StateComponent() {
+      const valueState = createState(0);
+      valueState.trackValue((value) => spyFn(value), { callOnMount: true });
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              valueState.setValue((currentValue) => currentValue + 1);
+            },
+          }),
+          valueState.useValue((value) =>
+            createElement("div", { children: [`current value is ${value}`] })
+          ),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(spyFn).toHaveBeenCalledTimes(0);
+
+    // wait until the component is mounted in DOM
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+    expect(spyFn).toHaveBeenCalledTimes(1);
+    expect(spyFn).toHaveBeenLastCalledWith(0);
+
+    const btn = screen.getByTestId("button");
+    await user.click(btn);
+    expect(spyFn).toHaveBeenCalledTimes(2);
+    expect(spyFn).toHaveBeenLastCalledWith(1);
+    await user.click(btn);
+    expect(spyFn).toHaveBeenCalledTimes(3);
+    expect(spyFn).toHaveBeenLastCalledWith(2);
+  });
+
   // test to make sure that `useValueSelector` is correctly called only when
   // the selector function returns a different result
   test("support selector functions correctly with useValueSelector", async () => {

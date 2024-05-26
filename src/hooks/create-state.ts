@@ -1,5 +1,5 @@
 import { getComponentVelesNode, identity } from "../utils";
-import { onUnmount } from "./lifecycle";
+import { onUnmount, onMount } from "./lifecycle";
 import { createElement } from "../create-element/create-element";
 
 import type { VelesElement, VelesComponent } from "../types";
@@ -10,7 +10,10 @@ type AttributeHelper = {
 };
 
 export type State<ValueType> = {
-  trackValue(cb: (value: ValueType) => void | Function): void;
+  trackValue(
+    cb: (value: ValueType) => void | Function,
+    options?: { callOnMount?: boolean; skipFirstCall?: boolean }
+  ): void;
   useValue(
     cb: (value: ValueType) => VelesElement | VelesComponent,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
@@ -87,11 +90,19 @@ function createState<T>(
   const result: State<T> = {
     // supposed to be used at the component level
     // TODO: add a version of trackValueSelector
-    trackValue: (cb) => {
+    trackValue: (cb, options = {}) => {
       trackingEffects.push(cb);
-      // trigger the callback first time
-      // maybe provide an option to skip it first time?
-      cb(value);
+      if (!options.skipFirstCall) {
+        // trigger the callback first time
+        // execute the first callback when the component is mounted
+        if (options.callOnMount) {
+          onMount(() => {
+            cb(value);
+          });
+        } else {
+          cb(value);
+        }
+      }
       // track value is attached at the component level
       onUnmount(() => {
         trackingEffects = trackingEffects.filter(
