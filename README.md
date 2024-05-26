@@ -213,7 +213,7 @@ function Counter() {
 }
 ```
 
-This subscription will not cause any re-renders.
+This subscription will not cause any re-renders. By default, the first call will happen during the component initialization, and you can pass a second options object to alter this behaviour. You can either set `{ skipFirstCall: true }` to completely skip it, or you can specify to run it when the component is mounted in DOM: `{ callOnMount: true }`.
 
 ### Combining different states
 
