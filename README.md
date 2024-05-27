@@ -135,6 +135,7 @@ function List() {
     children: [
       createElement("h1", { children: "list" }),
       listState.useValueIterator<{ id: number; name: string }>(
+        { key: "id" },
         ({ elementState }) => {
           return createElement("div", {
             children: [
@@ -143,8 +144,7 @@ function List() {
               ),
             ],
           });
-        },
-        { key: "id" }
+        }
       ),
     ],
   });
