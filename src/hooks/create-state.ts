@@ -39,12 +39,13 @@ export type State<ValueType> = {
   useValueIterator<Element>(
     options: {
       key: string | ((options: { element: Element; index: number }) => string);
+      selector?: (value: ValueType) => Element[];
     },
     cb: (props: {
       elementState: State<Element>;
       index: number;
     }) => VelesElement | VelesComponent
-  ): VelesComponent | VelesElement;
+  ): VelesComponent | VelesElement | null;
   getValue(): ValueType;
   getPreviousValue(): undefined | ValueType;
   setValue(newValueCB: (currentValue: ValueType) => ValueType): void;
@@ -59,6 +60,7 @@ type TrackingParams = {
     elementState: State<any>;
     index: number;
   }) => VelesElement | VelesComponent;
+  selector?: (value: unknown) => any[];
   renderedElements: [VelesElement | VelesComponent, string, State<unknown>][];
   key: string | ((options: { element: unknown; index: number }) => string);
   elementsByKey: {
@@ -155,10 +157,10 @@ function createState<T>(
       });
       return node;
     },
-    // TODO: add a version with a selector
     useValueIterator<Element>(
       options: {
         key: string | ((options: { element: any; index: number }) => string);
+        selector?: (value: T) => Element[];
       },
       cb: (props: {
         elementState: State<Element>;
@@ -178,7 +180,14 @@ function createState<T>(
         };
       } = {};
 
-      (value as Element[]).forEach((element, index) => {
+      const elements = options.selector ? options.selector(value) : value;
+
+      if (!Array.isArray(elements)) {
+        console.error("useValueIterator received non-array value");
+        return null;
+      }
+
+      (elements as Element[]).forEach((element, index) => {
         // we calculate a key for each element. This key determines whether we render the element from scratch, or do nothing
         // when the element updates
         let calculatedKey: string = "";
@@ -232,6 +241,10 @@ function createState<T>(
       trackingParams.elementsByKey = elementsByKey;
       trackingParams.renderedElements = children;
       trackingParams.wrapperComponent = wrapperComponent;
+
+      if (options.selector) {
+        trackingParams.selector = options.selector;
+      }
 
       return wrapperComponent;
 
@@ -374,8 +387,14 @@ function createState<T>(
       });
 
       trackingIterators.forEach((trackingIterator) => {
-        const { cb, key, renderedElements, elementsByKey, wrapperComponent } =
-          trackingIterator;
+        const {
+          cb,
+          key,
+          renderedElements,
+          elementsByKey,
+          wrapperComponent,
+          selector,
+        } = trackingIterator;
         if (!wrapperComponent) {
           console.error("there is no wrapper component for the iterator");
           return;
@@ -392,10 +411,12 @@ function createState<T>(
           return;
         }
 
+        const elements = selector ? selector(value) : value;
+
         // if we have any tracking iterators, it means the value is an array
         // but I don't know how to have correct type inferring here
         // so we check manually
-        if (Array.isArray(value)) {
+        if (Array.isArray(elements)) {
           const newRenderedElements: [
             VelesElement | VelesComponent,
             string,
@@ -413,7 +434,7 @@ function createState<T>(
             [calculatedKey: string]: boolean;
           } = {};
 
-          value.forEach((element, index) => {
+          elements.forEach((element, index) => {
             let calculatedKey: string = "";
             if (
               typeof key === "string" &&
