@@ -37,13 +37,13 @@ export type State<ValueType> = {
   ): VelesElement | VelesComponent | VelesStringElement;
   useAttribute(cb: (value: ValueType) => string): AttributeHelper;
   useValueIterator<Element>(
+    options: {
+      key: string | ((options: { element: Element; index: number }) => string);
+    },
     cb: (props: {
       elementState: State<Element>;
       index: number;
-    }) => VelesElement | VelesComponent,
-    options: {
-      key: string | ((options: { element: Element; index: number }) => string);
-    }
+    }) => VelesElement | VelesComponent
   ): VelesComponent | VelesElement;
   getValue(): ValueType;
   getPreviousValue(): undefined | ValueType;
@@ -157,13 +157,13 @@ function createState<T>(
     },
     // TODO: add a version with a selector
     useValueIterator<Element>(
+      options: {
+        key: string | ((options: { element: any; index: number }) => string);
+      },
       cb: (props: {
         elementState: State<Element>;
         index: number;
-      }) => VelesElement | VelesComponent,
-      options: {
-        key: string | ((options: { element: any; index: number }) => string);
-      }
+      }) => VelesElement | VelesComponent
     ) {
       const children: [
         VelesElement | VelesComponent,
