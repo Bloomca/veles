@@ -33,7 +33,7 @@ attachComponent({ htmlElement: appContainer, component: createElement(App) });
 Create Veles tree. Accepts strings for regular valid HTML elements (like `div`, `span`, etc) and functions which are expected to return another Veles tree from `createElement`.
 
 > [!NOTE]
-> JSX should be almost fully supported as long as you specify `Veles.createElement` pragma (no `Fragment` support at the moment)
+> JSX should be almost fully supported as long as you specify `Veles.createElement` pragma
 
 ```js
 import { createElement } from "veles";
@@ -65,9 +65,11 @@ function Counter() {
   return createElement("div", {
     children: [
       createElement("h1", { children: "Counter" }),
-      counterState.useValue((counterValue) =>
-        createElement("div", { children: `counter value is: ${counterValue}` })
-      ),
+      createElement("div", {
+        children: counterState.useValue(
+          (counterValue) => `counter value is: ${counterValue}`
+        ),
+      }),
       createElement("button", {
         onClick: () => {
           counterState.setValue(
@@ -97,10 +99,12 @@ function App() {
   return createElement("div", {
     children: [
       createElement("h1", { children: "App" }),
-      taskState.useSelectorValue(
-        (task) => task.title,
-        (title) => createElement("div", { children: `task title: ${title}` })
-      ),
+      createElement("div", {
+        children: taskState.useSelectorValue(
+          (task) => task.title,
+          (title) => `task title: ${title}`
+        ),
+      }),
     ],
   });
 }

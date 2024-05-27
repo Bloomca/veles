@@ -12,7 +12,7 @@ export type VelesElement = {
 
   // every element except the most top one should have one
   parentVelesElement?: VelesElement;
-  childComponents: (VelesElement | VelesComponent)[];
+  childComponents: (VelesElement | VelesComponent | VelesStringElement)[];
 
   // not intended to be used directly
   _privateMethods: {
@@ -25,6 +25,15 @@ export type VelesStringElement = {
   velesStringElement: true;
   html: Text;
   parentVelesElement?: VelesElement;
+
+  // not intended to be used directly
+  // despite being a text component, having same lifecycle
+  // methods is useful for state changes, to remove tracking
+  // when the said Text is returned from `useValue` state method
+  _privateMethods: {
+    _addUnmountHandler: Function;
+    _callUnmountHandlers: Function;
+  };
 };
 
 // an internal representation of components in the tree
@@ -42,7 +51,7 @@ export type VelesComponent = {
 };
 
 // all supported child options
-type velesChild = string | VelesElement | VelesComponent;
+type velesChild = string | VelesElement | VelesComponent | VelesStringElement;
 export type VelesChildren = velesChild | velesChild[] | undefined | null;
 
 export type VelesElementProps = {

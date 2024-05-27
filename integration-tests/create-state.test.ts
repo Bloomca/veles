@@ -491,4 +491,76 @@ describe("createState", () => {
     expect(btn).toHaveAttribute("data-testvalue", "2");
     expect(spyFn).not.toHaveBeenCalled();
   });
+
+  test("supports strings as returned value in useValue", async () => {
+    const user = userEvent.setup();
+    function StateComponent() {
+      const valueState = createState(0);
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              valueState.setValue((currentValue) => currentValue + 1);
+            },
+          }),
+          createElement("div", {
+            children: valueState.useValue(
+              (value) => `current value is ${value}`
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(await screen.findByText("current value is 0")).toBeVisible();
+    const btn = screen.getByTestId("button");
+
+    await user.click(btn);
+    expect(await screen.findByText("current value is 1")).toBeVisible();
+
+    await user.click(btn);
+    expect(await screen.findByText("current value is 2")).toBeVisible();
+  });
+
+  test("correctly supports null as a return value in useValue", async () => {
+    const user = userEvent.setup();
+    function StateComponent() {
+      const valueState = createState(0);
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              valueState.setValue((currentValue) => currentValue + 1);
+            },
+          }),
+          createElement("div", {
+            children: valueState.useValue((value) =>
+              value === 0 ? null : `current value is ${value}`
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(screen.queryByText("current value is 0")).not.toBeInTheDocument();
+    const btn = screen.getByTestId("button");
+
+    await user.click(btn);
+    expect(await screen.findByText("current value is 1")).toBeVisible();
+
+    await user.click(btn);
+    expect(await screen.findByText("current value is 2")).toBeVisible();
+  });
 });

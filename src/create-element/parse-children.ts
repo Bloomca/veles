@@ -1,6 +1,11 @@
 import { getComponentVelesNode } from "../utils";
 
-import type { VelesComponent, VelesElement, VelesElementProps } from "../types";
+import type {
+  VelesComponent,
+  VelesElement,
+  VelesStringElement,
+  VelesElementProps,
+} from "../types";
 
 function parseChildren({
   children,
@@ -11,7 +16,11 @@ function parseChildren({
   htmlElement: HTMLElement;
   velesNode: VelesElement;
 }) {
-  const childComponents: (VelesElement | VelesComponent)[] = [];
+  const childComponents: (
+    | VelesElement
+    | VelesComponent
+    | VelesStringElement
+  )[] = [];
 
   if (children === undefined || children === null) {
     return childComponents;
@@ -117,6 +126,16 @@ function parseChildren({
           velesElementNode.parentVelesElement = velesNode;
           childComponents.push(childComponent);
         }
+      } else if (
+        typeof childComponent === "object" &&
+        childComponent &&
+        "velesStringElement" in childComponent &&
+        childComponent?.velesStringElement
+      ) {
+        // TODO: check that it is a valid DOM Node
+        htmlElement.append(childComponent.html);
+        childComponent.parentVelesElement = velesNode;
+        childComponents.push(childComponent);
       }
     }
   );

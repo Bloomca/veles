@@ -1,8 +1,13 @@
 import { getComponentVelesNode, identity } from "../utils";
 import { onUnmount, onMount } from "./lifecycle";
 import { createElement } from "../create-element/create-element";
+import { createTextElement } from "../create-element/create-text-element";
 
-import type { VelesElement, VelesComponent } from "../types";
+import type {
+  VelesElement,
+  VelesComponent,
+  VelesStringElement,
+} from "../types";
 
 type AttributeHelper = {
   (htmlElement: HTMLElement, attributeName: string, node: VelesElement): string;
@@ -15,17 +20,21 @@ export type State<ValueType> = {
     options?: { callOnMount?: boolean; skipFirstCall?: boolean }
   ): void;
   useValue(
-    cb: (value: ValueType) => VelesElement | VelesComponent,
+    cb: (
+      value: ValueType
+    ) => VelesElement | VelesComponent | string | undefined | null,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
-  ): VelesElement | VelesComponent;
+  ): VelesElement | VelesComponent | VelesStringElement;
   useValueSelector<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
-    cb: (value: SelectorValueType) => VelesElement | VelesComponent,
+    cb: (
+      value: SelectorValueType
+    ) => VelesElement | VelesComponent | string | undefined | null,
     comparator?: (
       value1: SelectorValueType,
       value2: SelectorValueType
     ) => boolean
-  ): VelesElement | VelesComponent;
+  ): VelesElement | VelesComponent | VelesStringElement;
   useAttribute(cb: (value: ValueType) => string): AttributeHelper;
   useValueIterator<Element>(
     cb: (props: {
@@ -71,12 +80,15 @@ function createState<T>(
   let value = initialValue;
   let previousValue: undefined | T = undefined;
   let trackingEffects: { (value: T): void }[] = [];
+
   let trackingSelectorElements: {
-    cb: (value: any) => VelesElement | VelesComponent;
-    node: VelesElement | VelesComponent;
+    cb: (
+      value: any
+    ) => VelesElement | VelesComponent | string | undefined | null;
     selector?: Function;
     selectedValue: any;
     comparator: (value1: any, value2: any) => boolean;
+    node: VelesElement | VelesComponent | VelesStringElement;
   }[] = [];
 
   let trackingAttributes: {
@@ -115,12 +127,19 @@ function createState<T>(
     },
     useValueSelector<F>(
       selector: ((value: T) => F) | undefined,
-      cb: (value: F) => VelesElement | VelesComponent,
+      cb: (
+        value: F
+      ) => VelesElement | VelesComponent | string | undefined | null,
       comparator: (value1: F, value2: F) => boolean = identity
-    ): VelesElement | VelesComponent {
+    ): VelesElement | VelesComponent | VelesStringElement {
       // @ts-expect-error
       const selectedValue = selector ? selector(value) : (value as F);
-      const node = cb(selectedValue);
+      const returnedNode = cb(selectedValue);
+      const node =
+        !returnedNode || typeof returnedNode === "string"
+          ? createTextElement(returnedNode as string)
+          : returnedNode;
+
       trackingSelectorElements.push({
         selector,
         selectedValue,
@@ -128,6 +147,7 @@ function createState<T>(
         node,
         comparator,
       });
+
       node._privateMethods._addUnmountHandler(() => {
         trackingSelectorElements = trackingSelectorElements.filter(
           (trackingSelectorElement) => trackingSelectorElement.cb !== cb
@@ -281,7 +301,11 @@ function createState<T>(
             return selectorTrackingElement;
           }
 
-          const newNode = cb(newSelectedValue);
+          const returnednewNode = cb(newSelectedValue);
+          const newNode =
+            !returnednewNode || typeof returnednewNode === "string"
+              ? createTextElement(returnednewNode as string)
+              : returnednewNode;
 
           const { velesElementNode: oldVelesElementNode } =
             getComponentVelesNode(node);
