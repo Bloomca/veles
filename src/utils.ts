@@ -1,10 +1,20 @@
 import type { VelesComponent, VelesElement, VelesStringElement } from "./types";
 
-function getComponentVelesNode(component: VelesComponent | VelesElement): {
+function getComponentVelesNode(
+  component: VelesComponent | VelesElement | VelesStringElement
+): {
   velesElementNode: VelesElement | VelesStringElement;
   componentsTree: VelesComponent[];
 } {
   const componentsTree: VelesComponent[] = [];
+
+  if ("velesStringElement" in component) {
+    return {
+      velesElementNode: component,
+      componentsTree: [],
+    };
+  }
+
   let childNode: VelesComponent | VelesElement = component;
   // we can have multiple components nested, we need to get
   // to the actual HTML to attach it
