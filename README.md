@@ -219,6 +219,10 @@ function Counter() {
 
 This subscription will not cause any re-renders. By default, the first call will happen during the component initialization, and you can pass a second options object to alter this behaviour. You can either set `{ skipFirstCall: true }` to completely skip it, or you can specify to run it when the component is mounted in DOM: `{ callOnMount: true }`.
 
+### Subscribing to partial updates
+
+In case you don't want to subscribe to the whole state, you have 2 options. You can either provide a `{ comparator: (prevValue, nextValue) => prevValue === nextValue }` property in the options object, or you can use `state.trackValueSelector()` method. You can also combine them, if you need that for some reason.
+
 ### Combining different states
 
 Since `createState` is the only way to add dynamic behaviour to the application, sooner or later you'll need to build UI which depends on several states. To do so, you can use `combineState` function which accepts any amount of state objects, and returns an array with all combined values in it.
