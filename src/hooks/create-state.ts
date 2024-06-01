@@ -17,7 +17,23 @@ type AttributeHelper = {
 export type State<ValueType> = {
   trackValue(
     cb: (value: ValueType) => void | Function,
-    options?: { callOnMount?: boolean; skipFirstCall?: boolean }
+    options?: {
+      callOnMount?: boolean;
+      skipFirstCall?: boolean;
+      comparator?: (value1: ValueType, value2: ValueType) => boolean;
+    }
+  ): void;
+  trackValueSelector<SelectorValueType>(
+    selector: (value: ValueType) => SelectorValueType,
+    cb: (value: SelectorValueType) => void | Function,
+    options?: {
+      callOnMount?: boolean;
+      skipFirstCall?: boolean;
+      comparator?: (
+        value1: SelectorValueType,
+        value2: SelectorValueType
+      ) => boolean;
+    }
   ): void;
   useValue(
     cb: (
@@ -81,7 +97,12 @@ function createState<T>(
 ): State<T> {
   let value = initialValue;
   let previousValue: undefined | T = undefined;
-  let trackingEffects: { (value: T): void }[] = [];
+  let trackingEffects: {
+    cb: (value: any) => void;
+    selector?: Function;
+    comparator?: (value1: any, value2: any) => boolean;
+    selectedValue: any;
+  }[] = [];
 
   let trackingSelectorElements: {
     cb: (
@@ -103,24 +124,41 @@ function createState<T>(
 
   const result: State<T> = {
     // supposed to be used at the component level
-    // TODO: add a version of trackValueSelector
     trackValue: (cb, options = {}) => {
-      trackingEffects.push(cb);
+      result.trackValueSelector<T>(undefined, cb, options);
+    },
+    trackValueSelector<F>(
+      selector: ((value: T) => F) | undefined,
+      cb: (value: F) => void | Function,
+      options: {
+        callOnMount?: boolean;
+        skipFirstCall?: boolean;
+        comparator?: (value1: F, value2: F) => boolean;
+      } = {}
+    ) {
+      // @ts-expect-error
+      const trackedValue = selector ? selector(value) : (value as F);
+      trackingEffects.push({
+        cb,
+        selector,
+        comparator: options.comparator,
+        selectedValue: trackedValue,
+      });
       if (!options.skipFirstCall) {
         // trigger the callback first time
         // execute the first callback when the component is mounted
         if (options.callOnMount) {
           onMount(() => {
-            cb(value);
+            cb(trackedValue);
           });
         } else {
-          cb(value);
+          cb(trackedValue);
         }
       }
       // track value is attached at the component level
       onUnmount(() => {
         trackingEffects = trackingEffects.filter(
-          (trackingCallback) => trackingCallback !== cb
+          (trackingCallback) => trackingCallback.cb !== cb
         );
       });
     },
@@ -382,8 +420,20 @@ function createState<T>(
       });
 
       // tracked values
-      trackingEffects.forEach((trackingCallback) => {
-        trackingCallback(value);
+      trackingEffects.forEach((trackingEffect) => {
+        const { cb, selectedValue, selector, comparator } = trackingEffect;
+
+        const newSelectedValue = selector ? selector(value) : value;
+
+        if (
+          comparator
+            ? comparator(selectedValue, newSelectedValue)
+            : selectedValue === newSelectedValue
+        ) {
+          return;
+        }
+
+        cb(newSelectedValue);
       });
 
       trackingIterators.forEach((trackingIterator) => {
