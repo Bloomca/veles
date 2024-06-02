@@ -24,30 +24,26 @@ Attach Veles tree to a regular DOM Node.
 > As of right now, this method will wrap the component's HTML into one additional `div`. This will probably go away in the future, but for now it simplifies some things significantly.
 
 ```js
-import { createElement, attachComponent } from "veles";
+import { attachComponent } from "veles";
+
+const App () => <div>App</div>
 
 const appContainer = document.getElementById("app");
-attachComponent({ htmlElement: appContainer, component: createElement(App) });
+attachComponent({ htmlElement: appContainer, component: <App /> });
 ```
 
-### createElement
+### JSX support
 
-Create Veles tree. Accepts strings for regular valid HTML elements (like `div`, `span`, etc) and functions which are expected to return another Veles tree from `createElement`.
+Veles supports JSX transformation, so as long as you specify `importSource: "veles"` (this is for Babel, the other JS transpilers should have similar options) it will work as expected.
 
-> [!NOTE]
-> JSX should be almost fully supported as long as you specify `Veles.createElement` pragma
-
-```js
-import { createElement } from "veles";
-
+```jsx
 function App() {
-  return createElement("div", {
-    class: "app-container",
-    children: [
-      createElement("h1", { children: "Veles app" }),
-      createElement("p", { children: "Random description" }),
-    ],
-  });
+  return (
+    <div class="app-container">
+      <h1>Veles App</h1>
+      <p>Random description</p>
+    </div>
+  );
 }
 ```
 
@@ -59,29 +55,27 @@ function App() {
 
 The simplest way to react to state changes in the UI is to use `useValue` method from the state object. Let's build a simple counter to demonstrate:
 
-```js
-import { createElement, createState } from "veles";
+```jsx
+import { createState } from "veles";
 
 function Counter() {
   const counterState = createState(0);
-  return createElement("div", {
-    children: [
-      createElement("h1", { children: "Counter" }),
-      createElement("div", {
-        children: counterState.useValue(
+  const increment = () =>
+    counterState.setValue((currentValue) => currentValue + 1);
+  const decrement = () =>
+    counterState.setValue((currentValue) => currentValue - 1);
+  return (
+    <div>
+      <h1>Counter</h1>
+      <div>
+        {counterState.useValue(
           (counterValue) => `counter value is: ${counterValue}`
-        ),
-      }),
-      createElement("button", {
-        onClick: () => {
-          counterState.setValue(
-            (currentCounterValue) => currentCounterValue + 1
-          );
-        },
-        children: "+",
-      }),
-    ],
-  });
+        )}
+      </div>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+    </div>
+  );
 }
 ```
 
@@ -89,8 +83,8 @@ function Counter() {
 
 If you have an object in your store, even atomic updates will be wasteful. Let's say you have an object with several fields, but you are only interested in the `title` property. If you use `useValue`, it will do unnecessary work. To help with that, there is a `useValueSelector` state method, which accepts a selector function as the first parameter. Here is an example:
 
-```js
-import { createElement, createState } from "veles";
+```jsx
+import { createState } from "veles";
 
 function App() {
   const taskState = createState({
@@ -98,17 +92,17 @@ function App() {
     title: "title",
     description: "long description",
   });
-  return createElement("div", {
-    children: [
-      createElement("h1", { children: "App" }),
-      createElement("div", {
-        children: taskState.useSelectorValue(
+  return (
+    <div>
+      <h1>App</h1>
+      <div>
+        {taskState.useSelectorValue(
           (task) => task.title,
           (title) => `task title: ${title}`
-        ),
-      }),
-    ],
-  });
+        )}
+      </div>
+    </div>
+  );
 }
 ```
 
@@ -123,8 +117,8 @@ Lists performance is one of the cornerstones of this library, and to help with t
 
 Let's build a simple list component:
 
-```js
-import { createState, createElement } from "veles";
+```jsx
+import { createState } from "veles";
 
 function List() {
   const listState = createState([
@@ -133,23 +127,18 @@ function List() {
     { id: 3, name: "third task" },
   ]);
 
-  return createElement("div", {
-    children: [
-      createElement("h1", { children: "list" }),
-      listState.useValueIterator<{ id: number; name: string }>(
+  return <div>
+    <h1>List</h1>
+    {listState.useValueIterator<{ id: number; name: string }>(
         { key: "id" },
-        ({ elementState }) => {
-          return createElement("div", {
-            children: [
-              elementState.useValueSelector((element) => element.name, (name) =>
-                createElement("div", { children: name })
-              ),
-            ],
-          });
-        }
-      ),
-    ],
-  });
+        ({ elementState }) => <div>
+          {elementState.useValueSelector(
+            (element) => element.name,
+            (name) => <div>{name}</div>
+          )}
+        </div>
+      )}
+  </div>
 }
 ```
 
@@ -157,41 +146,38 @@ function List() {
 
 In order to avoid unnecessary re-renders when you to change properties on a wrapper element/component, there is a special state method `useAttribute`. It allows to recalculate value for an attribute every time the state changes, but instead of re-rendering, it calls the `htmlNode.setAttribute` method. Here is an example:
 
-```js
-import { createElement, createState } from "veles";
+```jsx
+import { createState } from "veles";
 
 function Counter() {
   const counterState = createState(0);
-  return createElement("div", {
-    children: [
-      createElement("h1", { children: "Counter" }),
-      counterState.useValue((counterValue) =>
-        createElement("div", { children: `counter value is: ${counterValue}` })
-      ),
-      createElement("button", {
-        onClick: () => {
-          counterState.setValue(
-            (currentCounterValue) => currentCounterValue + 1
-          );
-        },
-        style: counterState.useAttribute(
+  const increment = () =>
+    counterState.setValue((currentValue) => currentValue + 1);
+  return (
+    <div>
+      <h1>Counter</h1>
+      <div>{counterState.useValue((value) => `counter value is ${value}`)}</div>
+      <button
+        onClick={increment}
+        style={counterState.useAttribute(
           (currentValue) => `width: ${50 + currentValue}px;`
-        ),
-        children: "+",
-      }),
-    ],
-  });
+        )}
+      >
+        +
+      </button>
+    </div>
+  );
 }
 ```
 
-You can see that we dynamically change the width of the button with every press.
+You can see that we dynamically change the width of the button with every press. This will be the only change, the rest of the application will not be re-rendered or any code will not be executed. You still need to be mindful what are you changing, as with some CSS changes you can force reflows/repaints and that can still cause some performance issues.
 
 ### createState and subscribing to updates
 
 What if you don't want to render anything when the value changes, but you want to call your code? The state provides `trackValue` method, which does exactly that. Here is an example:
 
-```js
-import { createElement, createState } from "veles";
+```jsx
+import { createState } from "veles";
 
 function Counter() {
   const counterState = createState(0);
@@ -199,23 +185,23 @@ function Counter() {
   counterState.trackValue((counterValue) => {
     console.log(`new counter value is ${counterValue}`);
   });
+  const increment = () =>
+    counterState.setValue((currentValue) => currentValue + 1);
+  const decrement = () =>
+    counterState.setValue((currentValue) => currentValue - 1);
 
-  return createElement("div", {
-    children: [
-      createElement("h1", { children: "Counter" }),
-      counterState.useValue((counterValue) =>
-        createElement("div", { children: `counter value is: ${counterValue}` })
-      ),
-      createElement("button", {
-        onClick: () => {
-          counterState.setValue(
-            (currentCounterValue) => currentCounterValue + 1
-          );
-        },
-        children: "+",
-      }),
-    ],
-  });
+  return (
+    <div>
+      <h1>Counter</h1>
+      <div>
+        {counterState.useValue(
+          (counterValue) => `counter value is: ${counterValue}`
+        )}
+      </div>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+    </div>
+  );
 }
 ```
 
@@ -229,8 +215,8 @@ In case you don't want to subscribe to the whole state, you have 2 options. You 
 
 Since `createState` is the only way to add dynamic behaviour to the application, sooner or later you'll need to build UI which depends on several states. To do so, you can use `combineState` function which accepts any amount of state objects, and returns an array with all combined values in it.
 
-```js
-import { createElement, createState } from "veles";
+```jsx
+import { createState } from "veles";
 
 function Counter() {
   const firstcounterState = createState(0);
@@ -239,44 +225,37 @@ function Counter() {
     firstcounterState,
     secondCounterState
   );
-  return createElement("div", {
-    children: [
-      createElement("h1", { children: "Counter" }),
-      firstcounterState.useValue((counterValue) =>
-        createElement("div", {
-          children: `first counter value is: ${counterValue}`,
-        })
-      ),
-      secondCounterState.useValue((counterValue) =>
-        createElement("div", {
-          children: `second counter value is: ${counterValue}`,
-        })
-      ),
-      combinedCounterState.useValueSelector(
-        ([firstValue, secondValue]) => firstValue + secondValue,
-        (counterValue) =>
-          createElement("div", {
-            children: `combined counter value is: ${counterValue}`,
-          })
-      ),
-      createElement("button", {
-        onClick: () => {
-          firstcounterState.setValue(
-            (currentCounterValue) => currentCounterValue + 1
-          );
-        },
-        children: "add to the first counter",
-      }),
-      createElement("button", {
-        onClick: () => {
-          secondCounterState.setValue(
-            (currentCounterValue) => currentCounterValue + 1
-          );
-        },
-        children: "add to the second counter",
-      }),
-    ],
-  });
+  const incrementFirstCounter = () =>
+    firstcounterState.setValue(
+      (currentCounterValue) => currentCounterValue + 1
+    );
+  const incrementSecondCounter = () =>
+    secondCounterState.setValue(
+      (currentCounterValue) => currentCounterValue + 1
+    );
+  return (
+    <div>
+      <h1>Counters</h1>
+      <div>
+        {firstcounterState.useValue(
+          (value) => `first counter value is: ${value}`
+        )}
+      </div>
+      <div>
+        {secondCounterState.useValue(
+          (value) => `second counter value is: ${value}`
+        )}
+      </div>
+      <div>
+        {combinedCounterState.useValueSelector(
+          ([firstValue, secondValue]) => firstValue + secondValue,
+          (counterValue) => `combined counter value is: ${counterValue}`
+        )}
+      </div>
+      <button onClick={incrementFirstCounter}>Increment first counter</button>
+      <button onClick={incrementSecondCounter}>Increment second counter</button>
+    </div>
+  );
 }
 ```
 
@@ -287,8 +266,8 @@ Right now there are `onMount` and `onUnmount` lifecycle hooks. In your component
 > [!NOTE]
 > You can only use them during the original initialization of the component. If you want to add some callbacks later, use the same version passed as a second argument to your component
 
-```js
-import { createElement, onMount, onUnmount } from "veles";
+```jsx
+import { onMount, onUnmount } from "veles";
 
 function App(_props, componentAPI) {
   // could be used as `componentAPI.onMount()`
@@ -299,8 +278,6 @@ function App(_props, componentAPI) {
   onUnmount(() => {
     console.log("called when the component unmounts");
   });
-  return createElement("div", {
-    children: "Application",
-  });
+  return <div>Application<div>
 }
 ```
