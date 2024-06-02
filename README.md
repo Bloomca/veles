@@ -1,6 +1,8 @@
 # Veles
 
 ![Tests status](https://github.com/bloomca/veles/actions/workflows/pull-request-workflow.yaml/badge.svg)
+[![Build Size](https://img.shields.io/bundlephobia/minzip/veles?label=bundle%20size)](https://bundlephobia.com/result?p=veles)
+[![Version](https://img.shields.io/npm/v/veles)](https://www.npmjs.com/package/veles)
 
 > The library is in very early stages and is not published yet as some crucial APIs are still under development
 
