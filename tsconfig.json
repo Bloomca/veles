@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
+    "module": "ESNext",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "types": ["@testing-library/jest-dom"],
+    "moduleResolution": "node"
   }
 }

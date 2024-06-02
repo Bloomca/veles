@@ -2,10 +2,26 @@
   "name": "veles",
   "version": "0.0.1",
   "description": "UI library with main focus on performance",
-  "main": "dist/index.js",
+  "type": "module",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./jsx-runtime": {
+      "types": "./dist/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.js",
+      "require": "./dist/jsx-runtime.cjs"
+    }
+  },
   "scripts": {
     "test": "jest",
-    "build": "tsup src/index.ts",
+    "build": "tsup",
     "ts-compile-check": "tsc -p tsconfig.json"
   },
   "repository": {
