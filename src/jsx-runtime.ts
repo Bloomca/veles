@@ -4,3 +4,5 @@ export {
   createElement as jsxDEV,
 } from "./create-element";
 export { Fragment } from "./fragment";
+
+export type { JSX } from "./jsx";
