@@ -61,6 +61,35 @@ describe("createState", () => {
     expect(await screen.findByText("current value is 2")).toBeVisible();
   });
 
+  test("supports direct state updates", async () => {
+    const user = userEvent.setup();
+    function StateComponent() {
+      const nameState = createState(0);
+      return createElement("div", {
+        children: [
+          createElement("input", {
+            "data-testid": "nameInput",
+            onInput: (e) => {
+              nameState.setValue(e.target.value);
+            },
+          }),
+          nameState.useValue((value) =>
+            createElement("div", { children: [`current name is ${value}`] })
+          ),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    const nameInput = screen.getByTestId("nameInput");
+    await user.type(nameInput, "Veles");
+    expect(await screen.findByText("current name is Veles")).toBeVisible();
+  });
+
   // a test to make sure that we can create a state in a parent component,
   // and then pass it down to a child and it will work as expected
   test("supports passing state as a prop", async () => {

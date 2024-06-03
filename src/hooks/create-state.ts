@@ -64,7 +64,9 @@ export type State<ValueType> = {
   ): VelesComponent | VelesElement | null;
   getValue(): ValueType;
   getPreviousValue(): undefined | ValueType;
-  setValue(newValueCB: (currentValue: ValueType) => ValueType): void;
+  setValue(
+    newValueCB: ((currentValue: ValueType) => ValueType) | ValueType
+  ): void;
 
   // private method, don't use directly
   // TODO: hide completely in a closure
@@ -330,8 +332,10 @@ function createState<T>(
     // set up new value only through the callback which
     // gives the latest value to ensure no outdated data
     // can be used for the state
-    setValue: (newValueCB: (currentValue: T) => T): void => {
-      const newValue = newValueCB(value);
+    setValue: (newValueCB: ((currentValue: T) => T) | T): void => {
+      const newValue =
+        // @ts-expect-error
+        typeof newValueCB === "function" ? newValueCB(value) : newValueCB;
 
       if (newValue !== value) {
         previousValue = value;
