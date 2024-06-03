@@ -44,18 +44,14 @@ function parseChildren({
               htmlElement.append(childComponentofPhantom.html);
               childComponentofPhantom.parentVelesElement = velesNode;
             } else {
-              const { componentsTree, velesElementNode } =
-                getComponentVelesNode(childComponentofPhantom);
+              const { velesElementNode } = getComponentVelesNode(
+                childComponentofPhantom
+              );
 
               if (!velesElementNode) {
                 console.error("can't find HTML tree in a component chain");
               } else {
                 htmlElement.append(velesElementNode.html);
-
-                // TODO: address the same concern as below
-                componentsTree.forEach((component) => {
-                  component._privateMethods._callMountHandlers();
-                });
 
                 velesElementNode.parentVelesElement = velesNode;
               }
@@ -98,13 +94,6 @@ function parseChildren({
                     console.error("can't find HTML tree in a component chain");
                   } else {
                     htmlElement.append(velesElementNode.html);
-
-                    // Same explanation as below. Components are mounted synchronously
-                    setTimeout(() => {
-                      componentsTree.forEach((component) => {
-                        component._privateMethods._callMountHandlers();
-                      });
-                    }, 0);
                     velesElementNode.parentVelesElement = velesNode;
                   }
                 }
@@ -114,15 +103,6 @@ function parseChildren({
             htmlElement.append(velesElementNode.html);
           }
 
-          /**
-           * Components are mounted synchronously, so we can safely wait for the next
-           * CPU tick and be sure that new markup is attached to DOM.
-           */
-          setTimeout(() => {
-            componentsTree.forEach((component) => {
-              component._privateMethods._callMountHandlers();
-            });
-          }, 0);
           velesElementNode.parentVelesElement = velesNode;
           childComponents.push(childComponent);
         }

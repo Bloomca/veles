@@ -1,4 +1,4 @@
-import { getComponentVelesNode } from "./utils";
+import { getComponentVelesNode, callMountHandlers } from "./utils";
 import { createElement } from "./create-element";
 
 import type { VelesElement, VelesComponent } from "./types";
@@ -16,6 +16,7 @@ function attachComponent({
   const wrappedApp = createElement("div", { children: [component] });
   const { velesElementNode } = getComponentVelesNode(wrappedApp);
   htmlElement.appendChild(velesElementNode.html);
+  callMountHandlers(wrappedApp);
 
   // TODO: iterate over every child and call their `onUnmout` method
   // and add tests for that

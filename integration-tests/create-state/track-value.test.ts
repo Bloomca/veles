@@ -135,8 +135,6 @@ describe("createState", () => {
       component: createElement(StateComponent),
     });
 
-    expect(spyFn).toHaveBeenCalledTimes(0);
-
     // wait until the component is mounted in DOM
     await new Promise((resolve) => {
       setTimeout(resolve, 0);

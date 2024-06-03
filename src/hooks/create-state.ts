@@ -1,4 +1,4 @@
-import { getComponentVelesNode, identity } from "../utils";
+import { getComponentVelesNode, callMountHandlers, identity } from "../utils";
 import { onUnmount, onMount } from "./lifecycle";
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
@@ -380,6 +380,9 @@ function createState<T>(
               );
             // we call unmount handlers right after we replace it
             node._privateMethods._callUnmountHandlers();
+            // at this point the new Node is mounted, childComponents are updated
+            // and unmount handlers for the old node are called
+            callMountHandlers(newNode);
 
             // right after that, we add the callback back
             // the top level node is guaranteed to be rendered again (at least right now)
@@ -648,6 +651,8 @@ function createState<T>(
               offset = offset + 1;
               currentElement = newNodeVelesElement.html;
               newElementsCount = newElementsCount + 1;
+
+              callMountHandlers(newNode);
             }
           });
 
