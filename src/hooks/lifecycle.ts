@@ -20,7 +20,9 @@ function popContext() {
   currentContext = contextStack[contextStack.length - 1];
 }
 
-function onMount(cb: Function) {
+// You can return a function from the mount callback, and it will be
+// automatically registered as `onUnmount` callback
+function onMount(cb: () => void | Function) {
   if (currentContext) {
     currentContext.onMount(cb);
   } else {

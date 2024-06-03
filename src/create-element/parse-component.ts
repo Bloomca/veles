@@ -49,7 +49,13 @@ function parseComponent({
         componentAPI.onUnmount(cb);
       },
       _callMountHandlers: () => {
-        componentMountCbs.forEach((cb) => cb());
+        componentMountCbs.forEach((cb) => {
+          const mountCbResult = cb();
+
+          if (typeof mountCbResult === "function") {
+            componentAPI.onUnmount(mountCbResult);
+          }
+        });
       },
       _callUnmountHandlers: () => {
         componentUnmountCbs.forEach((cb) => cb());
