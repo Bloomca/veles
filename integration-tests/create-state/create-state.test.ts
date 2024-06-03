@@ -382,4 +382,68 @@ describe("createState", () => {
     await user.click(btn);
     expect(await screen.findByText("current value is 2")).toBeVisible();
   });
+
+  test("supports no callback in useValue to return the value directly", async () => {
+    const user = userEvent.setup();
+    function StateComponent() {
+      const titleState = createState("title");
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              titleState.setValue("new title");
+            },
+          }),
+          createElement("div", {
+            "data-testid": "container",
+            children: titleState.useValue(),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(screen.getByTestId("container").textContent).toBe("title");
+    const btn = screen.getByTestId("button");
+
+    await user.click(btn);
+    expect(screen.getByTestId("container").textContent).toBe("new title");
+  });
+
+  test("supports no callback in useValueSelector to return the value directly", async () => {
+    const user = userEvent.setup();
+    function StateComponent() {
+      const titleState = createState({ title: "title" });
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              titleState.setValue({ title: "new title" });
+            },
+          }),
+          createElement("div", {
+            "data-testid": "container",
+            children: titleState.useValueSelector((data) => data.title),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(screen.getByTestId("container").textContent).toBe("title");
+    const btn = screen.getByTestId("button");
+
+    await user.click(btn);
+    expect(screen.getByTestId("container").textContent).toBe("new title");
+  });
 });
