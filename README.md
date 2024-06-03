@@ -4,7 +4,7 @@
 [![Build Size](https://img.shields.io/bundlephobia/minzip/veles?label=bundle%20size)](https://bundlephobia.com/result?p=veles)
 [![Version](https://img.shields.io/npm/v/veles)](https://www.npmjs.com/package/veles)
 
-> The library is in very early stages and is not published yet as some crucial APIs are still under development
+> The library is in very early stages and some features, like proper TypeScript support, are not fully implemented yet
 
 `Veles` is a component-based performance-focused UI library. The main goal of this library is to provide a composable way to build highly interactive interfaces, which should be performant out of the box, as long as you follow the recommendations.
 
