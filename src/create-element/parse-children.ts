@@ -31,6 +31,9 @@ function parseChildren({
       if (typeof childComponent === "string") {
         const text = document.createTextNode(childComponent);
         htmlElement.append(text);
+      } else if (typeof childComponent === "number") {
+        const text = document.createTextNode(String(childComponent));
+        htmlElement.append(text);
       } else if (
         typeof childComponent === "object" &&
         childComponent &&

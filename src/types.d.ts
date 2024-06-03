@@ -51,7 +51,12 @@ export type VelesComponent = {
 };
 
 // all supported child options
-type velesChild = string | VelesElement | VelesComponent | VelesStringElement;
+type velesChild =
+  | string
+  | number
+  | VelesElement
+  | VelesComponent
+  | VelesStringElement;
 export type VelesChildren = velesChild | velesChild[] | undefined | null;
 
 export type VelesElementProps = {

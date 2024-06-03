@@ -244,4 +244,24 @@ describe("createElement", () => {
 
     expect(await screen.findByText("parent component")).toBeVisible();
   });
+
+  test("support numbers as a children element", async () => {
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: ["parent component"] }),
+          createElement("div", {
+            "data-testid": "container",
+            children: ["text ", 5],
+          }),
+        ],
+      });
+    }
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("container").textContent).toBe("text 5");
+  });
 });
