@@ -36,14 +36,14 @@ export type State<ValueType> = {
     }
   ): void;
   useValue(
-    cb: (
+    cb?: (
       value: ValueType
     ) => VelesElement | VelesComponent | string | undefined | null,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
   ): VelesElement | VelesComponent | VelesStringElement;
   useValueSelector<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
-    cb: (
+    cb?: (
       value: SelectorValueType
     ) => VelesElement | VelesComponent | string | undefined | null,
     comparator?: (
@@ -51,7 +51,7 @@ export type State<ValueType> = {
       value2: SelectorValueType
     ) => boolean
   ): VelesElement | VelesComponent | VelesStringElement;
-  useAttribute(cb: (value: ValueType) => string): AttributeHelper;
+  useAttribute(cb?: (value: ValueType) => string): AttributeHelper;
   useValueIterator<Element>(
     options: {
       key: string | ((options: { element: Element; index: number }) => string);
@@ -107,7 +107,7 @@ function createState<T>(
   }[] = [];
 
   let trackingSelectorElements: {
-    cb: (
+    cb?: (
       value: any
     ) => VelesElement | VelesComponent | string | undefined | null;
     selector?: Function;
@@ -117,7 +117,7 @@ function createState<T>(
   }[] = [];
 
   let trackingAttributes: {
-    cb: Function;
+    cb?: Function;
     htmlElement: HTMLElement;
     attributeName: string;
   }[] = [];
@@ -169,30 +169,31 @@ function createState<T>(
     },
     useValueSelector<F>(
       selector: ((value: T) => F) | undefined,
-      cb: (
+      cb?: (
         value: F
       ) => VelesElement | VelesComponent | string | undefined | null,
       comparator: (value1: F, value2: F) => boolean = identity
     ): VelesElement | VelesComponent | VelesStringElement {
       // @ts-expect-error
       const selectedValue = selector ? selector(value) : (value as F);
-      const returnedNode = cb(selectedValue);
+      const returnedNode = cb ? cb(selectedValue) : String(selectedValue);
       const node =
         !returnedNode || typeof returnedNode === "string"
           ? createTextElement(returnedNode as string)
           : returnedNode;
 
-      trackingSelectorElements.push({
+      const trackingSelectorElement = {
         selector,
         selectedValue,
         cb,
         node,
         comparator,
-      });
+      };
+      trackingSelectorElements.push(trackingSelectorElement);
 
       node._privateMethods._addUnmountHandler(() => {
         trackingSelectorElements = trackingSelectorElements.filter(
-          (trackingSelectorElement) => trackingSelectorElement.cb !== cb
+          (el) => trackingSelectorElement !== el
         );
       });
       return node;
@@ -295,8 +296,8 @@ function createState<T>(
       // 4. provide a way to listen to position value.
       //    It should be a separate subscription.
     },
-    useAttribute: (cb: (value: T) => string) => {
-      const attributeValue = cb(value);
+    useAttribute: (cb?: (value: T) => string) => {
+      const attributeValue = cb ? cb(value) : String(value);
 
       const attributeHelper = (
         htmlElement: HTMLElement,
@@ -308,11 +309,12 @@ function createState<T>(
         // and change inline
         // we need to save the HTML element and the name of the attribute
 
-        trackingAttributes.push({ cb, htmlElement, attributeName });
+        const trackingElement = { cb, htmlElement, attributeName };
+        trackingAttributes.push(trackingElement);
 
         node._privateMethods._addUnmountHandler(() => {
           trackingAttributes = trackingAttributes.filter(
-            (trackingAttribute) => trackingAttribute.cb !== cb
+            (trackingAttribute) => trackingAttribute !== trackingElement
           );
         });
 
@@ -356,7 +358,9 @@ function createState<T>(
             return selectorTrackingElement;
           }
 
-          const returnednewNode = cb(newSelectedValue);
+          const returnednewNode = cb
+            ? cb(newSelectedValue)
+            : String(newSelectedValue);
           const newNode =
             !returnednewNode || typeof returnednewNode === "string"
               ? createTextElement(returnednewNode as string)
@@ -368,6 +372,14 @@ function createState<T>(
             getComponentVelesNode(newNode);
 
           const parentVelesElement = oldVelesElementNode.parentVelesElement;
+
+          const newTrackingSelectorElement = {
+            selector,
+            selectedValue: newSelectedValue,
+            cb,
+            node: newNode,
+            comparator,
+          };
 
           if (parentVelesElement) {
             newVelesElementNode.parentVelesElement = parentVelesElement;
@@ -392,36 +404,23 @@ function createState<T>(
             // the top level node is guaranteed to be rendered again (at least right now)
             // if there were children listening, they should be cleared
             // and added back into their respective unmount listeners if it is still viable
-            trackingSelectorElements.push({
-              selector,
-              selectedValue: newSelectedValue,
-              cb,
-              node: newNode,
-              comparator,
-            });
             newNode._privateMethods._addUnmountHandler(() => {
               trackingSelectorElements = trackingSelectorElements.filter(
-                (trackingSelectorElement) => trackingSelectorElement.cb !== cb
+                (el) => el !== newTrackingSelectorElement
               );
             });
           } else {
             console.log("parent node was not found");
           }
 
-          return {
-            selectedValue: newSelectedValue,
-            selector,
-            cb,
-            node: newNode,
-            comparator,
-          };
+          return newTrackingSelectorElement;
         }
       );
 
       // attributes
       // the HTML node does not change, so we don't need to modify the array
       trackingAttributes.forEach(({ cb, htmlElement, attributeName }) => {
-        const newAttributeValue = cb(value);
+        const newAttributeValue = cb ? cb(value) : String(value);
 
         htmlElement.setAttribute(attributeName, newAttributeValue);
       });
