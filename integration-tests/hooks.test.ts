@@ -70,16 +70,11 @@ describe("lifecycle hooks", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showChildrenState.setValue(() => false),
+            onClick: () => showChildrenState.setValue(false),
           }),
-          showChildrenState.useValue((shouldShow) => {
-            if (shouldShow) {
-              return createElement(FirstNestedComponent);
-            } else {
-              // right now we have to return something
-              return createElement("div");
-            }
-          }),
+          showChildrenState.useValue((shouldShow) =>
+            shouldShow ? createElement(FirstNestedComponent) : null
+          ),
         ],
       });
     }
@@ -316,5 +311,53 @@ describe("lifecycle hooks", () => {
     });
 
     expect(taskMountSpy).toHaveBeenCalledTimes(3);
+  });
+
+  test("onMount returned function is automatically registered as onUnmount", async () => {
+    function App() {
+      const shouldShowState = createState(true);
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => shouldShowState.setValue(false),
+          }),
+          shouldShowState.useValue((shouldShow) =>
+            shouldShow ? createElement(ConditionalComponent) : null
+          ),
+        ],
+      });
+    }
+
+    const mountSpy = jest.fn();
+    const unmountSpy = jest.fn();
+    function ConditionalComponent() {
+      onMount(() => {
+        mountSpy();
+        return unmountSpy;
+      });
+      return createElement("div", {
+        children: "conditional",
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    // hacky way to wait until the next tick so that mount hooks are executed
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(mountSpy).toHaveBeenCalledTimes(1);
+    expect(unmountSpy).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByTestId("button"));
+    // hacky way to wait until the next tick so that mount hooks are executed
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+    expect(unmountSpy).toHaveBeenCalledTimes(1);
   });
 });

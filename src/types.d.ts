@@ -74,7 +74,9 @@ export type VelesElementProps = {
 } & VelesDOMElementProps;
 
 export type ComponentAPI = {
-  onMount: (cb: Function) => void;
+  // You can return a function from the mount callback, and it will be
+  // automatically registered as `onUnmount` callback
+  onMount: (cb: Function) => void | Function;
   onUnmount: (cb: Function) => void;
 };
 
