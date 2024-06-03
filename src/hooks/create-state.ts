@@ -7,12 +7,8 @@ import type {
   VelesElement,
   VelesComponent,
   VelesStringElement,
+  AttributeHelper,
 } from "../types";
-
-type AttributeHelper = {
-  (htmlElement: HTMLElement, attributeName: string, node: VelesElement): string;
-  velesAttribute: boolean;
-};
 
 export type State<ValueType> = {
   trackValue(
@@ -51,7 +47,7 @@ export type State<ValueType> = {
       value2: SelectorValueType
     ) => boolean
   ): VelesElement | VelesComponent | VelesStringElement;
-  useAttribute(cb?: (value: ValueType) => string): AttributeHelper;
+  useAttribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
   useValueIterator<Element>(
     options: {
       key: string | ((options: { element: Element; index: number }) => string);
@@ -296,8 +292,8 @@ function createState<T>(
       // 4. provide a way to listen to position value.
       //    It should be a separate subscription.
     },
-    useAttribute: (cb?: (value: T) => string) => {
-      const attributeValue = cb ? cb(value) : String(value);
+    useAttribute: (cb?: (value: T) => any) => {
+      const attributeValue = cb ? cb(value) : value;
 
       const attributeHelper = (
         htmlElement: HTMLElement,
@@ -420,7 +416,7 @@ function createState<T>(
       // attributes
       // the HTML node does not change, so we don't need to modify the array
       trackingAttributes.forEach(({ cb, htmlElement, attributeName }) => {
-        const newAttributeValue = cb ? cb(value) : String(value);
+        const newAttributeValue = cb ? cb(value) : value;
 
         htmlElement.setAttribute(attributeName, newAttributeValue);
       });
