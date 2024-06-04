@@ -446,4 +446,132 @@ describe("createState", () => {
     await user.click(btn);
     expect(screen.getByTestId("container").textContent).toBe("new title");
   });
+
+  test("supports state changes correctly when conditional is return true/false/true", async () => {
+    let newValue = "";
+    const user = userEvent.setup();
+    function StateComponent() {
+      const titleState = createState({ title: "title" });
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              titleState.setValue({ title: newValue });
+            },
+          }),
+          createElement("div", {
+            "data-testid": "container",
+            children: titleState.useValueSelector(
+              (data) => data.title.length > 3,
+              (isLong) =>
+                isLong
+                  ? createElement(ConditionalComponent, { state: titleState })
+                  : null
+            ),
+          }),
+        ],
+      });
+    }
+
+    function ConditionalComponent({
+      state,
+    }: {
+      state: State<{ title: string }>;
+    }) {
+      return createElement("div", {
+        children: [
+          createElement("div", {
+            "data-testid": "text",
+            children: state.useValue(
+              (value) => `length is ${value.title.length}`
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(screen.getByTestId("text").textContent).toBe("length is 5");
+    const btn = screen.getByTestId("button");
+
+    newValue = "";
+    await user.click(btn);
+
+    newValue = "new title";
+    await user.click(btn);
+    expect(screen.getByTestId("text").textContent).toBe("length is 9");
+
+    newValue = "another new title";
+    await user.click(btn);
+    expect(screen.getByTestId("text").textContent).toBe("length is 17");
+  });
+
+  test("supports state changes correctly when conditional is not rendered initially", async () => {
+    let newValue = "";
+    const user = userEvent.setup();
+    function StateComponent() {
+      const titleState = createState({ title: "" });
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => {
+              titleState.setValue({ title: newValue });
+            },
+          }),
+          createElement("div", {
+            "data-testid": "container",
+            children: titleState.useValueSelector(
+              (data) => data.title.length > 3,
+              (isLong) =>
+                isLong
+                  ? createElement(ConditionalComponent, { state: titleState })
+                  : null
+            ),
+          }),
+        ],
+      });
+    }
+
+    function ConditionalComponent({
+      state,
+    }: {
+      state: State<{ title: string }>;
+    }) {
+      return createElement("div", {
+        children: [
+          createElement("div", {
+            "data-testid": "text",
+            children: state.useValue(
+              (value) => `length is ${value.title.length}`
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    const btn = screen.getByTestId("button");
+
+    newValue = "title";
+    await user.click(btn);
+    expect(screen.getByTestId("text").textContent).toBe("length is 5");
+
+    newValue = "new title";
+    await user.click(btn);
+    expect(screen.getByTestId("text").textContent).toBe("length is 9");
+
+    newValue = "another new title";
+    await user.click(btn);
+    expect(screen.getByTestId("text").textContent).toBe("length is 17");
+  });
 });

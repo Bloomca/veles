@@ -1,4 +1,9 @@
-import { getComponentVelesNode, callMountHandlers, identity } from "../utils";
+import {
+  getComponentVelesNode,
+  callMountHandlers,
+  identity,
+  unique,
+} from "../utils";
 import { onUnmount, onMount } from "./lifecycle";
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
@@ -344,73 +349,76 @@ function createState<T>(
     // TODO: remove it from this object completely
     // and access it from closure
     _triggerUpdates: () => {
-      trackingSelectorElements = trackingSelectorElements.map(
-        (selectorTrackingElement) => {
-          const { selectedValue, selector, cb, node, comparator } =
-            selectorTrackingElement;
-          const newSelectedValue = selector ? selector(value) : value;
+      const newTrackingSelectorElements: typeof trackingSelectorElements = [];
+      trackingSelectorElements.forEach((selectorTrackingElement) => {
+        const { selectedValue, selector, cb, node, comparator } =
+          selectorTrackingElement;
+        const newSelectedValue = selector ? selector(value) : value;
 
-          if (comparator(selectedValue, newSelectedValue)) {
-            return selectorTrackingElement;
-          }
-
-          const returnednewNode = cb
-            ? cb(newSelectedValue)
-            : String(newSelectedValue);
-          const newNode =
-            !returnednewNode || typeof returnednewNode === "string"
-              ? createTextElement(returnednewNode as string)
-              : returnednewNode;
-
-          const { velesElementNode: oldVelesElementNode } =
-            getComponentVelesNode(node);
-          const { velesElementNode: newVelesElementNode } =
-            getComponentVelesNode(newNode);
-
-          const parentVelesElement = oldVelesElementNode.parentVelesElement;
-
-          const newTrackingSelectorElement = {
-            selector,
-            selectedValue: newSelectedValue,
-            cb,
-            node: newNode,
-            comparator,
-          };
-
-          if (parentVelesElement) {
-            newVelesElementNode.parentVelesElement = parentVelesElement;
-            parentVelesElement.html.replaceChild(
-              newVelesElementNode.html,
-              oldVelesElementNode.html
-            );
-            // we need to update `childComponents` so that after the update
-            // if the parent node is removed from DOM, it calls correct unmount
-            // callbacks
-            parentVelesElement.childComponents =
-              parentVelesElement.childComponents.map((childComponent) =>
-                childComponent === node ? newNode : node
-              );
-            // we call unmount handlers right after we replace it
-            node._privateMethods._callUnmountHandlers();
-            // at this point the new Node is mounted, childComponents are updated
-            // and unmount handlers for the old node are called
-            callMountHandlers(newNode);
-
-            // right after that, we add the callback back
-            // the top level node is guaranteed to be rendered again (at least right now)
-            // if there were children listening, they should be cleared
-            // and added back into their respective unmount listeners if it is still viable
-            newNode._privateMethods._addUnmountHandler(() => {
-              trackingSelectorElements = trackingSelectorElements.filter(
-                (el) => el !== newTrackingSelectorElement
-              );
-            });
-          } else {
-            console.log("parent node was not found");
-          }
-
-          return newTrackingSelectorElement;
+        if (comparator(selectedValue, newSelectedValue)) {
+          newTrackingSelectorElements.push(selectorTrackingElement);
+          return;
         }
+
+        const returnednewNode = cb
+          ? cb(newSelectedValue)
+          : String(newSelectedValue);
+        const newNode =
+          !returnednewNode || typeof returnednewNode === "string"
+            ? createTextElement(returnednewNode as string)
+            : returnednewNode;
+
+        const { velesElementNode: oldVelesElementNode } =
+          getComponentVelesNode(node);
+        const { velesElementNode: newVelesElementNode } =
+          getComponentVelesNode(newNode);
+        const parentVelesElement = oldVelesElementNode.parentVelesElement;
+
+        const newTrackingSelectorElement = {
+          selector,
+          selectedValue: newSelectedValue,
+          cb,
+          node: newNode,
+          comparator,
+        };
+
+        if (parentVelesElement) {
+          newVelesElementNode.parentVelesElement = parentVelesElement;
+          parentVelesElement.html.replaceChild(
+            newVelesElementNode.html,
+            oldVelesElementNode.html
+          );
+          // we need to update `childComponents` so that after the update
+          // if the parent node is removed from DOM, it calls correct unmount
+          // callbacks
+          parentVelesElement.childComponents =
+            parentVelesElement.childComponents.map((childComponent) =>
+              childComponent === node ? newNode : node
+            );
+          // we call unmount handlers right after we replace it
+          node._privateMethods._callUnmountHandlers();
+          // at this point the new Node is mounted, childComponents are updated
+          // and unmount handlers for the old node are called
+          callMountHandlers(newNode);
+
+          // right after that, we add the callback back
+          // the top level node is guaranteed to be rendered again (at least right now)
+          // if there were children listening, they should be cleared
+          // and added back into their respective unmount listeners if it is still viable
+          newNode._privateMethods._addUnmountHandler(() => {
+            trackingSelectorElements = trackingSelectorElements.filter(
+              (el) => el !== newTrackingSelectorElement
+            );
+          });
+        } else {
+          console.log("parent node was not found");
+        }
+
+        newTrackingSelectorElements.push(newTrackingSelectorElement);
+      });
+
+      trackingSelectorElements = unique(
+        trackingSelectorElements.concat(newTrackingSelectorElements)
       );
 
       // attributes

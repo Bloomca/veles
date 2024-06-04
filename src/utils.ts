@@ -57,4 +57,19 @@ function identity<T>(value1: T, value2: T) {
   return value1 === value2;
 }
 
-export { getComponentVelesNode, identity, callMountHandlers };
+// return an array with elements being there only one time total
+// the first encountered value will be preserved
+function unique<T>(arr: T[]): T[] {
+  const map = new Map<T, true>();
+  const resultArr: T[] = [];
+  arr.forEach((element) => {
+    if (map.has(element)) return;
+
+    map.set(element, true);
+    resultArr.push(element);
+  });
+
+  return resultArr;
+}
+
+export { getComponentVelesNode, identity, callMountHandlers, unique };
