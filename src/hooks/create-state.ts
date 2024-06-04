@@ -436,6 +436,8 @@ function createState<T>(
         }
 
         cb(newSelectedValue);
+        // update selected value
+        trackingEffect.selectedValue = newSelectedValue;
       });
 
       trackingIterators.forEach((trackingIterator) => {

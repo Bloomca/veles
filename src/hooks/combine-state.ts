@@ -84,7 +84,7 @@ export function combineState(...states) {
       // it is guaranteed that reading `state.getValue` will
       // return the updated value
       const updatedValue = states.map((state) => state.getValue());
-      combinedState.setValue(() => updatedValue);
+      combinedState.setValue(updatedValue);
     });
   });
 
