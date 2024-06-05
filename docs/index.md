@@ -3,4 +3,4 @@ title: Introduction
 layout: home
 ---
 
-Index documentation page.
+Introduction documentation page
