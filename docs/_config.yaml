@@ -1,8 +1,8 @@
-title: Veles Documentation
+title: Veles
 description: Documentation for the Veles UI library
 theme: just-the-docs
 
 url: https://bloomca.github.io/veles
 
 aux_links:
-  Template Repository: https://github.com/bloomca/veles
+  GitHub: https://github.com/bloomca/veles
