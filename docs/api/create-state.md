@@ -11,7 +11,7 @@ parent: API
 
 ## Reference
 
-<h4>`createState(initialValue, subscribeCallback?)`<h4>
+- `createState(initialValue, subscribeCallback?)`
 
 <h4>Parameters<h4>
 
