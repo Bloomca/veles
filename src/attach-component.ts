@@ -1,4 +1,4 @@
-import { getComponentVelesNode, callMountHandlers } from "./utils";
+import { getComponentVelesNode, callMountHandlers } from "./_utils";
 import { createElement } from "./create-element";
 
 import type { VelesElement, VelesComponent } from "./types";

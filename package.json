@@ -19,6 +19,11 @@
       "types": "./dist/jsx-runtime.d.ts",
       "import": "./dist/jsx-runtime.js",
       "require": "./dist/jsx-runtime.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
     }
   },
   "scripts": {

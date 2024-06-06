@@ -1,4 +1,4 @@
-import { getComponentVelesNode } from "../utils";
+import { getComponentVelesNode } from "../_utils";
 
 import type {
   VelesComponent,
