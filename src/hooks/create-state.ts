@@ -60,7 +60,7 @@ export type State<ValueType> = {
     },
     cb: (props: {
       elementState: State<Element>;
-      index: number;
+      indexState: State<number>;
     }) => VelesElement | VelesComponent
   ): VelesComponent | VelesElement | null;
   getValue(): ValueType;
@@ -73,7 +73,7 @@ export type State<ValueType> = {
 type TrackingParams = {
   cb: (props: {
     elementState: State<any>;
-    index: number;
+    indexState: State<number>;
   }) => VelesElement | VelesComponent;
   selector?: (value: unknown) => any[];
   renderedElements: [VelesElement | VelesComponent, string, State<unknown>][];
@@ -81,7 +81,8 @@ type TrackingParams = {
   elementsByKey: {
     [key: string]: {
       elementState: State<unknown>;
-      index: number;
+      indexState: State<number>;
+      indexValue: number;
       node: VelesElement | VelesComponent;
     };
   };
@@ -360,7 +361,8 @@ function createState<T>(
         const newElementsByKey: {
           [key: string]: {
             elementState: State<unknown>;
-            index: number;
+            indexState: State<number>;
+            indexValue: number;
             node: VelesElement | VelesComponent;
           };
         } = {};
@@ -394,7 +396,11 @@ function createState<T>(
             renderedExistingElements[calculatedKey] = true;
             const currentValue = existingElement.elementState.getValue();
             if (currentValue !== element) {
-              existingElement.elementState.setValue(() => element);
+              existingElement.elementState.setValue(element);
+            }
+            const currentIndex = existingElement.indexState.getValue();
+            if (currentIndex !== index) {
+              existingElement.indexState.setValue(index);
             }
 
             newRenderedElements.push([
@@ -404,17 +410,20 @@ function createState<T>(
             ]);
             newElementsByKey[calculatedKey] = {
               elementState: existingElement.elementState,
-              index,
+              indexState: existingElement.indexState,
+              indexValue: index,
               node: existingElement.node,
             };
           } else {
             const elementState = createState(element);
-            const node = cb({ elementState, index });
+            const indexState = createState(index);
+            const node = cb({ elementState, indexState });
 
             newRenderedElements.push([node, calculatedKey, elementState]);
             newElementsByKey[calculatedKey] = {
               elementState,
-              index,
+              indexState,
+              indexValue: index,
               node,
             };
           }
@@ -460,17 +469,17 @@ function createState<T>(
             const { velesElementNode: existingElementNode } =
               getComponentVelesNode(existingElement.node);
             // the element is in the same relative position
-            if (existingElement.index + offset === index) {
+            if (existingElement.indexValue + offset === index) {
               currentElement = existingElementNode.html;
               return;
             }
 
-            if (existingElement.index + offset > index) {
+            if (existingElement.indexValue + offset > index) {
               if (currentElement) {
                 currentElement.after(existingElementNode.html);
                 // we adjust the offset of the item right after the one
                 // we repositioned
-                positioningOffset[existingElement.index + 1] = -1;
+                positioningOffset[existingElement.indexValue + 1] = -1;
               } else {
                 // this means we at position 0
                 const firstRenderedElement = renderedElements[0]?.[0];
@@ -488,7 +497,7 @@ function createState<T>(
             } else {
               if (currentElement) {
                 currentElement.after(existingElementNode.html);
-                positioningOffset[existingElement.index + 1] = 1;
+                positioningOffset[existingElement.indexValue + 1] = 1;
               } else {
                 // this means we at position 0
                 const firstRenderedElement = renderedElements[0]?.[0];
@@ -653,7 +662,7 @@ function createState<T>(
       },
       cb: (props: {
         elementState: State<Element>;
-        index: number;
+        indexState: State<number>;
       }) => VelesElement | VelesComponent
     ) {
       const children: [
@@ -664,7 +673,8 @@ function createState<T>(
       const elementsByKey: {
         [key: string]: {
           elementState: State<Element>;
-          index: number;
+          indexState: State<number>;
+          indexValue: number;
           node: VelesElement | VelesComponent;
         };
       } = {};
@@ -694,16 +704,18 @@ function createState<T>(
         }
 
         const elementState = createState(element);
+        const indexState = createState(index);
 
         if (!calculatedKey) {
           return;
         }
 
-        let node = cb({ elementState, index });
+        let node = cb({ elementState, indexState });
 
         elementsByKey[calculatedKey] = {
           node,
-          index,
+          indexState,
+          indexValue: index,
           elementState,
         };
 
