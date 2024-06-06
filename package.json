@@ -1,6 +1,6 @@
 {
   "name": "veles",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "UI library with main focus on performance",
   "type": "module",
   "main": "dist/index.js",
