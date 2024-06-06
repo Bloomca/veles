@@ -61,5 +61,3 @@ function Component() {
   );
 }
 ```
-
-> `<Fragment>` cannot be returned directly from `useValue/useValueSelector` at the time
