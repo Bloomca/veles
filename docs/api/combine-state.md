@@ -8,6 +8,7 @@ parent: API
 ## combineState
 
 > Note: this function needs to be imported from `"veles/utils"`
+
 > This function is also available as `combine`
 
 Sooner or later you'll run into a situation where you depend on several states. While in theory you can make a subscription inside another one and access both current values that way, you should not do that. Not only it is cumbersome to write, it is also not very flexible and can't be used with other states.

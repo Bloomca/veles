@@ -8,6 +8,7 @@ parent: API
 ## selectState
 
 > Note: this function needs to be imported from `"veles/utils"`
+
 > This function is also available as `select`
 
 When working with multiple states, often by using [combineState](./combine-state.html), you end up with not the ideal state value representation. E.g. if you want to pass it down as a property to multiple component, you might want to avoid doing the same selector work on all of them, and want to do them at once. It becomes even more important if you want to combine that state with something else.
