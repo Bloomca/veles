@@ -13,6 +13,8 @@ parent: API
 
 - `createState(initialValue, subscribeCallback?)`
 
+<h4>Parameters</h4>
+
 - `initialValue`: can be any value you want to be the first
 - **optional** `subscribeCallback`: a callback which receives `state.setValue` as its argument, and can return a function to cleanup all the subscriptions when the component is unmounted (in case you create the state inside a component)
 
