@@ -3,7 +3,7 @@ import {
   callMountHandlers,
   identity,
   unique,
-} from "../utils";
+} from "../_utils";
 import { onUnmount, onMount } from "./lifecycle";
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";

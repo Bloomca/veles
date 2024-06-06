@@ -1,12 +1,8 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import {
-  attachComponent,
-  createElement,
-  combineState,
-  createState,
-} from "../src";
+import { attachComponent, createElement, createState } from "../../src";
+import { combineState, selectState } from "../../src/utils";
 
 describe("createState", () => {
   let cleanup: Function | undefined;
@@ -19,13 +15,17 @@ describe("createState", () => {
   test("allows to combine several states", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const valueState1 = createState(0);
-      const valueState2 = createState(0);
-      const valueState3 = createState(0);
+      const valueState1 = createState(1);
+      const valueState2 = createState(1);
+      const valueState3 = createState(1);
       const combinedValueState = combineState(
         valueState1,
         valueState2,
         valueState3
+      );
+      const changedState = selectState(
+        combinedValueState,
+        ([value1, value2, value3]) => value1 * value2 * value3
       );
 
       return createElement("div", {
@@ -48,10 +48,8 @@ describe("createState", () => {
               valueState3.setValue((currentValue) => currentValue + 1);
             },
           }),
-          combinedValueState.useValueSelector(
-            (values) => values.reduce((acc, num) => acc + num, 0),
-            (value) =>
-              createElement("div", { children: [`current value is ${value}`] })
+          changedState.useValue((value) =>
+            createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
       });
@@ -62,7 +60,7 @@ describe("createState", () => {
       component: createElement(StateComponent),
     });
 
-    expect(await screen.findByText("current value is 0")).toBeVisible();
+    expect(await screen.findByText("current value is 1")).toBeVisible();
     const btn1 = screen.getByTestId("button1");
     const btn2 = screen.getByTestId("button2");
     const btn3 = screen.getByTestId("button3");
@@ -70,11 +68,11 @@ describe("createState", () => {
     await user.click(btn1);
     await user.click(btn1);
     await user.click(btn3);
-    expect(await screen.findByText("current value is 3")).toBeVisible();
+    expect(await screen.findByText("current value is 6")).toBeVisible();
 
     await user.click(btn2);
     await user.click(btn2);
     await user.click(btn1);
-    expect(await screen.findByText("current value is 6")).toBeVisible();
+    expect(await screen.findByText("current value is 24")).toBeVisible();
   });
 });
