@@ -302,7 +302,15 @@ function createState<T>(
     trackingAttributes.forEach(({ cb, htmlElement, attributeName }) => {
       const newAttributeValue = cb ? cb(value) : value;
 
-      htmlElement.setAttribute(attributeName, newAttributeValue);
+      if (typeof newAttributeValue === "boolean") {
+        if (newAttributeValue) {
+          htmlElement.setAttribute(attributeName, "");
+        } else {
+          htmlElement.removeAttribute(attributeName);
+        }
+      } else {
+        htmlElement.setAttribute(attributeName, newAttributeValue);
+      }
     });
 
     // tracked values
@@ -768,7 +776,6 @@ function createState<T>(
         // read that array on `_triggerUpdates`
         // and change inline
         // we need to save the HTML element and the name of the attribute
-
         const trackingElement = { cb, htmlElement, attributeName };
         trackingAttributes.push(trackingElement);
 
