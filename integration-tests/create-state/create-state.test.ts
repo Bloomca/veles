@@ -575,7 +575,7 @@ describe("createState", () => {
     expect(screen.getByTestId("text").textContent).toBe("length is 17");
   });
 
-  test.only("unsubscribes from updates if wasn't mounted", async () => {
+  test("unsubscribes from updates if wasn't mounted", async () => {
     const user = userEvent.setup();
     const valueState = createState(0);
     function App() {
@@ -585,7 +585,7 @@ describe("createState", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(false),
+            onClick: () => showState.setValue((value) => !value),
           }),
           showState.useValue((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
@@ -608,6 +608,10 @@ describe("createState", () => {
       return createElement("div", {
         children: [
           createElement("h1", { children: "nested component" }),
+          createElement("button", {
+            "data-testid": "nestedButton",
+            onClick: () => showState.setValue((value) => !value),
+          }),
           showState.useValue((shouldShow) => (shouldShow ? x : null)),
         ],
       });
@@ -619,11 +623,21 @@ describe("createState", () => {
     });
 
     valueState.setValue(1);
-    expect(spyFn).toHaveBeenCalledTimes(2);
+    // it only was called one time, but it does not track because it is not mounted
+    expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
 
-    // valueState.setValue(2);
-    // expect(spyFn).toHaveBeenCalledTimes(2);
+    valueState.setValue(2);
+    expect(spyFn).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByTestId("button"));
+    expect(spyFn).toHaveBeenCalledTimes(2);
+    valueState.setValue(3);
+    expect(spyFn).toHaveBeenCalledTimes(2);
+
+    await user.click(screen.getByTestId("nestedButton"));
+    expect(spyFn).toHaveBeenCalledTimes(3);
+    expect(await screen.findByText("value is 3")).toBeVisible();
   });
 });
