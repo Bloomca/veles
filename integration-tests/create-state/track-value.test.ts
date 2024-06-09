@@ -178,7 +178,7 @@ describe("createState", () => {
             onInput: (e) =>
               userState.setValue((currentUser) => ({
                 ...currentUser,
-                name: e.target.value,
+                name: (e.target as HTMLInputElement).value,
               })),
           }),
           createElement("input", {
@@ -190,7 +190,7 @@ describe("createState", () => {
             onInput: (e) =>
               userState.setValue((currentUser) => ({
                 ...currentUser,
-                email: e.target.value,
+                email: (e.target as HTMLInputElement).value,
               })),
           }),
         ],
@@ -244,7 +244,7 @@ describe("createState", () => {
             onInput: (e) =>
               userState.setValue((currentUser) => ({
                 ...currentUser,
-                name: e.target.value,
+                name: (e.target as HTMLInputElement).value,
               })),
           }),
           createElement("input", {
@@ -256,7 +256,7 @@ describe("createState", () => {
             onInput: (e) =>
               userState.setValue((currentUser) => ({
                 ...currentUser,
-                email: e.target.value,
+                email: (e.target as HTMLInputElement).value,
               })),
           }),
         ],

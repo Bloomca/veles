@@ -1626,224 +1626,762 @@ export namespace JSX {
   export interface DOMAttributes<Target extends EventTarget>
     extends VelesDOMAttributes {
     // Image Events
-    onLoad?: GenericEventHandler<Target> | undefined;
-    onLoadCapture?: GenericEventHandler<Target> | undefined;
-    onError?: GenericEventHandler<Target> | undefined;
-    onErrorCapture?: GenericEventHandler<Target> | undefined;
+    onLoad?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onLoadCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onError?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onErrorCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
 
     // Clipboard Events
-    onCopy?: ClipboardEventHandler<Target> | undefined;
-    onCopyCapture?: ClipboardEventHandler<Target> | undefined;
-    onCut?: ClipboardEventHandler<Target> | undefined;
-    onCutCapture?: ClipboardEventHandler<Target> | undefined;
-    onPaste?: ClipboardEventHandler<Target> | undefined;
-    onPasteCapture?: ClipboardEventHandler<Target> | undefined;
+    onCopy?:
+      | ClipboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<ClipboardEventHandler<Target> | undefined>;
+    onCopyCapture?:
+      | ClipboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<ClipboardEventHandler<Target> | undefined>;
+    onCut?:
+      | ClipboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<ClipboardEventHandler<Target> | undefined>;
+    onCutCapture?:
+      | ClipboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<ClipboardEventHandler<Target> | undefined>;
+    onPaste?:
+      | ClipboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<ClipboardEventHandler<Target> | undefined>;
+    onPasteCapture?:
+      | ClipboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<ClipboardEventHandler<Target> | undefined>;
 
     // Composition Events
-    onCompositionEnd?: CompositionEventHandler<Target> | undefined;
-    onCompositionEndCapture?: CompositionEventHandler<Target> | undefined;
-    onCompositionStart?: CompositionEventHandler<Target> | undefined;
-    onCompositionStartCapture?: CompositionEventHandler<Target> | undefined;
-    onCompositionUpdate?: CompositionEventHandler<Target> | undefined;
-    onCompositionUpdateCapture?: CompositionEventHandler<Target> | undefined;
+    onCompositionEnd?:
+      | CompositionEventHandler<Target>
+      | undefined
+      | AttributeHelper<CompositionEventHandler<Target> | undefined>;
+    onCompositionEndCapture?:
+      | CompositionEventHandler<Target>
+      | undefined
+      | AttributeHelper<CompositionEventHandler<Target> | undefined>;
+    onCompositionStart?:
+      | CompositionEventHandler<Target>
+      | undefined
+      | AttributeHelper<CompositionEventHandler<Target> | undefined>;
+    onCompositionStartCapture?:
+      | CompositionEventHandler<Target>
+      | undefined
+      | AttributeHelper<CompositionEventHandler<Target> | undefined>;
+    onCompositionUpdate?:
+      | CompositionEventHandler<Target>
+      | undefined
+      | AttributeHelper<CompositionEventHandler<Target> | undefined>;
+    onCompositionUpdateCapture?:
+      | CompositionEventHandler<Target>
+      | undefined
+      | AttributeHelper<CompositionEventHandler<Target> | undefined>;
 
     // Details Events
-    onToggle?: GenericEventHandler<Target> | undefined;
+    onToggle?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
 
     // Dialog Events
-    onClose?: GenericEventHandler<Target> | undefined;
-    onCancel?: GenericEventHandler<Target> | undefined;
+    onClose?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onCancel?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
 
     // Focus Events
-    onFocus?: FocusEventHandler<Target> | undefined;
-    onFocusCapture?: FocusEventHandler<Target> | undefined;
-    onFocusIn?: FocusEventHandler<Target> | undefined;
-    onFocusInCapture?: FocusEventHandler<Target> | undefined;
-    onFocusOut?: FocusEventHandler<Target> | undefined;
-    onFocusOutCapture?: FocusEventHandler<Target> | undefined;
-    onBlur?: FocusEventHandler<Target> | undefined;
-    onBlurCapture?: FocusEventHandler<Target> | undefined;
+    onFocus?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
+    onFocusCapture?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
+    onFocusIn?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
+    onFocusInCapture?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
+    onFocusOut?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
+    onFocusOutCapture?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
+    onBlur?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
+    onBlurCapture?:
+      | FocusEventHandler<Target>
+      | undefined
+      | AttributeHelper<FocusEventHandler<Target> | undefined>;
 
     // Form Events
-    onChange?: GenericEventHandler<Target> | undefined;
-    onChangeCapture?: GenericEventHandler<Target> | undefined;
-    onInput?: InputEventHandler<Target> | undefined;
-    onInputCapture?: InputEventHandler<Target> | undefined;
-    onBeforeInput?: InputEventHandler<Target> | undefined;
-    onBeforeInputCapture?: InputEventHandler<Target> | undefined;
-    onSearch?: GenericEventHandler<Target> | undefined;
-    onSearchCapture?: GenericEventHandler<Target> | undefined;
-    onSubmit?: SubmitEventHandler<Target> | undefined;
-    onSubmitCapture?: SubmitEventHandler<Target> | undefined;
-    onInvalid?: GenericEventHandler<Target> | undefined;
-    onInvalidCapture?: GenericEventHandler<Target> | undefined;
-    onReset?: GenericEventHandler<Target> | undefined;
-    onResetCapture?: GenericEventHandler<Target> | undefined;
-    onFormData?: GenericEventHandler<Target> | undefined;
-    onFormDataCapture?: GenericEventHandler<Target> | undefined;
+    onChange?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onChangeCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onInput?:
+      | InputEventHandler<Target>
+      | undefined
+      | AttributeHelper<InputEventHandler<Target> | undefined>;
+    onInputCapture?:
+      | InputEventHandler<Target>
+      | undefined
+      | AttributeHelper<InputEventHandler<Target> | undefined>;
+    onBeforeInput?:
+      | InputEventHandler<Target>
+      | undefined
+      | AttributeHelper<InputEventHandler<Target> | undefined>;
+    onBeforeInputCapture?:
+      | InputEventHandler<Target>
+      | undefined
+      | AttributeHelper<InputEventHandler<Target> | undefined>;
+    onSearch?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSearchCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSubmit?:
+      | SubmitEventHandler<Target>
+      | undefined
+      | AttributeHelper<SubmitEventHandler<Target> | undefined>;
+    onSubmitCapture?:
+      | SubmitEventHandler<Target>
+      | undefined
+      | AttributeHelper<SubmitEventHandler<Target> | undefined>;
+    onInvalid?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onInvalidCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onReset?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onResetCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onFormData?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onFormDataCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
 
     // Keyboard Events
-    onKeyDown?: KeyboardEventHandler<Target> | undefined;
-    onKeyDownCapture?: KeyboardEventHandler<Target> | undefined;
-    onKeyPress?: KeyboardEventHandler<Target> | undefined;
-    onKeyPressCapture?: KeyboardEventHandler<Target> | undefined;
-    onKeyUp?: KeyboardEventHandler<Target> | undefined;
-    onKeyUpCapture?: KeyboardEventHandler<Target> | undefined;
+    onKeyDown?:
+      | KeyboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<KeyboardEventHandler<Target> | undefined>;
+    onKeyDownCapture?:
+      | KeyboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<KeyboardEventHandler<Target> | undefined>;
+    onKeyPress?:
+      | KeyboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<KeyboardEventHandler<Target> | undefined>;
+    onKeyPressCapture?:
+      | KeyboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<KeyboardEventHandler<Target> | undefined>;
+    onKeyUp?:
+      | KeyboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<KeyboardEventHandler<Target> | undefined>;
+    onKeyUpCapture?:
+      | KeyboardEventHandler<Target>
+      | undefined
+      | AttributeHelper<KeyboardEventHandler<Target> | undefined>;
 
     // Media Events
-    onAbort?: GenericEventHandler<Target> | undefined;
-    onAbortCapture?: GenericEventHandler<Target> | undefined;
-    onCanPlay?: GenericEventHandler<Target> | undefined;
-    onCanPlayCapture?: GenericEventHandler<Target> | undefined;
-    onCanPlayThrough?: GenericEventHandler<Target> | undefined;
-    onCanPlayThroughCapture?: GenericEventHandler<Target> | undefined;
-    onDurationChange?: GenericEventHandler<Target> | undefined;
-    onDurationChangeCapture?: GenericEventHandler<Target> | undefined;
-    onEmptied?: GenericEventHandler<Target> | undefined;
-    onEmptiedCapture?: GenericEventHandler<Target> | undefined;
-    onEncrypted?: GenericEventHandler<Target> | undefined;
-    onEncryptedCapture?: GenericEventHandler<Target> | undefined;
-    onEnded?: GenericEventHandler<Target> | undefined;
-    onEndedCapture?: GenericEventHandler<Target> | undefined;
-    onLoadedData?: GenericEventHandler<Target> | undefined;
-    onLoadedDataCapture?: GenericEventHandler<Target> | undefined;
-    onLoadedMetadata?: GenericEventHandler<Target> | undefined;
-    onLoadedMetadataCapture?: GenericEventHandler<Target> | undefined;
-    onLoadStart?: GenericEventHandler<Target> | undefined;
-    onLoadStartCapture?: GenericEventHandler<Target> | undefined;
-    onPause?: GenericEventHandler<Target> | undefined;
-    onPauseCapture?: GenericEventHandler<Target> | undefined;
-    onPlay?: GenericEventHandler<Target> | undefined;
-    onPlayCapture?: GenericEventHandler<Target> | undefined;
-    onPlaying?: GenericEventHandler<Target> | undefined;
-    onPlayingCapture?: GenericEventHandler<Target> | undefined;
-    onProgress?: GenericEventHandler<Target> | undefined;
-    onProgressCapture?: GenericEventHandler<Target> | undefined;
-    onRateChange?: GenericEventHandler<Target> | undefined;
-    onRateChangeCapture?: GenericEventHandler<Target> | undefined;
-    onSeeked?: GenericEventHandler<Target> | undefined;
-    onSeekedCapture?: GenericEventHandler<Target> | undefined;
-    onSeeking?: GenericEventHandler<Target> | undefined;
-    onSeekingCapture?: GenericEventHandler<Target> | undefined;
-    onStalled?: GenericEventHandler<Target> | undefined;
-    onStalledCapture?: GenericEventHandler<Target> | undefined;
-    onSuspend?: GenericEventHandler<Target> | undefined;
-    onSuspendCapture?: GenericEventHandler<Target> | undefined;
-    onTimeUpdate?: GenericEventHandler<Target> | undefined;
-    onTimeUpdateCapture?: GenericEventHandler<Target> | undefined;
-    onVolumeChange?: GenericEventHandler<Target> | undefined;
-    onVolumeChangeCapture?: GenericEventHandler<Target> | undefined;
-    onWaiting?: GenericEventHandler<Target> | undefined;
-    onWaitingCapture?: GenericEventHandler<Target> | undefined;
+    onAbort?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onAbortCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onCanPlay?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onCanPlayCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onCanPlayThrough?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onCanPlayThroughCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onDurationChange?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onDurationChangeCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onEmptied?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onEmptiedCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onEncrypted?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onEncryptedCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onEnded?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onEndedCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onLoadedData?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onLoadedDataCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onLoadedMetadata?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onLoadedMetadataCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onLoadStart?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onLoadStartCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onPause?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onPauseCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onPlay?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onPlayCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onPlaying?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onPlayingCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onProgress?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onProgressCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onRateChange?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onRateChangeCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSeeked?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSeekedCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSeeking?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSeekingCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onStalled?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onStalledCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSuspend?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSuspendCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onTimeUpdate?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onTimeUpdateCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onVolumeChange?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onVolumeChangeCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onWaiting?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onWaitingCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
 
     // MouseEvents
-    onClick?: MouseEventHandler<Target> | undefined;
-    onClickCapture?: MouseEventHandler<Target> | undefined;
-    onContextMenu?: MouseEventHandler<Target> | undefined;
-    onContextMenuCapture?: MouseEventHandler<Target> | undefined;
-    onDblClick?: MouseEventHandler<Target> | undefined;
-    onDblClickCapture?: MouseEventHandler<Target> | undefined;
-    onDrag?: DragEventHandler<Target> | undefined;
-    onDragCapture?: DragEventHandler<Target> | undefined;
-    onDragEnd?: DragEventHandler<Target> | undefined;
-    onDragEndCapture?: DragEventHandler<Target> | undefined;
-    onDragEnter?: DragEventHandler<Target> | undefined;
-    onDragEnterCapture?: DragEventHandler<Target> | undefined;
-    onDragExit?: DragEventHandler<Target> | undefined;
-    onDragExitCapture?: DragEventHandler<Target> | undefined;
-    onDragLeave?: DragEventHandler<Target> | undefined;
-    onDragLeaveCapture?: DragEventHandler<Target> | undefined;
-    onDragOver?: DragEventHandler<Target> | undefined;
-    onDragOverCapture?: DragEventHandler<Target> | undefined;
-    onDragStart?: DragEventHandler<Target> | undefined;
-    onDragStartCapture?: DragEventHandler<Target> | undefined;
-    onDrop?: DragEventHandler<Target> | undefined;
-    onDropCapture?: DragEventHandler<Target> | undefined;
-    onMouseDown?: MouseEventHandler<Target> | undefined;
-    onMouseDownCapture?: MouseEventHandler<Target> | undefined;
-    onMouseEnter?: MouseEventHandler<Target> | undefined;
-    onMouseEnterCapture?: MouseEventHandler<Target> | undefined;
-    onMouseLeave?: MouseEventHandler<Target> | undefined;
-    onMouseLeaveCapture?: MouseEventHandler<Target> | undefined;
-    onMouseMove?: MouseEventHandler<Target> | undefined;
-    onMouseMoveCapture?: MouseEventHandler<Target> | undefined;
-    onMouseOut?: MouseEventHandler<Target> | undefined;
-    onMouseOutCapture?: MouseEventHandler<Target> | undefined;
-    onMouseOver?: MouseEventHandler<Target> | undefined;
-    onMouseOverCapture?: MouseEventHandler<Target> | undefined;
-    onMouseUp?: MouseEventHandler<Target> | undefined;
-    onMouseUpCapture?: MouseEventHandler<Target> | undefined;
+    onClick?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onClickCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onContextMenu?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onContextMenuCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onDblClick?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onDblClickCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onDrag?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragEnd?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragEndCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragEnter?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragEnterCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragExit?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragExitCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragLeave?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragLeaveCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragOver?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragOverCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragStart?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDragStartCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDrop?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onDropCapture?:
+      | DragEventHandler<Target>
+      | undefined
+      | AttributeHelper<DragEventHandler<Target> | undefined>;
+    onMouseDown?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseDownCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseEnter?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseEnterCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseLeave?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseLeaveCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseMove?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseMoveCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseOut?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseOutCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseOver?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseOverCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseUp?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
+    onMouseUpCapture?:
+      | MouseEventHandler<Target>
+      | undefined
+      | AttributeHelper<MouseEventHandler<Target> | undefined>;
 
     // Selection Events
-    onSelect?: GenericEventHandler<Target> | undefined;
-    onSelectCapture?: GenericEventHandler<Target> | undefined;
+    onSelect?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
+    onSelectCapture?:
+      | GenericEventHandler<Target>
+      | undefined
+      | AttributeHelper<GenericEventHandler<Target> | undefined>;
 
     // Touch Events
-    onTouchCancel?: TouchEventHandler<Target> | undefined;
-    onTouchCancelCapture?: TouchEventHandler<Target> | undefined;
-    onTouchEnd?: TouchEventHandler<Target> | undefined;
-    onTouchEndCapture?: TouchEventHandler<Target> | undefined;
-    onTouchMove?: TouchEventHandler<Target> | undefined;
-    onTouchMoveCapture?: TouchEventHandler<Target> | undefined;
-    onTouchStart?: TouchEventHandler<Target> | undefined;
-    onTouchStartCapture?: TouchEventHandler<Target> | undefined;
+    onTouchCancel?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
+    onTouchCancelCapture?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
+    onTouchEnd?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
+    onTouchEndCapture?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
+    onTouchMove?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
+    onTouchMoveCapture?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
+    onTouchStart?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
+    onTouchStartCapture?:
+      | TouchEventHandler<Target>
+      | undefined
+      | AttributeHelper<TouchEventHandler<Target> | undefined>;
 
     // Pointer Events
-    onPointerOver?: PointerEventHandler<Target> | undefined;
-    onPointerOverCapture?: PointerEventHandler<Target> | undefined;
-    onPointerEnter?: PointerEventHandler<Target> | undefined;
-    onPointerEnterCapture?: PointerEventHandler<Target> | undefined;
-    onPointerDown?: PointerEventHandler<Target> | undefined;
-    onPointerDownCapture?: PointerEventHandler<Target> | undefined;
-    onPointerMove?: PointerEventHandler<Target> | undefined;
-    onPointerMoveCapture?: PointerEventHandler<Target> | undefined;
-    onPointerUp?: PointerEventHandler<Target> | undefined;
-    onPointerUpCapture?: PointerEventHandler<Target> | undefined;
-    onPointerCancel?: PointerEventHandler<Target> | undefined;
-    onPointerCancelCapture?: PointerEventHandler<Target> | undefined;
-    onPointerOut?: PointerEventHandler<Target> | undefined;
-    onPointerOutCapture?: PointerEventHandler<Target> | undefined;
-    onPointerLeave?: PointerEventHandler<Target> | undefined;
-    onPointerLeaveCapture?: PointerEventHandler<Target> | undefined;
-    onGotPointerCapture?: PointerEventHandler<Target> | undefined;
-    onGotPointerCaptureCapture?: PointerEventHandler<Target> | undefined;
-    onLostPointerCapture?: PointerEventHandler<Target> | undefined;
-    onLostPointerCaptureCapture?: PointerEventHandler<Target> | undefined;
+    onPointerOver?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerOverCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerEnter?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerEnterCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerDown?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerDownCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerMove?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerMoveCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerUp?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerUpCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerCancel?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerCancelCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerOut?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerOutCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerLeave?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onPointerLeaveCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onGotPointerCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onGotPointerCaptureCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onLostPointerCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
+    onLostPointerCaptureCapture?:
+      | PointerEventHandler<Target>
+      | undefined
+      | AttributeHelper<PointerEventHandler<Target> | undefined>;
 
     // UI Events
-    onScroll?: UIEventHandler<Target> | undefined;
-    onScrollEnd?: UIEventHandler<Target> | undefined;
-    onScrollCapture?: UIEventHandler<Target> | undefined;
+    onScroll?:
+      | UIEventHandler<Target>
+      | undefined
+      | AttributeHelper<UIEventHandler<Target> | undefined>;
+    onScrollEnd?:
+      | UIEventHandler<Target>
+      | undefined
+      | AttributeHelper<UIEventHandler<Target> | undefined>;
+    onScrollCapture?:
+      | UIEventHandler<Target>
+      | undefined
+      | AttributeHelper<UIEventHandler<Target> | undefined>;
 
     // Wheel Events
-    onWheel?: WheelEventHandler<Target> | undefined;
-    onWheelCapture?: WheelEventHandler<Target> | undefined;
+    onWheel?:
+      | WheelEventHandler<Target>
+      | undefined
+      | AttributeHelper<WheelEventHandler<Target> | undefined>;
+    onWheelCapture?:
+      | WheelEventHandler<Target>
+      | undefined
+      | AttributeHelper<WheelEventHandler<Target> | undefined>;
 
     // Animation Events
-    onAnimationStart?: AnimationEventHandler<Target> | undefined;
-    onAnimationStartCapture?: AnimationEventHandler<Target> | undefined;
-    onAnimationEnd?: AnimationEventHandler<Target> | undefined;
-    onAnimationEndCapture?: AnimationEventHandler<Target> | undefined;
-    onAnimationIteration?: AnimationEventHandler<Target> | undefined;
-    onAnimationIterationCapture?: AnimationEventHandler<Target> | undefined;
+    onAnimationStart?:
+      | AnimationEventHandler<Target>
+      | undefined
+      | AttributeHelper<AnimationEventHandler<Target> | undefined>;
+    onAnimationStartCapture?:
+      | AnimationEventHandler<Target>
+      | undefined
+      | AttributeHelper<AnimationEventHandler<Target> | undefined>;
+    onAnimationEnd?:
+      | AnimationEventHandler<Target>
+      | undefined
+      | AttributeHelper<AnimationEventHandler<Target> | undefined>;
+    onAnimationEndCapture?:
+      | AnimationEventHandler<Target>
+      | undefined
+      | AttributeHelper<AnimationEventHandler<Target> | undefined>;
+    onAnimationIteration?:
+      | AnimationEventHandler<Target>
+      | undefined
+      | AttributeHelper<AnimationEventHandler<Target> | undefined>;
+    onAnimationIterationCapture?:
+      | AnimationEventHandler<Target>
+      | undefined
+      | AttributeHelper<AnimationEventHandler<Target> | undefined>;
 
     // Transition Events
-    onTransitionCancel?: TransitionEventHandler<Target>;
-    onTransitionCancelCapture?: TransitionEventHandler<Target>;
-    onTransitionEnd?: TransitionEventHandler<Target>;
-    onTransitionEndCapture?: TransitionEventHandler<Target>;
-    onTransitionRun?: TransitionEventHandler<Target>;
-    onTransitionRunCapture?: TransitionEventHandler<Target>;
-    onTransitionStart?: TransitionEventHandler<Target>;
-    onTransitionStartCapture?: TransitionEventHandler<Target>;
+    onTransitionCancel?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
+    onTransitionCancelCapture?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
+    onTransitionEnd?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
+    onTransitionEndCapture?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
+    onTransitionRun?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
+    onTransitionRunCapture?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
+    onTransitionStart?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
+    onTransitionStartCapture?:
+      | TransitionEventHandler<Target>
+      | AttributeHelper<TransitionEventHandler<Target> | undefined>;
 
     // PictureInPicture Events
-    onEnterPictureInPicture?: PictureInPictureEventHandler<Target>;
-    onEnterPictureInPictureCapture?: PictureInPictureEventHandler<Target>;
-    onLeavePictureInPicture?: PictureInPictureEventHandler<Target>;
-    onLeavePictureInPictureCapture?: PictureInPictureEventHandler<Target>;
-    onResize?: PictureInPictureEventHandler<Target>;
-    onResizeCapture?: PictureInPictureEventHandler<Target>;
+    onEnterPictureInPicture?:
+      | PictureInPictureEventHandler<Target>
+      | AttributeHelper<PictureInPictureEventHandler<Target> | undefined>;
+    onEnterPictureInPictureCapture?:
+      | PictureInPictureEventHandler<Target>
+      | AttributeHelper<PictureInPictureEventHandler<Target> | undefined>;
+    onLeavePictureInPicture?:
+      | PictureInPictureEventHandler<Target>
+      | AttributeHelper<PictureInPictureEventHandler<Target> | undefined>;
+    onLeavePictureInPictureCapture?:
+      | PictureInPictureEventHandler<Target>
+      | AttributeHelper<PictureInPictureEventHandler<Target> | undefined>;
+    onResize?:
+      | PictureInPictureEventHandler<Target>
+      | AttributeHelper<PictureInPictureEventHandler<Target> | undefined>;
+    onResizeCapture?:
+      | PictureInPictureEventHandler<Target>
+      | AttributeHelper<PictureInPictureEventHandler<Target> | undefined>;
   }
 
   // All the WAI-ARIA 1.1 attributes from https://www.w3.org/TR/wai-aria-1.1/

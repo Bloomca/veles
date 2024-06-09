@@ -43,7 +43,8 @@ describe("createState", () => {
             value: nameState.useAttribute((name) => name),
             onFocus: focusFn,
             onBlur: blurFn,
-            onInput: (e) => nameState.setValue(() => e.target.value),
+            onInput: (e) =>
+              nameState.setValue((e.target as HTMLInputElement).value),
           }),
           nameState.useValue((value) =>
             createElement("div", {
@@ -101,7 +102,8 @@ describe("createState", () => {
             value: nameState.useAttribute(),
             onFocus: focusFn,
             onBlur: blurFn,
-            onInput: (e) => nameState.setValue(e.target.value),
+            onInput: (e) =>
+              nameState.setValue((e.target as HTMLInputElement).value),
           }),
           nameState.useValue((value) =>
             createElement("div", {
@@ -215,5 +217,92 @@ describe("createState", () => {
 
     expect(testBtn.getAttribute("disabled")).toBe(null);
     expect((testBtn as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("allows to assign and remove event listeners dynamically", async () => {
+    const user = userEvent.setup();
+    const state = createState(0);
+    const spyFn = jest.fn();
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: state.useAttribute((value) =>
+              value !== 0 && value < 4
+                ? () => {
+                    spyFn();
+                    state.setValue((currentValue) => currentValue + 1);
+                  }
+                : undefined
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const btn = screen.getByTestId("button");
+
+    await user.click(btn);
+    await user.click(btn);
+
+    state.setValue(1);
+
+    await user.click(btn);
+    await user.click(btn);
+    await user.click(btn);
+    await user.click(btn);
+    await user.click(btn);
+
+    expect(spyFn).toHaveBeenCalledTimes(3);
+    expect(state.getValue()).toBe(4);
+  });
+
+  it("allows to assign and remove event listeners dynamically passing the same callback", async () => {
+    const user = userEvent.setup();
+    const state = createState(0);
+    const spyFn = jest.fn();
+    function App() {
+      const handler = () => {
+        spyFn();
+        state.setValue((currentValue) => currentValue + 1);
+      };
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: state.useAttribute((value) =>
+              value !== 0 && value < 4 ? handler : undefined
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const btn = screen.getByTestId("button");
+
+    await user.click(btn);
+    await user.click(btn);
+
+    state.setValue(1);
+
+    await user.click(btn);
+    await user.click(btn);
+    await user.click(btn);
+    await user.click(btn);
+    await user.click(btn);
+
+    expect(spyFn).toHaveBeenCalledTimes(3);
+    expect(state.getValue()).toBe(4);
   });
 });

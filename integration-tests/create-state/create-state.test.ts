@@ -64,7 +64,7 @@ describe("createState", () => {
   test("supports direct state updates", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const nameState = createState(0);
+      const nameState = createState("");
       return createElement("div", {
         children: [
           createElement("input", {
