@@ -13,11 +13,17 @@ function assignAttributes({
     const isFunction = typeof value === "function";
     if (isFunction && value.velesAttribute === true) {
       const attributeValue = value(htmlElement, key, velesNode);
-      htmlElement.setAttribute(key, attributeValue);
+      if (typeof attributeValue === "boolean") {
+        // according to the spec, boolean values should just get either an empty string
+        // or duplicated key. I don't see a reason to duplicate the key.
+        // If the value is `false`, no need to set it, the correct behaviour is to remove it.
+        if (value) htmlElement.setAttribute(key, "");
+      } else {
+        htmlElement.setAttribute(key, attributeValue);
+      }
     } else if (
       // basically, any form of `on` handlers, like `onClick`, `onCopy`, etc
       isFunction &&
-      key.length > 2 &&
       key.startsWith("on")
     ) {
       // TODO: think if this is robust enough
@@ -26,7 +32,11 @@ function assignAttributes({
         value
       );
     } else {
-      htmlElement.setAttribute(key, value);
+      if (typeof value === "boolean") {
+        if (value) htmlElement.setAttribute(key, "");
+      } else {
+        htmlElement.setAttribute(key, value);
+      }
     }
   });
 }

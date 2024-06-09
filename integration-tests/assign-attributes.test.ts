@@ -134,4 +134,86 @@ describe("createState", () => {
     expect(input).toHaveFocus();
     expect(await screen.findByText("current name is empty")).toBeVisible();
   });
+
+  it('assignes empty string to attributes with a "true" value', () => {
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            disabled: true,
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const btn = screen.getByTestId("button");
+
+    expect(btn.getAttribute("disabled")).toBe("");
+    expect((btn as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('does not assign anything to attributes with a "false" value', () => {
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            disabled: false,
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const btn = screen.getByTestId("button");
+
+    expect(btn.getAttribute("disabled")).toBe(null);
+    expect((btn as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("correctly updates boolean properties with useAttribute", async () => {
+    const user = userEvent.setup();
+    function App() {
+      const disabledState = createState(false);
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "toggleButton",
+            onClick: () => disabledState.setValue((value) => !value),
+          }),
+          createElement("button", {
+            "data-testid": "button",
+            disabled: disabledState.useAttribute(),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const testBtn = screen.getByTestId("button");
+    const toggleBtn = screen.getByTestId("toggleButton");
+    await user.click(toggleBtn);
+
+    expect(testBtn.getAttribute("disabled")).toBe("");
+    expect((testBtn as HTMLButtonElement).disabled).toBe(true);
+
+    await user.click(toggleBtn);
+
+    expect(testBtn.getAttribute("disabled")).toBe(null);
+    expect((testBtn as HTMLButtonElement).disabled).toBe(false);
+  });
 });
