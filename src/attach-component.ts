@@ -21,6 +21,7 @@ function attachComponent({
   // TODO: iterate over every child and call their `onUnmout` method
   // and add tests for that
   return () => {
+    wrappedApp._privateMethods._callUnmountHandlers();
     velesElementNode.html.remove();
   };
 }

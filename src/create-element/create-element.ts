@@ -34,12 +34,13 @@ function createElement(
     // `useAttribute`
     let unmountHandlers: Function[] = [];
     const callUnmountHandlers = () => {
-      unmountHandlers.forEach((cb) => cb());
-      unmountHandlers = [];
-
+      // `onUnmount` is logically better to be executed on children first
       childComponents.forEach((childComponent) => {
         childComponent._privateMethods._callUnmountHandlers();
       });
+
+      unmountHandlers.forEach((cb) => cb());
+      unmountHandlers = [];
     };
 
     velesNode.html = newElement;
