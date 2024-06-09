@@ -1,5 +1,7 @@
 import { VelesDOMElementProps } from "./dom-types";
 
+import type { JSX } from "./jsx.d.ts";
+
 // an internal representation of DOM nodes in the tree
 // despite being DOM nodes, we still can track mounting/unmounting
 // (although it is not exposed at the moment)
@@ -71,7 +73,7 @@ export type VelesElementProps = {
   // or a function in case we support reactivity
   // TODO: we can improve these types
   [htmlAttribute: string]: any;
-} & VelesDOMElementProps;
+} & JSX.HTMLAttributes;
 
 export type ComponentAPI = {
   // You can return a function from the mount callback, and it will be
