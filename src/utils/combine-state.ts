@@ -1,4 +1,4 @@
-import { createState } from "../hooks/create-state";
+import { createState } from "../create-state";
 
 type createdState<StateType> = ReturnType<typeof createState<StateType>>;
 

@@ -1,7 +1,8 @@
 export { attachComponent } from "./attach-component";
 export { createElement } from "./create-element";
-export { createState, onMount, onUnmount } from "./hooks";
+export { onMount, onUnmount } from "./hooks";
+export { createState } from "./create-state";
 export { createRef } from "./create-ref";
 export { Fragment } from "./fragment";
 
-export type { State } from "./hooks/create-state";
+export type { State } from "./create-state/types";
