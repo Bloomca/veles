@@ -85,7 +85,7 @@ export type ComponentAPI = {
 export type ComponentFunction = (
   props: VelesElementProps,
   componentAPI: ComponentAPI
-) => VelesElement | VelesComponent | string | null;
+) => VelesElement | VelesComponent | VelesStringElement | string | null;
 
 export type AttributeHelper<T> = {
   (htmlElement: HTMLElement, attributeName: string, node: VelesElement): T;
