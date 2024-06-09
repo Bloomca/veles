@@ -47,8 +47,19 @@ function createElement(
     velesNode.velesNode = true;
     velesNode.childComponents = childComponents;
     velesNode.phantom = phantom;
+
+    // these handlers are used to start tracking `useValue` only when the node
+    // is actually mounted in the DOM
+    let mountHandlers: Function[] = [];
     velesNode._privateMethods = {
-      _addUnmountHandler: (cb: Function) => {
+      _addMountHandler(cb: Function) {
+        mountHandlers.push(cb);
+      },
+      _callMountHandlers() {
+        mountHandlers.forEach((cb) => cb());
+        mountHandlers = [];
+      },
+      _addUnmountHandler(cb: Function) {
         unmountHandlers.push(cb);
       },
       _callUnmountHandlers: callUnmountHandlers,

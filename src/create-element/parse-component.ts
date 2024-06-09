@@ -1,4 +1,5 @@
 import { addContext, popContext } from "../hooks/lifecycle";
+import { createTextElement } from "./create-text-element";
 
 import type {
   VelesComponent,
@@ -15,8 +16,8 @@ function parseComponent({
   element: ComponentFunction;
   props: VelesElementProps;
 }) {
-  const componentUnmountCbs: Function[] = [];
-  const componentMountCbs: Function[] = [];
+  let componentUnmountCbs: Function[] = [];
+  let componentMountCbs: Function[] = [];
   const componentAPI: ComponentAPI = {
     onMount: (cb) => {
       componentMountCbs.push(cb);
@@ -31,12 +32,7 @@ function parseComponent({
 
   const componentTree =
     typeof _componentTree === "string" || !_componentTree
-      ? ({
-          velesStringElement: true,
-          html: document.createTextNode(
-            typeof _componentTree === "string" ? _componentTree : ""
-          ),
-        } as VelesStringElement)
+      ? createTextElement(_componentTree as string)
       : _componentTree;
 
   // here we exit our context
@@ -45,6 +41,9 @@ function parseComponent({
     velesComponent: true,
     tree: componentTree,
     _privateMethods: {
+      _addMountHandler(cb: Function) {
+        componentMountCbs.push(cb);
+      },
       _addUnmountHandler: (cb: Function) => {
         componentAPI.onUnmount(cb);
       },
@@ -56,6 +55,7 @@ function parseComponent({
             componentAPI.onUnmount(mountCbResult);
           }
         });
+        // componentMountCbs = [];
       },
       _callUnmountHandlers: () => {
         // this should trigger recursive checks, whether it is a VelesNode or VelesComponent
@@ -66,6 +66,7 @@ function parseComponent({
 
         // we execute own unmount callbacks after children, so the order is reversed
         componentUnmountCbs.forEach((cb) => cb());
+        // componentUnmountCbs = [];
       },
     },
   };

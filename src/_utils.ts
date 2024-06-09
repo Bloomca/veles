@@ -36,13 +36,12 @@ function getComponentVelesNode(
 function callMountHandlers(
   component: VelesComponent | VelesElement | VelesStringElement
 ): void {
+  component._privateMethods._callMountHandlers();
   if ("velesStringElement" in component) {
-    // string elements don't have mount callbacks, only unmount
     return;
   }
 
   if ("velesComponent" in component) {
-    component._privateMethods._callMountHandlers();
     callMountHandlers(component.tree);
   }
 

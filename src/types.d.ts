@@ -18,6 +18,8 @@ export type VelesElement = {
 
   // not intended to be used directly
   _privateMethods: {
+    _addMountHandler: Function;
+    _callMountHandlers: Function;
     _addUnmountHandler: Function;
     _callUnmountHandlers: Function;
   };
@@ -33,6 +35,8 @@ export type VelesStringElement = {
   // methods is useful for state changes, to remove tracking
   // when the said Text is returned from `useValue` state method
   _privateMethods: {
+    _addMountHandler: Function;
+    _callMountHandlers: Function;
     _addUnmountHandler: Function;
     _callUnmountHandlers: Function;
   };
@@ -46,6 +50,7 @@ export type VelesComponent = {
 
   // not intended to be used directly
   _privateMethods: {
+    _addMountHandler: Function;
     _callMountHandlers: Function;
     _callUnmountHandlers: Function;
     _addUnmountHandler: Function;
