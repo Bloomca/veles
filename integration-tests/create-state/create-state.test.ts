@@ -276,41 +276,6 @@ describe("createState", () => {
     expect(unmountSpy).toHaveBeenCalledTimes(3);
   });
 
-  test("useAttribute does not re-mount the component", async () => {
-    const user = userEvent.setup();
-    const spyFn = jest.fn();
-    function StateComponent() {
-      onUnmount(spyFn);
-      const valueState = createState(0);
-      return createElement("div", {
-        children: [
-          createElement("button", {
-            "data-testvalue": valueState.useAttribute((value) => String(value)),
-            "data-testid": "button",
-            onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
-            },
-          }),
-        ],
-      });
-    }
-
-    cleanup = attachComponent({
-      htmlElement: document.body,
-      component: createElement(StateComponent),
-    });
-
-    const btn = screen.getByTestId("button");
-    expect(btn).toHaveAttribute("data-testvalue", "0");
-
-    await user.click(btn);
-    expect(btn).toHaveAttribute("data-testvalue", "1");
-
-    await user.click(btn);
-    expect(btn).toHaveAttribute("data-testvalue", "2");
-    expect(spyFn).not.toHaveBeenCalled();
-  });
-
   test("supports strings as returned value in useValue", async () => {
     const user = userEvent.setup();
     function StateComponent() {

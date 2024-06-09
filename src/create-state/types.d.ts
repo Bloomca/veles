@@ -84,7 +84,7 @@ export type TrackingSelectorElement = {
   node: VelesElement | VelesComponent | VelesStringElement;
 };
 
-type TrackingAttribute = {
+export type TrackingAttribute = {
   cb?: Function;
   htmlElement: HTMLElement;
   attributeName: string;
