@@ -4,6 +4,7 @@ import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
 import { updateUseValueSelector } from "./update-usevalue-selector-value";
+import { updateUseAttributeValue } from "./update-useattribute-value";
 
 import type {
   VelesElement,
@@ -237,6 +238,7 @@ function createState<T>(
       //    It should be a separate subscription.
     },
     useAttribute: (cb?: (value: T) => any) => {
+      const originalValue = value;
       const attributeValue = cb ? cb(value) : value;
 
       const attributeHelper = (
@@ -254,12 +256,21 @@ function createState<T>(
           attributeName,
           attributeValue,
         };
-        trackers.trackingAttributes.push(trackingElement);
 
-        node._privateMethods._addUnmountHandler(() => {
-          trackers.trackingAttributes = trackers.trackingAttributes.filter(
-            (trackingAttribute) => trackingAttribute !== trackingElement
-          );
+        node._privateMethods._addMountHandler(() => {
+          trackers.trackingAttributes.push(trackingElement);
+
+          if (value !== originalValue) {
+            // since the `element` will be modified in place, we don't need to
+            // replace it in the array or anything
+            updateUseAttributeValue({ element: trackingElement, value });
+          }
+
+          node._privateMethods._addUnmountHandler(() => {
+            trackers.trackingAttributes = trackers.trackingAttributes.filter(
+              (trackingAttribute) => trackingAttribute !== trackingElement
+            );
+          });
         });
 
         return attributeValue;
