@@ -137,6 +137,8 @@ function createState<T>(
 
       const returnednewNode = cb
         ? cb(newSelectedValue)
+        : newSelectedValue == undefined
+        ? ""
         : String(newSelectedValue);
       const newNode =
         !returnednewNode || typeof returnednewNode === "string"
@@ -270,7 +272,7 @@ function createState<T>(
         // callbacks
         parentVelesElement.childComponents =
           parentVelesElement.childComponents.map((childComponent) =>
-            childComponent === node ? newNode : node
+            childComponent === node ? newNode : childComponent
           );
         // we call unmount handlers right after we replace it
         node._privateMethods._callUnmountHandlers();
@@ -661,7 +663,11 @@ function createState<T>(
     ): VelesElement | VelesComponent | VelesStringElement {
       // @ts-expect-error
       const selectedValue = selector ? selector(value) : (value as F);
-      const returnedNode = cb ? cb(selectedValue) : String(selectedValue);
+      const returnedNode = cb
+        ? cb(selectedValue)
+        : selectedValue == undefined
+        ? ""
+        : String(selectedValue);
       const node =
         !returnedNode || typeof returnedNode === "string"
           ? createTextElement(returnedNode as string)

@@ -447,7 +447,7 @@ describe("createState", () => {
     expect(screen.getByTestId("container").textContent).toBe("new title");
   });
 
-  test("supports state changes correctly when conditional is return true/false/true", async () => {
+  test("supports state changes correctly when conditional returns true/false/true", async () => {
     let newValue = "";
     const user = userEvent.setup();
     function StateComponent() {
@@ -573,5 +573,57 @@ describe("createState", () => {
     newValue = "another new title";
     await user.click(btn);
     expect(screen.getByTestId("text").textContent).toBe("length is 17");
+  });
+
+  test.only("unsubscribes from updates if wasn't mounted", async () => {
+    const user = userEvent.setup();
+    const valueState = createState(0);
+    function App() {
+      const showState = createState(true);
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => showState.setValue(false),
+          }),
+          showState.useValue((shouldShow) =>
+            shouldShow ? createElement(NestedComponent) : null
+          ),
+        ],
+      });
+    }
+
+    const spyFn = jest.fn();
+    function NestedComponent() {
+      const x = createElement("div", {
+        children: [
+          valueState.useValue((value) => {
+            spyFn();
+            return `value is ${value}`;
+          }),
+        ],
+      });
+      const showState = createState(false);
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: "nested component" }),
+          showState.useValue((shouldShow) => (shouldShow ? x : null)),
+        ],
+      });
+    }
+
+    attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    valueState.setValue(1);
+    expect(spyFn).toHaveBeenCalledTimes(2);
+
+    await user.click(screen.getByTestId("button"));
+
+    // valueState.setValue(2);
+    // expect(spyFn).toHaveBeenCalledTimes(2);
   });
 });

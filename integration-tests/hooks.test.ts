@@ -360,4 +360,59 @@ describe("lifecycle hooks", () => {
     });
     expect(unmountSpy).toHaveBeenCalledTimes(1);
   });
+
+  test("calls unmounted correct amount of times", async () => {
+    const user = userEvent.setup();
+    const unmountSpy = jest.fn();
+    function App() {
+      onUnmount(() => {
+        unmountSpy("unmounting app");
+      });
+      const showState = createState(true);
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => showState.setValue(false),
+          }),
+          showState.useValue((shouldShow) =>
+            shouldShow
+              ? createElement(NestedComponent)
+              : createElement("div", { children: "other" })
+          ),
+        ],
+      });
+    }
+
+    function NestedComponent() {
+      onUnmount(() => {
+        unmountSpy("unmounting nested component");
+      });
+      const t = createElement("h1", { children: "nested component" });
+      t._privateMethods._addUnmountHandler(() => {
+        unmountSpy("unmounting h1 nested component");
+      });
+      return createElement("div", {
+        children: [t],
+      });
+    }
+
+    const component = createElement(App);
+    const removeVelesTree = attachComponent({
+      htmlElement: document.body,
+      component,
+    });
+
+    await user.click(screen.getByTestId("button"));
+
+    expect(unmountSpy).toHaveBeenCalledTimes(2);
+    expect(unmountSpy.mock.calls[0][0]).toBe("unmounting h1 nested component");
+    expect(unmountSpy.mock.calls[1][0]).toBe("unmounting nested component");
+
+    removeVelesTree();
+
+    expect(unmountSpy).toHaveBeenCalledTimes(3);
+    expect(unmountSpy.mock.calls[2][0]).toBe("unmounting app");
+  });
 });

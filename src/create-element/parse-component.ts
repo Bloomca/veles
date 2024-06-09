@@ -58,12 +58,14 @@ function parseComponent({
         });
       },
       _callUnmountHandlers: () => {
-        componentUnmountCbs.forEach((cb) => cb());
         // this should trigger recursive checks, whether it is a VelesNode or VelesComponent
         // string Nodes don't have lifecycle handlers
         if ("_privateMethods" in velesComponent.tree) {
           velesComponent.tree._privateMethods._callUnmountHandlers();
         }
+
+        // we execute own unmount callbacks after children, so the order is reversed
+        componentUnmountCbs.forEach((cb) => cb());
       },
     },
   };

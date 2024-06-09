@@ -35,7 +35,7 @@ function createElement(
     let unmountHandlers: Function[] = [];
     const callUnmountHandlers = () => {
       // `onUnmount` is logically better to be executed on children first
-      childComponents.forEach((childComponent) => {
+      velesNode.childComponents.forEach((childComponent) => {
         childComponent._privateMethods._callUnmountHandlers();
       });
 
