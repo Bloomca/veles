@@ -1,7 +1,12 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import { attachComponent, createElement } from "../src";
+import {
+  attachComponent,
+  createElement,
+  createState,
+  type State,
+} from "../src";
 
 describe("createElement", () => {
   let cleanup: Function | undefined;
@@ -155,5 +160,41 @@ describe("createElement", () => {
     });
 
     expect(screen.getByTestId("container").textContent).toBe("text 5");
+  });
+
+  test("support returning useValue directly from a component", async () => {
+    const user = userEvent.setup();
+    function App() {
+      const showState = createState(false);
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: ["parent component"] }),
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => showState.setValue(true),
+          }),
+          createElement(StateComponent, { showState }),
+        ],
+      });
+    }
+
+    function StateComponent({ showState }: { showState: State<boolean> }) {
+      return showState.useValue((shouldShowState) =>
+        shouldShowState
+          ? createElement("div", {
+              "data-testid": "stateComponent",
+              children: "state component",
+            })
+          : null
+      );
+    }
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.queryByTestId("stateComponent")).not.toBeInTheDocument();
+    await user.click(screen.getByTestId("button"));
+    expect(screen.getByTestId("stateComponent")).toBeInTheDocument();
   });
 });
