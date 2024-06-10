@@ -105,5 +105,11 @@ describe("createState", () => {
     await user.click(screen.getByTestId("button"));
     valueState.setValue("newValue3");
     expect(spyFn).toHaveBeenCalledTimes(3);
+
+    valueState.setValue("initialValue");
+    await user.click(screen.getByTestId("button"));
+    expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
+      "initialValue"
+    );
   });
 });

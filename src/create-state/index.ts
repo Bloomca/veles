@@ -267,6 +267,7 @@ function createState<T>(
     },
     useAttribute: (cb?: (value: T) => any) => {
       const originalValue = value;
+      let wasMounted = false;
       const attributeValue = cb ? cb(value) : value;
 
       const attributeHelper = (
@@ -288,10 +289,23 @@ function createState<T>(
         node._privateMethods._addMountHandler(() => {
           trackers.trackingAttributes.push(trackingElement);
 
-          if (value !== originalValue) {
+          if (!wasMounted && value === originalValue) {
+            /**
+             * We avoid recalculating in one case:
+             * 1. the component was never mounted
+             * 2. the value didn't change
+             *
+             * Every other case will need to store their own value,
+             * and while it is possible, for now we are not doing it
+             */
+          } else {
             // since the `element` will be modified in place, we don't need to
             // replace it in the array or anything
             updateUseAttributeValue({ element: trackingElement, value });
+          }
+
+          if (!wasMounted) {
+            wasMounted = true;
           }
 
           node._privateMethods._addUnmountHandler(() => {
