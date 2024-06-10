@@ -1,23 +1,20 @@
-import { getComponentVelesNode, callMountHandlers, unique } from "../_utils";
+import { unique } from "../_utils";
 import { updateUseValueSelector } from "./update-usevalue-selector-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
 import { updateUseValueIteratorValue } from "./update-usevalueiterator-value";
 
-import type { VelesElement, VelesComponent } from "../types";
-import type {
-  State,
-  createState as createStateType,
-  StateTrackers,
-} from "./types";
+import type { createState as createStateType, StateTrackers } from "./types";
 
 function triggerUpdates<T>({
   value,
   createState,
   trackers,
+  getValue,
 }: {
   value: T;
   createState: typeof createStateType;
   trackers: StateTrackers;
+  getValue: () => T;
 }) {
   const newTrackingSelectorElements: StateTrackers["trackingSelectorElements"] =
     [];
@@ -27,6 +24,7 @@ function triggerUpdates<T>({
       selectorTrackingElement,
       newTrackingSelectorElements,
       trackers,
+      getValue,
     })
   );
 
