@@ -1,19 +1,25 @@
 import { getComponentVelesNode, callMountHandlers } from "../_utils";
 import { createTextElement } from "../create-element/create-text-element";
 
-import type { VelesElement, VelesStringElement } from "../types";
-import type { TrackingSelectorElement, StateTrackers } from "./types";
+import type {
+  VelesElement,
+  VelesStringElement,
+  VelesComponent,
+} from "../types";
+import type { TrackingSelectorElement, StateTrackers, State } from "./types";
 
 function updateUseValueSelector<T>({
   value,
   selectorTrackingElement,
   newTrackingSelectorElements,
   trackers,
+  getValue,
 }: {
   value: T;
   selectorTrackingElement: TrackingSelectorElement;
   newTrackingSelectorElements: TrackingSelectorElement[];
   trackers: StateTrackers;
+  getValue: () => T;
 }) {
   const { selectedValue, selector, cb, node, comparator } =
     selectorTrackingElement;
@@ -40,7 +46,7 @@ function updateUseValueSelector<T>({
 
   const parentVelesElement = oldVelesElementNode.parentVelesElement;
 
-  const newTrackingSelectorElement = {
+  const newTrackingSelectorElement: TrackingSelectorElement = {
     selector,
     selectedValue: newSelectedValue,
     cb,
@@ -155,6 +161,13 @@ function updateUseValueSelector<T>({
     );
     // we call unmount handlers right after we replace it
     node._privateMethods._callUnmountHandlers();
+
+    addUseValueMountHandler({
+      usedValue: value,
+      trackers,
+      getValue,
+      trackingSelectorElement: newTrackingSelectorElement,
+    });
     // at this point the new Node is mounted, childComponents are updated
     // and unmount handlers for the old node are called
     callMountHandlers(newNode);
@@ -176,4 +189,62 @@ function updateUseValueSelector<T>({
   newTrackingSelectorElements.push(newTrackingSelectorElement);
 }
 
-export { updateUseValueSelector };
+function addUseValueMountHandler<T>({
+  usedValue,
+  getValue,
+  trackers,
+  trackingSelectorElement,
+}: {
+  usedValue: T;
+  getValue(): T;
+  trackers: StateTrackers;
+  trackingSelectorElement: TrackingSelectorElement;
+}) {
+  trackingSelectorElement.node._privateMethods._addMountHandler(() => {
+    const currentValue = getValue();
+    // if the current value is the same as the one which was used to calculate
+    // current node, nothing really changed, no need to run it again
+    if (usedValue === currentValue) {
+      trackers.trackingSelectorElements.push(trackingSelectorElement);
+      trackingSelectorElement.node._privateMethods._addUnmountHandler(() => {
+        trackers.trackingSelectorElements =
+          trackers.trackingSelectorElements.filter(
+            (el) => trackingSelectorElement !== el
+          );
+      });
+    } else {
+      const newTrackingSelectorElements: TrackingSelectorElement[] = [];
+      updateUseValueSelector({
+        value: getValue(),
+        trackers,
+        selectorTrackingElement: trackingSelectorElement,
+        newTrackingSelectorElements,
+        getValue,
+      });
+
+      if (newTrackingSelectorElements[0]) {
+        const newTrackingSelectorElement = newTrackingSelectorElements[0];
+        // this means nothing really changed
+        if (newTrackingSelectorElement.node === trackingSelectorElement.node) {
+          trackers.trackingSelectorElements.push(newTrackingSelectorElement);
+          newTrackingSelectorElement.node._privateMethods._addUnmountHandler(
+            () => {
+              trackers.trackingSelectorElements =
+                trackers.trackingSelectorElements.filter(
+                  (el) => trackingSelectorElement !== el
+                );
+            }
+          );
+        } else {
+          // otherwise it means the node was replaced, because the selector result is different
+          // the new node will be executed with this function as well, so nothing to do here
+        }
+      } else {
+        // should not happen, as nothing happens only when there is no parent element
+        // since we are in the `onMount` handler, it means everything is mounted
+      }
+    }
+  });
+}
+
+export { updateUseValueSelector, addUseValueMountHandler };

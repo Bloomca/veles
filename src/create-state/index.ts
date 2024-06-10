@@ -3,7 +3,7 @@ import { onUnmount, onMount } from "../hooks/lifecycle";
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
-import { updateUseValueSelector } from "./update-usevalue-selector-value";
+import { addUseValueMountHandler } from "./update-usevalue-selector-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
 import { updateUseValueIteratorValue } from "./update-usevalueiterator-value";
 
@@ -86,7 +86,6 @@ function createState<T>(
       ) => VelesElement | VelesComponent | string | undefined | null,
       comparator: (value1: F, value2: F) => boolean = identity
     ): VelesElement | VelesComponent | VelesStringElement {
-      const valueOnInit = value;
       // @ts-expect-error
       const selectedValue = selector ? selector(value) : (value as F);
       const returnedNode = cb
@@ -107,32 +106,11 @@ function createState<T>(
         comparator,
       };
 
-      node._privateMethods._addMountHandler(() => {
-        // we need to trigger update useValueSelector manually, but only
-        // in case the value has changed
-        if (value !== valueOnInit) {
-          const newTrackingSelectorElements: TrackingSelectorElement[] = [];
-          updateUseValueSelector({
-            value,
-            trackers,
-            selectorTrackingElement: trackingSelectorElement,
-            newTrackingSelectorElements,
-          });
-
-          if (newTrackingSelectorElements[0]) {
-            trackers.trackingSelectorElements.push(
-              newTrackingSelectorElements[0]
-            );
-          }
-        } else {
-          trackers.trackingSelectorElements.push(trackingSelectorElement);
-          node._privateMethods._addUnmountHandler(() => {
-            trackers.trackingSelectorElements =
-              trackers.trackingSelectorElements.filter(
-                (el) => trackingSelectorElement !== el
-              );
-          });
-        }
+      addUseValueMountHandler({
+        usedValue: value,
+        getValue: () => value,
+        trackers,
+        trackingSelectorElement,
       });
 
       return node;
@@ -339,7 +317,7 @@ function createState<T>(
       if (newValue !== value) {
         previousValue = value;
         value = newValue;
-        triggerUpdates({ value, createState, trackers });
+        triggerUpdates({ value, createState, trackers, getValue: () => value });
       }
     },
   };

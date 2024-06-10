@@ -604,5 +604,11 @@ describe("createState", () => {
     await user.click(screen.getByTestId("nestedButton"));
     expect(spyFn).toHaveBeenCalledTimes(3);
     expect(await screen.findByText("value is 3")).toBeVisible();
+
+    await user.click(screen.getByTestId("nestedButton"));
+    valueState.setValue(4);
+    await user.click(screen.getByTestId("nestedButton"));
+    expect(spyFn).toHaveBeenCalledTimes(4);
+    expect(await screen.findByText("value is 4")).toBeVisible();
   });
 });
