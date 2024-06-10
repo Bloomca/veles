@@ -32,7 +32,7 @@ function createElement(
     // specifically, the top level node which is rendered after
     // using `useValue` function and also listeners from
     // `useAttribute`
-    let unmountHandlers: Function[] = [];
+    const unmountHandlers: Function[] = [];
     const callUnmountHandlers = () => {
       // `onUnmount` is logically better to be executed on children first
       velesNode.childComponents.forEach((childComponent) => {
@@ -40,7 +40,6 @@ function createElement(
       });
 
       unmountHandlers.forEach((cb) => cb());
-      unmountHandlers = [];
     };
 
     velesNode.html = newElement;
@@ -50,14 +49,13 @@ function createElement(
 
     // these handlers are used to start tracking `useValue` only when the node
     // is actually mounted in the DOM
-    let mountHandlers: Function[] = [];
+    const mountHandlers: Function[] = [];
     velesNode._privateMethods = {
       _addMountHandler(cb: Function) {
         mountHandlers.push(cb);
       },
       _callMountHandlers() {
         mountHandlers.forEach((cb) => cb());
-        mountHandlers = [];
       },
       _addUnmountHandler(cb: Function) {
         unmountHandlers.push(cb);
