@@ -5,6 +5,7 @@ import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
 import { updateUseValueSelector } from "./update-usevalue-selector-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
+import { updateUseValueIteratorValue } from "./update-usevalueiterator-value";
 
 import type {
   VelesElement,
@@ -146,6 +147,8 @@ function createState<T>(
         indexState: State<number>;
       }) => VelesElement | VelesComponent
     ) {
+      let wasMounted = false;
+      const originalValue = value;
       const children: [
         VelesElement | VelesComponent,
         string,
@@ -204,13 +207,38 @@ function createState<T>(
       });
 
       const trackingParams = {} as TrackingIterator;
-      trackers.trackingIterators.push(trackingParams);
 
-      const wrapperComponent = createElement(() => {
-        onUnmount(() => {
-          trackers.trackingIterators = trackers.trackingIterators.filter(
-            (currentTrackingParams) => currentTrackingParams !== trackingParams
-          );
+      const wrapperComponent = createElement((_props, componentAPI) => {
+        onMount(() => {
+          trackers.trackingIterators.push(trackingParams);
+
+          if (!wasMounted && value === originalValue) {
+            /**
+             * We avoid recalculating in one case:
+             * 1. the component was never mounted
+             * 2. the value didn't change
+             *
+             * Every other case will need to store their own value,
+             * and while it is possible, for now we are not doing it
+             */
+          } else {
+            updateUseValueIteratorValue({
+              value,
+              trackingIterator: trackingParams,
+              createState,
+            });
+          }
+
+          if (!wasMounted) {
+            wasMounted = true;
+          }
+
+          componentAPI.onUnmount(() => {
+            trackers.trackingIterators = trackers.trackingIterators.filter(
+              (currentTrackingParams) =>
+                currentTrackingParams !== trackingParams
+            );
+          });
         });
         return createElement("div", {
           phantom: true,

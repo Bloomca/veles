@@ -8,8 +8,8 @@ import type { VelesStringElement } from "../types";
 export function createTextElement(
   text: string | undefined | null
 ): VelesStringElement {
-  let mountHandlers: Function[] = [];
-  let unmountHandlers: Function[] = [];
+  const mountHandlers: Function[] = [];
+  const unmountHandlers: Function[] = [];
   return {
     velesStringElement: true,
     // in case there is no text, we create an empty Text node, so we still can
@@ -22,14 +22,12 @@ export function createTextElement(
       },
       _callMountHandlers() {
         mountHandlers.forEach((cb) => cb());
-        mountHandlers = [];
       },
       _addUnmountHandler: (cb: Function) => {
         unmountHandlers.push(cb);
       },
       _callUnmountHandlers: () => {
         unmountHandlers.forEach((cb) => cb());
-        // unmountHandlers = [];
       },
     },
   };

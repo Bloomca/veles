@@ -91,7 +91,7 @@ export type TrackingAttribute = {
   attributeValue: any;
 };
 
-type TrackingIterator = {
+export type TrackingIterator = {
   cb: (props: {
     elementState: State<any>;
     indexState: State<number>;

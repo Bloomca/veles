@@ -8,6 +8,8 @@ import {
   onUnmount,
 } from "../../src";
 
+import type { State } from "../../src";
+
 describe("createState", () => {
   let cleanup: Function | undefined;
 
@@ -254,5 +256,156 @@ describe("createState", () => {
     expect(children[2].textContent).toBe("2.first item");
     expect(children[3].textContent).toBe("3.fourth item");
     expect(children[4].textContent).toBe("4.second item");
+  });
+
+  test("useValueIterator does not update until mounted", async () => {
+    const user = userEvent.setup();
+    type Item = { id: number; text: string };
+    const item1: Item = { id: 1, text: "first item" };
+    const item2: Item = { id: 2, text: "second item" };
+    const item3: Item = { id: 3, text: "third item" };
+    const item4: Item = { id: 4, text: "fourth item" };
+    const item5: Item = { id: 5, text: "fifth item" };
+    const item6: Item = { id: 6, text: "sixth item" };
+    const itemsState = createState([item1, item2, item3]);
+    function App() {
+      const showState = createState(false);
+      const itemsMarkup = itemsState.useValueIterator<Item>(
+        { key: "id" },
+        ({ elementState, indexState }) =>
+          createElement(Item, {
+            elementState,
+            indexState,
+          })
+      );
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: "Application" }),
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => showState.setValue((value) => !value),
+          }),
+          createElement("div", {
+            "data-testid": "container",
+            children: showState.useValue((shouldShow) =>
+              shouldShow ? itemsMarkup : null
+            ),
+          }),
+        ],
+      });
+    }
+
+    const textSpy = jest.fn();
+    const indexSpy = jest.fn();
+    function Item({
+      elementState,
+      indexState,
+    }: {
+      elementState: State<Item>;
+      indexState: State<number>;
+    }) {
+      return createElement("div", {
+        children: [
+          createElement("h3", {
+            children: elementState.useValueSelector((element) => {
+              textSpy();
+              return element.text;
+            }),
+          }),
+          " ",
+          createElement("p", {
+            children: indexState.useValue((value) => {
+              indexSpy();
+              return `number: ${value}`;
+            }),
+          }),
+        ],
+      });
+    }
+
+    const component = createElement(App);
+    attachComponent({
+      htmlElement: document.body,
+      component,
+    });
+
+    expect(textSpy).toHaveBeenCalledTimes(3);
+    expect(indexSpy).toHaveBeenCalledTimes(3);
+
+    const container = screen.getByTestId("container");
+    const children = container.childNodes;
+
+    itemsState.setValue([item4, item2, item3, item1]);
+
+    // empty Text node
+    expect(children.length).toBe(1);
+
+    expect(textSpy).toHaveBeenCalledTimes(3);
+    expect(indexSpy).toHaveBeenCalledTimes(3);
+
+    await user.click(screen.getByTestId("button"));
+
+    expect(textSpy).toHaveBeenCalledTimes(4);
+    expect(indexSpy).toHaveBeenCalledTimes(5);
+
+    expect(children.length).toBe(4);
+    expect(children[0].textContent).toBe("fourth item number: 0");
+    expect(children[1].textContent).toBe("second item number: 1");
+    expect(children[2].textContent).toBe("third item number: 2");
+    expect(children[3].textContent).toBe("first item number: 3");
+
+    itemsState.setValue([item4, item5, item3, item1, item2]);
+    expect(textSpy).toHaveBeenCalledTimes(5);
+    expect(indexSpy).toHaveBeenCalledTimes(7);
+
+    expect(children.length).toBe(5);
+    expect(children[0].textContent).toBe("fourth item number: 0");
+    expect(children[1].textContent).toBe("fifth item number: 1");
+    expect(children[2].textContent).toBe("third item number: 2");
+    expect(children[3].textContent).toBe("first item number: 3");
+    expect(children[4].textContent).toBe("second item number: 4");
+
+    await user.click(screen.getByTestId("button"));
+
+    // empty Text node
+    expect(children.length).toBe(1);
+
+    itemsState.setValue([
+      item4,
+      item5,
+      item3,
+      { ...item1, text: "1st item" },
+      item2,
+      item6,
+    ]);
+
+    expect(textSpy).toHaveBeenCalledTimes(5);
+    expect(indexSpy).toHaveBeenCalledTimes(7);
+
+    await user.click(screen.getByTestId("button"));
+
+    expect(textSpy).toHaveBeenCalledTimes(7);
+    expect(indexSpy).toHaveBeenCalledTimes(8);
+    expect(children.length).toBe(6);
+    expect(children[0].textContent).toBe("fourth item number: 0");
+    expect(children[1].textContent).toBe("fifth item number: 1");
+    expect(children[2].textContent).toBe("third item number: 2");
+    expect(children[3].textContent).toBe("1st item number: 3");
+    expect(children[4].textContent).toBe("second item number: 4");
+    expect(children[5].textContent).toBe("sixth item number: 5");
+
+    await user.click(screen.getByTestId("button"));
+
+    // empty Text node
+    expect(children.length).toBe(1);
+
+    itemsState.setValue([item3, item6]);
+
+    await user.click(screen.getByTestId("button"));
+    expect(textSpy).toHaveBeenCalledTimes(7);
+    expect(indexSpy).toHaveBeenCalledTimes(10);
+    expect(children.length).toBe(2);
+    expect(children[0].textContent).toBe("third item number: 0");
+    expect(children[1].textContent).toBe("sixth item number: 1");
   });
 });
