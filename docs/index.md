@@ -6,7 +6,7 @@ nav_order: 1
 
 # What is Veles
 
-Veles is a component-based UI library focused on performant updates. It allows you to react to changes in your tracked state and update only the nodes which are affected, be it a Text node, or the attribute of a DOM node, only that part will change without touching anything else.
+Veles is a component-based UI library focused on performant updates. It allows you to react to changes in your tracked state and update only the nodes which are affected, be it a Text node, the attribute of a DOM node or the single element in the array; only that part will change without touching anything else.
 
 Veles has special treatment for arrays, meaning that adding new elements, changing existing ones, changing order, or removing elements is efficient and is done with minimal amount of DOM operations.
 
@@ -18,7 +18,7 @@ You can install Veles from npm:
 npm i --save veles
 ```
 
-The library is very small ([2.9KB minified and gzipped](https://bundlephobia.com/package/veles)), and at the moment has no dependencies.
+The library is quite small ([4.2KB minified and gzipped](https://bundlephobia.com/package/veles)), and at the moment has no dependencies.
 
 Let's build a simple counter application:
 

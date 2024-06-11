@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Differences from other frameworks
-nav_order: 5
+nav_order: 4
 ---
 
 ## Differences from other frameworks
@@ -31,7 +31,6 @@ Overall, with the correct approach, both libraries should give you good interact
 
 The library is pretty much in alpha state, and there are several missing concepts:
 
-- Context
 - Portals
-- No server rendering (this one is not really planned)
 - Not ideal TypeScript support
+- No server rendering (this one is not planned to be supported)
