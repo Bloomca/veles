@@ -27,6 +27,7 @@ describe("state.useValueIterator", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     const unmountSpy = jest.fn();
+    const textSpy = jest.fn()
     function IteratorComponent() {
       const state = createState<Item[]>([item1, item3, item4]);
 
@@ -66,7 +67,10 @@ describe("state.useValueIterator", () => {
                     children: [
                       elementState.useValueSelector(
                         (element) => element.text,
-                        (text) => createElement("span", { children: text })
+                        (text) => {
+                          textSpy()
+                          return createElement("span", { children: text })
+                        }
                       ),
                     ],
                   });
@@ -88,6 +92,7 @@ describe("state.useValueIterator", () => {
     const firstListElement = listElement.childNodes[0];
     const secondListElement = listElement.childNodes[1];
     const thirdListElement = listElement.childNodes[2];
+    expect(textSpy).toHaveBeenCalledTimes(3)
 
     expect(firstListElement.textContent).toBe(item1.text);
     expect(secondListElement.textContent).toBe(item3.text);
@@ -96,10 +101,12 @@ describe("state.useValueIterator", () => {
     await user.click(screen.getByTestId("updateFirstItem"));
     expect(unmountSpy).not.toHaveBeenCalled();
     expect(listElement.childNodes[0].textContent).toBe("updated first value");
+    expect(textSpy).toHaveBeenCalledTimes(4)
 
     await user.click(screen.getByTestId("updateArrayButton"));
     expect(listElement.childNodes.length).toBe(4);
     expect(unmountSpy).toHaveBeenCalledTimes(1);
+    expect(textSpy).toHaveBeenCalledTimes(7)
   });
 
   test("useValueIterator does support selector option", async () => {
@@ -111,6 +118,7 @@ describe("state.useValueIterator", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     const unmountSpy = jest.fn();
+    const textSpy = jest.fn()
     function IteratorComponent() {
       const state = createState<{ value: Item[] }>({
         value: [item1, item3, item4],
@@ -154,7 +162,10 @@ describe("state.useValueIterator", () => {
                       children: [
                         elementState.useValueSelector(
                           (element) => element.text,
-                          (text) => createElement("span", { children: text })
+                          (text) => {
+                            textSpy()
+                            return createElement("span", { children: text })
+                          }
                         ),
                       ],
                     });
@@ -181,13 +192,17 @@ describe("state.useValueIterator", () => {
     expect(secondListElement.textContent).toBe(item3.text);
     expect(thirdListElement.textContent).toBe(item4.text);
 
+    expect(textSpy).toHaveBeenCalledTimes(3)
+
     await user.click(screen.getByTestId("updateFirstItem"));
     expect(unmountSpy).not.toHaveBeenCalled();
     expect(listElement.childNodes[0].textContent).toBe("updated first value");
+    expect(textSpy).toHaveBeenCalledTimes(4)
 
     await user.click(screen.getByTestId("updateArrayButton"));
     expect(listElement.childNodes.length).toBe(4);
     expect(unmountSpy).toHaveBeenCalledTimes(1);
+    expect(textSpy).toHaveBeenCalledTimes(7)
   });
 
   test("value iterator correctly updates indices after changing order", async () => {
@@ -199,6 +214,8 @@ describe("state.useValueIterator", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     let items = [item1, item2, item3, item4, item5];
+    const textSpy = jest.fn()
+    const indexSpy = jest.fn()
     function App() {
       const itemsState = createState(items);
 
@@ -217,12 +234,19 @@ describe("state.useValueIterator", () => {
                   createElement("div", {
                     children: [
                       createElement("div", {
-                        children: indexState.useValue(),
+                        children: indexState.useValue(value => {
+                          indexSpy()
+                          return String(value)
+                        }),
                       }),
                       ".",
                       createElement("div", {
                         children: elementState.useValueSelector(
-                          (item) => item.text
+                          (item) => item.text,
+                          value => {
+                            textSpy()
+                            return value
+                          }
                         ),
                       }),
                     ],
@@ -239,6 +263,8 @@ describe("state.useValueIterator", () => {
       component: createElement(App),
     });
 
+    expect(textSpy).toHaveBeenCalledTimes(5)
+    expect(indexSpy).toHaveBeenCalledTimes(5)
     const container = screen.getByTestId("container");
     const children = container.childNodes;
     expect(children.length).toBe(5);
@@ -250,6 +276,8 @@ describe("state.useValueIterator", () => {
 
     items = [item5, item3, item1, item4, item2];
     await user.click(screen.getByTestId("button"));
+    expect(textSpy).toHaveBeenCalledTimes(5)
+    expect(indexSpy).toHaveBeenCalledTimes(9)
 
     expect(children[0].textContent).toBe("0.fifth item");
     expect(children[1].textContent).toBe("1.third item");
