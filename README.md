@@ -12,7 +12,7 @@
 
 This library's primary focus is in performance. What this means is that it allows you to write your code in a way which will ensure that when the data in your app changes, only the smallest relevant parts will update. Despite of similarities with React in syntax, it does not follow the same waterfall style for component re-renders. Instead, it gives you API to subscribe to atomic changes in your tracked state and re-render only parts of the UI which actually depend on the value. Internally, it renders new HTML and replaces the old node. A similar approach is done for attributes, where in case of changes, only the relevant attribute will be updated in place, but nothing else will change.
 
-It is important to note that the performance benefits will only be observed (and relevant as well) in case of a pretty high interactivity. It might not be faster than any other UI framework on the first render, the biggest improvement lies in the power of subscribing to individual changes.
+It is important to note that the performance benefits will only be observed (and relevant as well) in case of a pretty high interactivity. It might not be faster than any other UI framework on the first render, the biggest improvement lies in the power of subscribing to individual changes, which is especially powerful in case of lists.
 
 ## Installation
 
@@ -57,4 +57,4 @@ There also a companion app ([veles-calendar-app](https://github.com/Bloomca/vele
 
 ### Features
 
-The library is under development, so some features are not available yet, namely Context and Portals.
+The library is under development, so some features are not available yet. Namely the TypeScript type inferring is not the best (although the library does support TypeScript), and Portals are not implemented yet.
