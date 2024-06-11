@@ -540,7 +540,7 @@ describe("createState", () => {
     expect(screen.getByTestId("text").textContent).toBe("length is 17");
   });
 
-  test.skip("unsubscribes from updates if wasn't mounted", async () => {
+  test("unsubscribes from updates if wasn't mounted", async () => {
     const user = userEvent.setup();
     const valueState = createState(0);
     function App() {

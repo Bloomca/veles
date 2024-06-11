@@ -61,7 +61,8 @@ function updateUseValueSelector<T>({
   );
   const newVelesElementNode = getExecutedComponentVelesNode(newRenderedNode);
 
-  const parentVelesElement = oldVelesElementNode.parentVelesElement;
+  const parentVelesElement = node.parentVelesElement;
+  const parentVelesElementRendered = oldVelesElementNode.parentVelesElement;
 
   const newTrackingSelectorElement: TrackingSelectorElement = {
     selector,
@@ -71,8 +72,9 @@ function updateUseValueSelector<T>({
     comparator,
   };
 
-  if (parentVelesElement) {
-    newVelesElementNode.parentVelesElement = parentVelesElement;
+  if (parentVelesElementRendered) {
+    newNode.parentVelesElement = parentVelesElement;
+    newVelesElementNode.parentVelesElement = parentVelesElementRendered;
     // we need to treat phantom nodes slightly differently
     // because it is not a single node removal/insert, but all
     // the children at once
@@ -172,22 +174,41 @@ function updateUseValueSelector<T>({
           }
         );
       } else {
-        parentVelesElement.html.replaceChild(
-          newVelesElementNode.html,
-          oldVelesElementNode.html
-        );
+        try {
+          parentVelesElementRendered.html.replaceChild(
+            newVelesElementNode.html,
+            oldVelesElementNode.html
+          );
+        } catch (e) {
+          console.error("failed to update...");
+          console.log(document.body.innerHTML);
+          console.log(oldVelesElementNode.parentVelesElement.html.innerHTML);
+          console.log(
+            //@ts-expect-error
+            oldVelesElementNode.parentVelesElement.childComponents[0].html
+              .textContent
+          );
+        }
       }
     }
 
     // we need to update `childComponents` so that after the update
     // if the parent node is removed from DOM, it calls correct unmount
     // callbacks
-    parentVelesElement.childComponents = parentVelesElement.childComponents.map(
-      (childComponent) =>
+    parentVelesElementRendered.childComponents =
+      parentVelesElementRendered.childComponents.map((childComponent) =>
         childComponent === node.executedVersion
           ? newRenderedNode
           : childComponent
-    );
+      );
+
+    if (parentVelesElement?.childComponents) {
+      parentVelesElement.childComponents =
+        parentVelesElement.childComponents.map((childComponent) =>
+          childComponent === node ? newNode : childComponent
+        );
+    }
+
     // we call unmount handlers right after we replace it
     callUnmountHandlers(node.executedVersion);
 
@@ -231,6 +252,7 @@ function addUseValueMountHandler<T>({
 }) {
   trackingSelectorElement.node._privateMethods._addMountHandler(() => {
     const currentValue = getValue();
+
     // if the current value is the same as the one which was used to calculate
     // current node, nothing really changed, no need to run it again
     if (usedValue === currentValue) {
