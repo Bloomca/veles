@@ -114,6 +114,7 @@ export type TrackingIterator = {
     };
   };
   wrapperComponent: VelesElement | VelesComponentObject;
+  savedContext: ComponentContext;
 };
 
 export type StateTrackers = {

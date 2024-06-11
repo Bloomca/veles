@@ -41,13 +41,13 @@ function updateUseValueSelector<T>({
     : newSelectedValue == undefined
     ? ""
     : String(newSelectedValue);
-  popPublicContext();
   const newNode =
     !returnednewNode || typeof returnednewNode === "string"
       ? createTextElement(returnednewNode as string)
       : returnednewNode;
 
   const newRenderedNode = renderTree(newNode);
+  popPublicContext();
   newNode.executedVersion = newRenderedNode;
 
   // `executedVersion` is added when we convert it to tree. It doesn't have

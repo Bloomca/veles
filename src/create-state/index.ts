@@ -130,7 +130,9 @@ function createState<T>(
         indexState: State<number>;
       }) => VelesElement | VelesComponentObject
     ) {
+      const currentContext = getCurrentContext();
       const trackingParams = {} as TrackingIterator;
+      trackingParams.savedContext = currentContext
 
       const wrapperComponent = createElement((_props, componentAPI) => {
         const children: [
