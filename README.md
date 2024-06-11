@@ -4,7 +4,7 @@
 [![Build Size](https://img.shields.io/bundlephobia/minzip/veles?label=bundle%20size)](https://bundlephobia.com/result?p=veles)
 [![Version](https://img.shields.io/npm/v/veles)](https://www.npmjs.com/package/veles)
 
-> This library is very early stages, so the API is not 100% finalized
+> This library is still in early stages, so the API is not 100% finalized
 
 `Veles` is a component-based performance-focused UI library. The main goal of this library is to provide a composable way to build highly interactive interfaces, which should be performant out of the box, as long as you follow the recommendations.
 
@@ -51,6 +51,7 @@ This will render an input and will update the Text node dynamically, without re-
 
 - [Getting started](https://bloomca.github.io/veles/)
 - [API docs](https://bloomca.github.io/veles/api/)
+- [Guides](https://bloomca.github.io/veles/guides/)
 - [Differences from other frameworks](https://bloomca.github.io/veles/frameworks-difference.html)
 
 There also a companion app ([veles-calendar-app](https://github.com/Bloomca/veles-calendar-app)), which is developed using Veles and is supposed to push it to the limits, identify the issues and ideally improve performance even more.
