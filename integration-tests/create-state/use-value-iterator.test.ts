@@ -258,7 +258,7 @@ describe("createState", () => {
     expect(children[4].textContent).toBe("4.second item");
   });
 
-  test.skip("useValueIterator does not update until mounted", async () => {
+  test("useValueIterator does not update until mounted", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
     const item1: Item = { id: 1, text: "first item" };
@@ -348,7 +348,7 @@ describe("createState", () => {
     await user.click(screen.getByTestId("button"));
 
     expect(textSpy).toHaveBeenCalledTimes(4);
-    expect(indexSpy).toHaveBeenCalledTimes(5);
+    expect(indexSpy).toHaveBeenCalledTimes(4);
 
     expect(children.length).toBe(4);
     expect(children[0].textContent).toBe("fourth item number: 0");
@@ -358,7 +358,7 @@ describe("createState", () => {
 
     itemsState.setValue([item4, item5, item3, item1, item2]);
     expect(textSpy).toHaveBeenCalledTimes(5);
-    expect(indexSpy).toHaveBeenCalledTimes(7);
+    expect(indexSpy).toHaveBeenCalledTimes(6);
 
     expect(children.length).toBe(5);
     expect(children[0].textContent).toBe("fourth item number: 0");
@@ -382,10 +382,13 @@ describe("createState", () => {
     ]);
 
     expect(textSpy).toHaveBeenCalledTimes(5);
-    expect(indexSpy).toHaveBeenCalledTimes(7);
+    expect(indexSpy).toHaveBeenCalledTimes(6);
 
-    expect(textSpy).toHaveBeenCalledTimes(10);
-    expect(indexSpy).toHaveBeenCalledTimes(11);
+    await user.click(screen.getByTestId("button"));
+
+    expect(textSpy).toHaveBeenCalledTimes(11);
+    expect(indexSpy).toHaveBeenCalledTimes(12);
+
     expect(children.length).toBe(6);
     expect(children[0].textContent).toBe("fourth item number: 0");
     expect(children[1].textContent).toBe("fifth item number: 1");
@@ -402,8 +405,8 @@ describe("createState", () => {
     itemsState.setValue([item3, item6]);
 
     await user.click(screen.getByTestId("button"));
-    expect(textSpy).toHaveBeenCalledTimes(7);
-    expect(indexSpy).toHaveBeenCalledTimes(10);
+    expect(textSpy).toHaveBeenCalledTimes(15);
+    expect(indexSpy).toHaveBeenCalledTimes(16);
     expect(children.length).toBe(2);
     expect(children[0].textContent).toBe("third item number: 0");
     expect(children[1].textContent).toBe("sixth item number: 1");

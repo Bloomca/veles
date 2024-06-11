@@ -5,7 +5,12 @@ import {
   getExecutedComponentVelesNode,
 } from "../_utils";
 
-import type { ExecutedVelesComponent, ExecutedVelesElement } from "../types";
+import type {
+  ExecutedVelesComponent,
+  ExecutedVelesElement,
+  VelesComponentObject,
+  VelesElement,
+} from "../types";
 import type {
   TrackingIterator,
   State,
@@ -56,7 +61,7 @@ function updateUseValueIteratorValue<T>({
   // so we check manually
   if (Array.isArray(elements)) {
     const newRenderedElements: [
-      { executedVersion?: ExecutedVelesElement | ExecutedVelesComponent },
+      VelesElement | VelesComponentObject,
       string,
       State<unknown>
     ][] = [];
@@ -65,9 +70,7 @@ function updateUseValueIteratorValue<T>({
         elementState: State<unknown>;
         indexState: State<number>;
         indexValue: number;
-        node: {
-          executedVersion?: ExecutedVelesElement | ExecutedVelesComponent;
-        };
+        node: VelesElement | VelesComponentObject;
       };
     } = {};
 
@@ -108,7 +111,7 @@ function updateUseValueIteratorValue<T>({
         }
 
         newRenderedElements.push([
-          { executedVersion: existingElement.node.executedVersion },
+          existingElement.node,
           calculatedKey,
           existingElement.elementState,
         ]);
@@ -116,7 +119,7 @@ function updateUseValueIteratorValue<T>({
           elementState: existingElement.elementState,
           indexState: existingElement.indexState,
           indexValue: index,
-          node: { executedVersion: existingElement.node.executedVersion },
+          node: existingElement.node,
         };
       } else {
         const elementState = createState(element);
@@ -127,17 +130,14 @@ function updateUseValueIteratorValue<T>({
         const renderedNode = renderTree(node) as
           | ExecutedVelesComponent
           | ExecutedVelesElement;
+        node.executedVersion = renderedNode;
 
-        newRenderedElements.push([
-          { executedVersion: renderedNode },
-          calculatedKey,
-          elementState,
-        ]);
+        newRenderedElements.push([node, calculatedKey, elementState]);
         newElementsByKey[calculatedKey] = {
           elementState,
           indexState,
           indexValue: index,
-          node: { executedVersion: renderedNode },
+          node,
         };
       }
 
@@ -163,10 +163,12 @@ function updateUseValueIteratorValue<T>({
 
     // to replace old wrapper's children to make sure they are removed correctly
     // on `useValue` unmount
-    const newChildComponents: (
+    const newChildRenderedComponents: (
       | ExecutedVelesComponent
       | ExecutedVelesElement
     )[] = [];
+    const newChildComponents: (VelesComponentObject | VelesElement)[] = [];
+
     const positioningOffset: { [key: number]: number } = {};
 
     // to avoid iterating over arrays to determine whether there are removed nodes
@@ -175,7 +177,8 @@ function updateUseValueIteratorValue<T>({
     let offset: number = 0;
     let currentElement: HTMLElement | Text | null = null;
     newRenderedElements.forEach((newRenderedElement, index) => {
-      newChildComponents.push(newRenderedElement[0].executedVersion);
+      newChildRenderedComponents.push(newRenderedElement[0].executedVersion);
+      newChildComponents.push(newRenderedElement[0]);
       // if we needed to adjust offset until we reach the original position of the item
       // we need to return it back once we reach the position after it
       if (positioningOffset[index]) {
@@ -302,6 +305,13 @@ function updateUseValueIteratorValue<T>({
           } else {
             throw new Error("Wrapper iterator element is a string");
           }
+
+          if ("velesNode" in wrapperComponent) {
+            wrapperComponent.childComponents =
+              wrapperComponent.childComponents.filter(
+                (childComponent) => childComponent !== oldNode
+              );
+          }
         }
       });
     }
@@ -309,7 +319,11 @@ function updateUseValueIteratorValue<T>({
     // We need to update `childComponents` of `wrapperVelesElementNode` to have the latest info
     // otherwise it will not be removed completely if it needs to be unmounted.
     if ("executedVelesNode" in wrapperVelesElementNode) {
-      wrapperVelesElementNode.childComponents = newChildComponents;
+      wrapperVelesElementNode.childComponents = newChildRenderedComponents;
+    }
+
+    if ("velesNode" in wrapperComponent) {
+      wrapperComponent.childComponents = newChildComponents;
     }
 
     // update the tracking info with new data
