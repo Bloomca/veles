@@ -28,7 +28,7 @@ function createContext<T>() {
     }
   }
   return {
-    Provider: ({ value, children }: { value: T; children: VelesChildren }) => {
+    Provider: ({ value, children }: { value: T; children?: VelesChildren }) => {
       addContext(value);
       return createElement(Fragment, { children });
     },

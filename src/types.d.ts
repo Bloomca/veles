@@ -1,5 +1,3 @@
-import { VelesDOMElementProps } from "./dom-types";
-
 import type { JSX } from "./jsx.d.ts";
 
 // an internal representation of DOM nodes in the tree

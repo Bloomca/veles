@@ -21,11 +21,14 @@ describe("Context", () => {
     const exampleContext = createContext<number>();
 
     function App() {
-      return createElement("div", {
-        children: [
-          createElement("h1", { children: "Application" }),
-          createElement(NestedComponent),
-        ],
+      return createElement(exampleContext.Provider, {
+        value: 5,
+        children: createElement("div", {
+          children: [
+            createElement("h1", { children: "Application" }),
+            createElement(NestedComponent),
+          ],
+        }),
       });
     }
 
@@ -40,10 +43,7 @@ describe("Context", () => {
 
     cleanup = attachComponent({
       htmlElement: document.body,
-      component: createElement(exampleContext.Provider, {
-        value: 5,
-        children: createElement(App),
-      }),
+      component: createElement(App),
     });
 
     expect(screen.getByTestId("contextContent").textContent).toBe(
