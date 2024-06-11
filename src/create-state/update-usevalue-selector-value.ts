@@ -5,6 +5,7 @@ import {
   getExecutedComponentVelesNode,
 } from "../_utils";
 import { createTextElement } from "../create-element/create-text-element";
+import { addPublicContext, popPublicContext } from "../context";
 
 import type {
   ExecutedVelesElement,
@@ -25,7 +26,7 @@ function updateUseValueSelector<T>({
   trackers: StateTrackers;
   getValue: () => T;
 }) {
-  const { selectedValue, selector, cb, node, comparator } =
+  const { selectedValue, selector, cb, node, comparator, savedContext } =
     selectorTrackingElement;
   const newSelectedValue = selector ? selector(value) : value;
 
@@ -34,11 +35,13 @@ function updateUseValueSelector<T>({
     return;
   }
 
+  addPublicContext(savedContext);
   const returnednewNode = cb
     ? cb(newSelectedValue)
     : newSelectedValue == undefined
     ? ""
     : String(newSelectedValue);
+  popPublicContext();
   const newNode =
     !returnednewNode || typeof returnednewNode === "string"
       ? createTextElement(returnednewNode as string)
@@ -70,6 +73,7 @@ function updateUseValueSelector<T>({
     cb,
     node: newNode,
     comparator,
+    savedContext,
   };
 
   if (parentVelesElementRendered) {

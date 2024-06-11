@@ -5,7 +5,7 @@ import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
 import { addUseValueMountHandler } from "./update-usevalue-selector-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
-import { updateUseValueIteratorValue } from "./update-usevalueiterator-value";
+import { getCurrentContext } from "../context";
 
 import type {
   VelesElement,
@@ -13,7 +13,12 @@ import type {
   VelesStringElement,
 } from "../types";
 
-import type { State, TrackingIterator, StateTrackers } from "./types";
+import type {
+  State,
+  TrackingIterator,
+  StateTrackers,
+  TrackingSelectorElement,
+} from "./types";
 
 function createState<T>(
   initialValue: T,
@@ -93,14 +98,17 @@ function createState<T>(
           ? createTextElement(returnedNode as string)
           : returnedNode;
 
+      const currentContext = getCurrentContext();
+
       node.needExecutedVersion = true;
 
-      const trackingSelectorElement = {
+      const trackingSelectorElement: TrackingSelectorElement = {
         selector,
         selectedValue,
         cb,
         node,
         comparator,
+        savedContext: currentContext,
       };
 
       addUseValueMountHandler({

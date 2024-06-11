@@ -10,7 +10,7 @@ import {
 
 import type { State } from "../../src";
 
-describe("createState", () => {
+describe("state.useValueIterator", () => {
   let cleanup: Function | undefined;
 
   afterEach(() => {
