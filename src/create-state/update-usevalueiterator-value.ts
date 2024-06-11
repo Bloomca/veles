@@ -1,6 +1,11 @@
-import { getComponentVelesNode, callMountHandlers } from "../_utils";
+import {
+  callMountHandlers,
+  renderTree,
+  callUnmountHandlers,
+  getExecutedComponentVelesNode,
+} from "../_utils";
 
-import type { VelesComponent, VelesElement } from "../types";
+import type { ExecutedVelesComponent, ExecutedVelesElement } from "../types";
 import type {
   TrackingIterator,
   State,
@@ -29,8 +34,14 @@ function updateUseValueIteratorValue<T>({
     return;
   }
 
-  const { velesElementNode: wrapperVelesElementNode } =
-    getComponentVelesNode(wrapperComponent);
+  if (!wrapperComponent.executedVersion) {
+    console.error("it seems the wrapper component was not mounted");
+    return;
+  }
+
+  const wrapperVelesElementNode = getExecutedComponentVelesNode(
+    wrapperComponent.executedVersion
+  );
   const parentVelesElement = wrapperVelesElementNode.parentVelesElement;
 
   if (!parentVelesElement) {
@@ -45,7 +56,7 @@ function updateUseValueIteratorValue<T>({
   // so we check manually
   if (Array.isArray(elements)) {
     const newRenderedElements: [
-      VelesElement | VelesComponent,
+      { executedVersion?: ExecutedVelesElement | ExecutedVelesComponent },
       string,
       State<unknown>
     ][] = [];
@@ -54,7 +65,9 @@ function updateUseValueIteratorValue<T>({
         elementState: State<unknown>;
         indexState: State<number>;
         indexValue: number;
-        node: VelesElement | VelesComponent;
+        node: {
+          executedVersion?: ExecutedVelesElement | ExecutedVelesComponent;
+        };
       };
     } = {};
 
@@ -95,7 +108,7 @@ function updateUseValueIteratorValue<T>({
         }
 
         newRenderedElements.push([
-          existingElement.node,
+          { executedVersion: existingElement.node.executedVersion },
           calculatedKey,
           existingElement.elementState,
         ]);
@@ -103,19 +116,28 @@ function updateUseValueIteratorValue<T>({
           elementState: existingElement.elementState,
           indexState: existingElement.indexState,
           indexValue: index,
-          node: existingElement.node,
+          node: { executedVersion: existingElement.node.executedVersion },
         };
       } else {
         const elementState = createState(element);
         const indexState = createState(index);
         const node = cb({ elementState, indexState });
+        // this TypeScript conversion should always be correct, because `node` is
+        // also either a component or an element
+        const renderedNode = renderTree(node) as
+          | ExecutedVelesComponent
+          | ExecutedVelesElement;
 
-        newRenderedElements.push([node, calculatedKey, elementState]);
+        newRenderedElements.push([
+          { executedVersion: renderedNode },
+          calculatedKey,
+          elementState,
+        ]);
         newElementsByKey[calculatedKey] = {
           elementState,
           indexState,
           indexValue: index,
-          node,
+          node: { executedVersion: renderedNode },
         };
       }
 
@@ -141,7 +163,10 @@ function updateUseValueIteratorValue<T>({
 
     // to replace old wrapper's children to make sure they are removed correctly
     // on `useValue` unmount
-    const newChildComponents: (VelesComponent | VelesElement)[] = [];
+    const newChildComponents: (
+      | ExecutedVelesComponent
+      | ExecutedVelesElement
+    )[] = [];
     const positioningOffset: { [key: number]: number } = {};
 
     // to avoid iterating over arrays to determine whether there are removed nodes
@@ -150,7 +175,7 @@ function updateUseValueIteratorValue<T>({
     let offset: number = 0;
     let currentElement: HTMLElement | Text | null = null;
     newRenderedElements.forEach((newRenderedElement, index) => {
-      newChildComponents.push(newRenderedElement[0]);
+      newChildComponents.push(newRenderedElement[0].executedVersion);
       // if we needed to adjust offset until we reach the original position of the item
       // we need to return it back once we reach the position after it
       if (positioningOffset[index]) {
@@ -161,8 +186,8 @@ function updateUseValueIteratorValue<T>({
 
       const existingElement = elementsByKey[calculatedKey];
       if (existingElement) {
-        const { velesElementNode: existingElementNode } = getComponentVelesNode(
-          existingElement.node
+        const existingElementNode = getExecutedComponentVelesNode(
+          existingElement.node.executedVersion
         );
         // the element is in the same relative position
         if (existingElement.indexValue + offset === index) {
@@ -179,9 +204,12 @@ function updateUseValueIteratorValue<T>({
           } else {
             // this means we at position 0
             const firstRenderedElement = renderedElements[0]?.[0];
-            if (firstRenderedElement) {
-              const { velesElementNode: firstRenderedVelesNode } =
-                getComponentVelesNode(firstRenderedElement);
+            if (firstRenderedElement?.executedVersion) {
+              const firstRenderedVelesNode = getExecutedComponentVelesNode(
+                firstRenderedElement.executedVersion as
+                  | ExecutedVelesComponent
+                  | ExecutedVelesElement
+              );
               firstRenderedVelesNode.html.before(existingElementNode.html);
             } else {
               // TODO: handle this properly
@@ -197,9 +225,12 @@ function updateUseValueIteratorValue<T>({
           } else {
             // this means we at position 0
             const firstRenderedElement = renderedElements[0]?.[0];
-            if (firstRenderedElement) {
-              const { velesElementNode: firstRenderedVelesNode } =
-                getComponentVelesNode(firstRenderedElement);
+            if (firstRenderedElement?.executedVersion) {
+              const firstRenderedVelesNode = getExecutedComponentVelesNode(
+                firstRenderedElement.executedVersion as
+                  | ExecutedVelesComponent
+                  | ExecutedVelesElement
+              );
               firstRenderedVelesNode.html.before(existingElementNode.html);
             } else {
               // TODO: handle this properly
@@ -211,8 +242,9 @@ function updateUseValueIteratorValue<T>({
         }
       } else {
         // we need to insert new element
-        const { velesElementNode: newNodeVelesElement } =
-          getComponentVelesNode(newNode);
+        const newNodeVelesElement = getExecutedComponentVelesNode(
+          newNode.executedVersion
+        );
         newNodeVelesElement.parentVelesElement = parentVelesElement;
 
         if (currentElement) {
@@ -220,9 +252,12 @@ function updateUseValueIteratorValue<T>({
         } else {
           // this basically means we at the position 0
           const firstRenderedElement = renderedElements[0]?.[0];
-          if (firstRenderedElement) {
-            const { velesElementNode: firstRenderedVelesNode } =
-              getComponentVelesNode(firstRenderedElement);
+          if (firstRenderedElement?.executedVersion) {
+            const firstRenderedVelesNode = getExecutedComponentVelesNode(
+              firstRenderedElement.executedVersion as
+                | ExecutedVelesComponent
+                | ExecutedVelesElement
+            );
             firstRenderedVelesNode.html.before(newNodeVelesElement.html);
           } else {
             // TODO: handle the case when there were 0 rendered elements
@@ -235,7 +270,7 @@ function updateUseValueIteratorValue<T>({
         currentElement = newNodeVelesElement.html;
         newElementsCount = newElementsCount + 1;
 
-        callMountHandlers(newNode);
+        callMountHandlers(newNode.executedVersion);
       }
     });
 
@@ -252,16 +287,17 @@ function updateUseValueIteratorValue<T>({
         if (renderedExistingElements[calculatedKey] === true) {
           return;
         } else {
-          const { velesElementNode: oldRenderedVelesNode } =
-            getComponentVelesNode(oldNode);
+          const oldRenderedVelesNode = getExecutedComponentVelesNode(
+            oldNode.executedVersion
+          );
 
           oldRenderedVelesNode.html.remove();
-          oldNode._privateMethods._callUnmountHandlers();
+          callUnmountHandlers(oldNode.executedVersion);
 
-          if ("velesNode" in wrapperVelesElementNode) {
+          if ("executedVelesNode" in wrapperVelesElementNode) {
             wrapperVelesElementNode.childComponents =
               wrapperVelesElementNode.childComponents.filter(
-                (childComponent) => childComponent !== oldNode
+                (childComponent) => childComponent !== oldNode.executedVersion
               );
           } else {
             throw new Error("Wrapper iterator element is a string");
@@ -272,7 +308,7 @@ function updateUseValueIteratorValue<T>({
 
     // We need to update `childComponents` of `wrapperVelesElementNode` to have the latest info
     // otherwise it will not be removed completely if it needs to be unmounted.
-    if ("velesNode" in wrapperVelesElementNode) {
+    if ("executedVelesNode" in wrapperVelesElementNode) {
       wrapperVelesElementNode.childComponents = newChildComponents;
     }
 

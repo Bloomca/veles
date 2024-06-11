@@ -9,16 +9,11 @@ import { updateUseValueIteratorValue } from "./update-usevalueiterator-value";
 
 import type {
   VelesElement,
-  VelesComponent,
+  VelesComponentObject,
   VelesStringElement,
 } from "../types";
 
-import type {
-  State,
-  TrackingIterator,
-  StateTrackers,
-  TrackingSelectorElement,
-} from "./types";
+import type { State, TrackingIterator, StateTrackers } from "./types";
 
 function createState<T>(
   initialValue: T,
@@ -83,9 +78,9 @@ function createState<T>(
       selector: ((value: T) => F) | undefined,
       cb?: (
         value: F
-      ) => VelesElement | VelesComponent | string | undefined | null,
+      ) => VelesElement | VelesComponentObject | string | undefined | null,
       comparator: (value1: F, value2: F) => boolean = identity
-    ): VelesElement | VelesComponent | VelesStringElement {
+    ): VelesElement | VelesComponentObject | VelesStringElement {
       // @ts-expect-error
       const selectedValue = selector ? selector(value) : (value as F);
       const returnedNode = cb
@@ -97,6 +92,8 @@ function createState<T>(
         !returnedNode || typeof returnedNode === "string"
           ? createTextElement(returnedNode as string)
           : returnedNode;
+
+      node.needExecutedVersion = true;
 
       const trackingSelectorElement = {
         selector,
@@ -123,12 +120,12 @@ function createState<T>(
       cb: (props: {
         elementState: State<Element>;
         indexState: State<number>;
-      }) => VelesElement | VelesComponent
+      }) => VelesElement | VelesComponentObject
     ) {
       let wasMounted = false;
       const originalValue = value;
       const children: [
-        VelesElement | VelesComponent,
+        VelesElement | VelesComponentObject,
         string,
         State<Element>
       ][] = [];
@@ -137,7 +134,7 @@ function createState<T>(
           elementState: State<Element>;
           indexState: State<number>;
           indexValue: number;
-          node: VelesElement | VelesComponent;
+          node: VelesElement | VelesComponentObject;
         };
       } = {};
 
@@ -173,6 +170,7 @@ function createState<T>(
         }
 
         let node = cb({ elementState, indexState });
+        node.needExecutedVersion = true;
 
         elementsByKey[calculatedKey] = {
           node,
@@ -223,6 +221,8 @@ function createState<T>(
           children: children.map((child) => child[0]),
         });
       });
+
+      wrapperComponent.needExecutedVersion = true;
 
       trackingParams.cb = cb;
       trackingParams.key = options.key;

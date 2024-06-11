@@ -1,7 +1,7 @@
-import { getComponentVelesNode } from "../_utils";
+import { createTextElement } from "./create-text-element";
 
 import type {
-  VelesComponent,
+  VelesComponentObject,
   VelesElement,
   VelesStringElement,
   VelesElementProps,
@@ -18,22 +18,29 @@ function parseChildren({
 }) {
   const childComponents: (
     | VelesElement
-    | VelesComponent
+    | VelesComponentObject
     | VelesStringElement
   )[] = [];
 
   if (children === undefined || children === null) {
     return childComponents;
   }
+  // we need this reference so that Components will be inserted at the right position
+  // when they are executed
+  let lastInsertedNode: null | HTMLElement | Text | VelesComponentObject = null;
 
   (Array.isArray(children) ? children : [children]).forEach(
     (childComponent) => {
       if (typeof childComponent === "string") {
-        const text = document.createTextNode(childComponent);
-        htmlElement.append(text);
+        const textNode = createTextElement(childComponent);
+        htmlElement.append(textNode.html);
+        lastInsertedNode = textNode.html;
+        childComponents.push(textNode);
       } else if (typeof childComponent === "number") {
-        const text = document.createTextNode(String(childComponent));
-        htmlElement.append(text);
+        const textNode = createTextElement(String(childComponent));
+        htmlElement.append(textNode.html);
+        lastInsertedNode = textNode.html;
+        childComponents.push(textNode);
       } else if (
         typeof childComponent === "object" &&
         childComponent &&
@@ -46,18 +53,20 @@ function parseChildren({
             if ("velesNode" in childComponentofPhantom) {
               htmlElement.append(childComponentofPhantom.html);
               childComponentofPhantom.parentVelesElement = velesNode;
-            } else {
-              const { velesElementNode } = getComponentVelesNode(
-                childComponentofPhantom
-              );
+              lastInsertedNode = childComponentofPhantom.html;
+            } else if ("velesStringElement" in childComponentofPhantom) {
+              const velesElementNode = childComponentofPhantom;
 
               if (!velesElementNode) {
                 console.error("can't find HTML tree in a component chain");
               } else {
                 htmlElement.append(velesElementNode.html);
+                lastInsertedNode = velesElementNode.html;
 
                 velesElementNode.parentVelesElement = velesNode;
               }
+            } else {
+              // not sure if we need to do something
             }
           });
           childComponent.parentVelesElement = velesNode;
@@ -67,48 +76,16 @@ function parseChildren({
           htmlElement.append(childComponent.html);
           childComponent.parentVelesElement = velesNode;
           childComponents.push(childComponent);
+          lastInsertedNode = childComponent.html;
         }
       } else if (
         typeof childComponent === "object" &&
         childComponent &&
-        "velesComponent" in childComponent &&
-        childComponent?.velesComponent
+        "velesComponentObject" in childComponent
       ) {
-        // we need to save the whole components chain, so that
-        // we can trigger `mount` hooks on all of them correctly
-        const { componentsTree, velesElementNode } =
-          getComponentVelesNode(childComponent);
-
-        if (!velesElementNode) {
-          console.error("can't find HTML tree in a component chain");
-        } else {
-          if ("velesNode" in velesElementNode && velesElementNode.phantom) {
-            // we need to get ALL the children of it and attach it to this node
-            velesElementNode.childComponents.forEach(
-              (childComponentofPhantom) => {
-                if ("velesNode" in childComponentofPhantom) {
-                  htmlElement.append(childComponentofPhantom.html);
-                  childComponentofPhantom.parentVelesElement = velesNode;
-                } else {
-                  const { componentsTree, velesElementNode } =
-                    getComponentVelesNode(childComponentofPhantom);
-
-                  if (!velesElementNode) {
-                    console.error("can't find HTML tree in a component chain");
-                  } else {
-                    htmlElement.append(velesElementNode.html);
-                    velesElementNode.parentVelesElement = velesNode;
-                  }
-                }
-              }
-            );
-          } else {
-            htmlElement.append(velesElementNode.html);
-          }
-
-          velesElementNode.parentVelesElement = velesNode;
-          childComponents.push(childComponent);
-        }
+        childComponent.insertAfter = lastInsertedNode;
+        childComponents.push(childComponent);
+        lastInsertedNode = childComponent;
       } else if (
         typeof childComponent === "object" &&
         childComponent &&
@@ -119,6 +96,8 @@ function parseChildren({
         htmlElement.append(childComponent.html);
         childComponent.parentVelesElement = velesNode;
         childComponents.push(childComponent);
+
+        lastInsertedNode = childComponent.html;
       }
     }
   );

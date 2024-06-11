@@ -6,9 +6,41 @@ import type {
   VelesElementProps,
   ComponentAPI,
   ComponentFunction,
+  VelesComponentObject,
 } from "../types";
 
+// only parse, do not execute and render it
 function parseComponent({
+  element,
+  props,
+}: {
+  element: ComponentFunction;
+  props: VelesElementProps;
+}): VelesComponentObject {
+  const mountCbs: Function[] = [];
+  const unmountCbs: Function[] = [];
+  return {
+    velesComponentObject: true,
+    element,
+    props,
+    _privateMethods: {
+      _addMountHandler(cb: Function) {
+        mountCbs.push(cb);
+      },
+      _addUnmountHandler: (cb: Function) => {
+        unmountCbs.push(cb);
+      },
+      _callMountHandlers: () => {
+        mountCbs.forEach((cb) => cb());
+      },
+      _callUnmountHandlers: () => {
+        unmountCbs.forEach((cb) => cb());
+      },
+    },
+  };
+}
+
+function executeComponent({
   element,
   props,
 }: {
@@ -56,13 +88,6 @@ function parseComponent({
         });
       },
       _callUnmountHandlers: () => {
-        // this should trigger recursive checks, whether it is a VelesNode or VelesComponent
-        // string Nodes don't have lifecycle handlers
-        if ("_privateMethods" in velesComponent.tree) {
-          velesComponent.tree._privateMethods._callUnmountHandlers();
-        }
-
-        // we execute own unmount callbacks after children, so the order is reversed
         componentUnmountCbs.forEach((cb) => cb());
       },
     },
@@ -71,4 +96,4 @@ function parseComponent({
   return velesComponent;
 }
 
-export { parseComponent };
+export { parseComponent, executeComponent };

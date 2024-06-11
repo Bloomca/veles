@@ -12,9 +12,36 @@ export type VelesElement = {
 
   phantom?: boolean;
 
+  needExecutedVersion?: boolean;
+  executedVersion?: ExecutedVelesElement;
+
   // every element except the most top one should have one
   parentVelesElement?: VelesElement;
-  childComponents: (VelesElement | VelesComponent | VelesStringElement)[];
+  childComponents: (VelesElement | VelesComponentObject | VelesStringElement)[];
+
+  // not intended to be used directly
+  _privateMethods: {
+    _addMountHandler: Function;
+    _callMountHandlers: Function;
+    _addUnmountHandler: Function;
+    _callUnmountHandlers: Function;
+  };
+};
+
+export type ExecutedVelesElement = {
+  executedVelesNode: true;
+
+  html: HTMLElement;
+
+  phantom?: boolean;
+
+  // every element except the most top one should have one
+  parentVelesElement?: ExecutedVelesElement;
+  childComponents: (
+    | ExecutedVelesElement
+    | ExecutedVelesComponent
+    | ExecutedVelesStringElement
+  )[];
 
   // not intended to be used directly
   _privateMethods: {
@@ -29,6 +56,26 @@ export type VelesStringElement = {
   velesStringElement: true;
   html: Text;
   parentVelesElement?: VelesElement;
+
+  needExecutedVersion?: boolean;
+  executedVersion?: ExecutedVelesStringElement;
+
+  // not intended to be used directly
+  // despite being a text component, having same lifecycle
+  // methods is useful for state changes, to remove tracking
+  // when the said Text is returned from `useValue` state method
+  _privateMethods: {
+    _addMountHandler: Function;
+    _callMountHandlers: Function;
+    _addUnmountHandler: Function;
+    _callUnmountHandlers: Function;
+  };
+};
+
+export type ExecutedVelesStringElement = {
+  executedVelesStringElement: true;
+  html: Text;
+  parentVelesElement?: ExecutedVelesElement;
 
   // not intended to be used directly
   // despite being a text component, having same lifecycle
@@ -46,7 +93,24 @@ export type VelesStringElement = {
 export type VelesComponent = {
   velesComponent: true;
 
-  tree: VelesElement | VelesComponent | VelesStringElement;
+  tree: VelesElement | VelesComponentObject | VelesStringElement;
+
+  // not intended to be used directly
+  _privateMethods: {
+    _addMountHandler: Function;
+    _callMountHandlers: Function;
+    _callUnmountHandlers: Function;
+    _addUnmountHandler: Function;
+  };
+};
+
+export type ExecutedVelesComponent = {
+  executedVelesComponent: true;
+
+  tree:
+    | ExecutedVelesElement
+    | ExecutedVelesComponent
+    | ExecutedVelesStringElement;
 
   // not intended to be used directly
   _privateMethods: {
@@ -62,7 +126,7 @@ type velesChild =
   | string
   | number
   | VelesElement
-  | VelesComponent
+  | VelesComponentObject
   | VelesStringElement;
 export type VelesChildren = velesChild | velesChild[] | undefined | null;
 
@@ -90,9 +154,28 @@ export type ComponentAPI = {
 export type ComponentFunction = (
   props: VelesElementProps,
   componentAPI: ComponentAPI
-) => VelesElement | VelesComponent | VelesStringElement | string | null;
+) => VelesElement | VelesComponentObject | VelesStringElement | string | null;
 
 export type AttributeHelper<T> = {
   (htmlElement: HTMLElement, attributeName: string, node: VelesElement): T;
   velesAttribute: boolean;
+};
+
+export type VelesComponentObject = {
+  velesComponentObject: true;
+  element: ComponentFunction;
+  props: VelesElementProps;
+  insertAfter?: VelesComponentObject | HTMLElement | Text | null;
+  html?: HTMLElement | Text;
+
+  needExecutedVersion?: boolean;
+  executedVersion?: ExecutedVelesComponent;
+
+  // not intended to be used directly
+  _privateMethods: {
+    _addMountHandler: Function;
+    _callMountHandlers: Function;
+    _callUnmountHandlers: Function;
+    _addUnmountHandler: Function;
+  };
 };

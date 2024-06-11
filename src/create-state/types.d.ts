@@ -1,8 +1,10 @@
 import type {
   VelesElement,
-  VelesComponent,
+  VelesComponentObject,
   VelesStringElement,
   AttributeHelper,
+  ExecutedVelesElement,
+  ExecutedVelesComponent,
 } from "../types";
 
 export type State<ValueType> = {
@@ -29,19 +31,19 @@ export type State<ValueType> = {
   useValue(
     cb?: (
       value: ValueType
-    ) => VelesElement | VelesComponent | string | undefined | null,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
-  ): VelesElement | VelesComponent | VelesStringElement;
+  ): VelesElement | VelesComponentObject | VelesStringElement;
   useValueSelector<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
     cb?: (
       value: SelectorValueType
-    ) => VelesElement | VelesComponent | string | undefined | null,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (
       value1: SelectorValueType,
       value2: SelectorValueType
     ) => boolean
-  ): VelesElement | VelesComponent | VelesStringElement;
+  ): VelesElement | VelesComponentObject | VelesStringElement;
   useAttribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
   useValueIterator<Element>(
     options: {
@@ -51,8 +53,8 @@ export type State<ValueType> = {
     cb: (props: {
       elementState: State<Element>;
       indexState: State<number>;
-    }) => VelesElement | VelesComponent
-  ): VelesComponent | VelesElement | null;
+    }) => VelesElement | VelesComponentObject
+  ): VelesComponentObject | VelesElement | null;
   getValue(): ValueType;
   getPreviousValue(): undefined | ValueType;
   setValue(
@@ -77,11 +79,11 @@ type TrackingEffect = {
 export type TrackingSelectorElement = {
   cb?: (
     value: any
-  ) => VelesElement | VelesComponent | string | undefined | null;
+  ) => VelesElement | VelesComponentObject | string | undefined | null;
   selector?: Function;
   selectedValue: any;
   comparator: (value1: any, value2: any) => boolean;
-  node: VelesElement | VelesComponent | VelesStringElement;
+  node: VelesElement | VelesComponentObject | VelesStringElement;
 };
 
 export type TrackingAttribute = {
@@ -95,19 +97,25 @@ export type TrackingIterator = {
   cb: (props: {
     elementState: State<any>;
     indexState: State<number>;
-  }) => VelesElement | VelesComponent;
+  }) => VelesElement | VelesComponentObject;
   selector?: (value: unknown) => any[];
-  renderedElements: [VelesElement | VelesComponent, string, State<unknown>][];
+  renderedElements: [
+    { executedVersion?: ExecutedVelesElement | ExecutedVelesComponent },
+    string,
+    State<unknown>
+  ][];
   key: string | ((options: { element: unknown; index: number }) => string);
   elementsByKey: {
     [key: string]: {
       elementState: State<unknown>;
       indexState: State<number>;
       indexValue: number;
-      node: VelesElement | VelesComponent;
+      node: {
+        executedVersion?: ExecutedVelesElement | ExecutedVelesComponent;
+      };
     };
   };
-  wrapperComponent: VelesElement | VelesComponent;
+  wrapperComponent: VelesElement | VelesComponentObject;
 };
 
 export type StateTrackers = {
