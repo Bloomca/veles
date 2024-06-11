@@ -84,6 +84,7 @@ function parseChildren({
         "velesComponentObject" in childComponent
       ) {
         childComponent.insertAfter = lastInsertedNode;
+        childComponent.parentVelesElement = velesNode;
         childComponents.push(childComponent);
         lastInsertedNode = childComponent;
       } else if (

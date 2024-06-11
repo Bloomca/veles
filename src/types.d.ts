@@ -92,6 +92,7 @@ export type ExecutedVelesStringElement = {
 // an internal representation of components in the tree
 export type VelesComponent = {
   velesComponent: true;
+  parentVelesElement?: VelesElement;
 
   tree: VelesElement | VelesComponentObject | VelesStringElement;
 
@@ -167,6 +168,7 @@ export type VelesComponentObject = {
   props: VelesElementProps;
   insertAfter?: VelesComponentObject | HTMLElement | Text | null;
   html?: HTMLElement | Text;
+  parentVelesElement?: VelesElement;
 
   needExecutedVersion?: boolean;
   executedVersion?: ExecutedVelesComponent;
