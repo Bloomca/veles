@@ -100,7 +100,7 @@ export type TrackingIterator = {
   }) => VelesElement | VelesComponentObject;
   selector?: (value: unknown) => any[];
   renderedElements: [
-    { executedVersion?: ExecutedVelesElement | ExecutedVelesComponent },
+    VelesElement | VelesComponentObject,
     string,
     State<unknown>
   ][];
@@ -110,9 +110,7 @@ export type TrackingIterator = {
       elementState: State<unknown>;
       indexState: State<number>;
       indexValue: number;
-      node: {
-        executedVersion?: ExecutedVelesElement | ExecutedVelesComponent;
-      };
+      node: VelesElement | VelesComponentObject;
     };
   };
   wrapperComponent: VelesElement | VelesComponentObject;

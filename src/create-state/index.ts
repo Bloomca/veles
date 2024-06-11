@@ -122,93 +122,70 @@ function createState<T>(
         indexState: State<number>;
       }) => VelesElement | VelesComponentObject
     ) {
-      let wasMounted = false;
-      const originalValue = value;
-      const children: [
-        VelesElement | VelesComponentObject,
-        string,
-        State<Element>
-      ][] = [];
-      const elementsByKey: {
-        [key: string]: {
-          elementState: State<Element>;
-          indexState: State<number>;
-          indexValue: number;
-          node: VelesElement | VelesComponentObject;
-        };
-      } = {};
-
-      const elements = options.selector ? options.selector(value) : value;
-
-      if (!Array.isArray(elements)) {
-        console.error("useValueIterator received non-array value");
-        return null;
-      }
-
-      (elements as Element[]).forEach((element, index) => {
-        // we calculate a key for each element. This key determines whether we render the element from scratch, or do nothing
-        // when the element updates
-        let calculatedKey: string = "";
-        if (
-          typeof options.key === "string" &&
-          typeof element === "object" &&
-          element !== null &&
-          options.key in element
-        ) {
-          calculatedKey = element[options.key];
-        } else if (typeof options.key === "function") {
-          calculatedKey = options.key({ element, index });
-        } else {
-          // ignore for now
-        }
-
-        const elementState = createState(element);
-        const indexState = createState(index);
-
-        if (!calculatedKey) {
-          return;
-        }
-
-        let node = cb({ elementState, indexState });
-        node.needExecutedVersion = true;
-
-        elementsByKey[calculatedKey] = {
-          node,
-          indexState,
-          indexValue: index,
-          elementState,
-        };
-
-        children.push([node, calculatedKey, elementState]);
-      });
-
       const trackingParams = {} as TrackingIterator;
 
       const wrapperComponent = createElement((_props, componentAPI) => {
-        onMount(() => {
-          trackers.trackingIterators.push(trackingParams);
+        const children: [
+          VelesElement | VelesComponentObject,
+          string,
+          State<Element>
+        ][] = [];
+        const elementsByKey: {
+          [key: string]: {
+            elementState: State<Element>;
+            indexState: State<number>;
+            indexValue: number;
+            node: VelesElement | VelesComponentObject;
+          };
+        } = {};
+        const elements = options.selector ? options.selector(value) : value;
 
-          if (!wasMounted && value === originalValue) {
-            /**
-             * We avoid recalculating in one case:
-             * 1. the component was never mounted
-             * 2. the value didn't change
-             *
-             * Every other case will need to store their own value,
-             * and while it is possible, for now we are not doing it
-             */
+        if (!Array.isArray(elements)) {
+          console.error("useValueIterator received non-array value");
+          return null;
+        }
+
+        (elements as Element[]).forEach((element, index) => {
+          // we calculate a key for each element. This key determines whether we render the element from scratch, or do nothing
+          // when the element updates
+          let calculatedKey: string = "";
+          if (
+            typeof options.key === "string" &&
+            typeof element === "object" &&
+            element !== null &&
+            options.key in element
+          ) {
+            calculatedKey = element[options.key];
+          } else if (typeof options.key === "function") {
+            calculatedKey = options.key({ element, index });
           } else {
-            updateUseValueIteratorValue({
-              value,
-              trackingIterator: trackingParams,
-              createState,
-            });
+            // ignore for now
           }
 
-          if (!wasMounted) {
-            wasMounted = true;
+          const elementState = createState(element);
+          const indexState = createState(index);
+
+          if (!calculatedKey) {
+            return;
           }
 
+          let node = cb({ elementState, indexState });
+          node.needExecutedVersion = true;
+
+          elementsByKey[calculatedKey] = {
+            node,
+            indexState,
+            indexValue: index,
+            elementState,
+          };
+
+          children.push([node, calculatedKey, elementState]);
+        });
+
+        trackingParams.elementsByKey = elementsByKey;
+        trackingParams.renderedElements = children;
+        trackers.trackingIterators.push(trackingParams);
+        onMount(() => {
           componentAPI.onUnmount(() => {
             trackers.trackingIterators = trackers.trackingIterators.filter(
               (currentTrackingParams) =>
@@ -226,8 +203,6 @@ function createState<T>(
 
       trackingParams.cb = cb;
       trackingParams.key = options.key;
-      trackingParams.elementsByKey = elementsByKey;
-      trackingParams.renderedElements = children;
       trackingParams.wrapperComponent = wrapperComponent;
 
       if (options.selector) {
