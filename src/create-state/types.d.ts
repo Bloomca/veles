@@ -3,9 +3,8 @@ import type {
   VelesComponentObject,
   VelesStringElement,
   AttributeHelper,
-  ExecutedVelesElement,
-  ExecutedVelesComponent,
 } from "../types";
+import type { ComponentContext } from "../context/types";
 
 export type State<ValueType> = {
   trackValue(
@@ -84,6 +83,7 @@ export type TrackingSelectorElement = {
   selectedValue: any;
   comparator: (value1: any, value2: any) => boolean;
   node: VelesElement | VelesComponentObject | VelesStringElement;
+  savedContext: ComponentContext;
 };
 
 export type TrackingAttribute = {

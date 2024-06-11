@@ -1,4 +1,5 @@
 import { executeComponent } from "./create-element/parse-component";
+import { addPublicContext, popPublicContext } from "./context";
 
 import type {
   VelesComponentObject,
@@ -51,10 +52,12 @@ function renderTree(
     }
     return executedString;
   } else if ("velesComponentObject" in component) {
+    addPublicContext();
     const componentTree = executeComponent(component);
     const executedComponent = {} as ExecutedVelesComponent;
     executedComponent.executedVelesComponent = true;
     executedComponent.tree = renderTree(componentTree.tree);
+    popPublicContext();
     executedComponent._privateMethods = {
       ...componentTree._privateMethods,
       _callMountHandlers: () => {

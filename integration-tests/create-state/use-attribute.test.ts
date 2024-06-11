@@ -8,9 +8,7 @@ import {
   onUnmount,
 } from "../../src";
 
-import type { State } from "../../src";
-
-describe("createState", () => {
+describe("state.useAttribute", () => {
   let cleanup: Function | undefined;
 
   afterEach(() => {
