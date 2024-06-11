@@ -4,6 +4,7 @@ import {
   callUnmountHandlers,
   getExecutedComponentVelesNode,
 } from "../_utils";
+import { addPublicContext, popPublicContext } from "../context";
 
 import type {
   ExecutedVelesComponent,
@@ -33,6 +34,7 @@ function updateUseValueIteratorValue<T>({
     elementsByKey,
     wrapperComponent,
     selector,
+    savedContext
   } = trackingIterator;
   if (!wrapperComponent) {
     console.error("there is no wrapper component for the iterator");
@@ -124,6 +126,7 @@ function updateUseValueIteratorValue<T>({
       } else {
         const elementState = createState(element);
         const indexState = createState(index);
+        addPublicContext(savedContext)
         const node = cb({ elementState, indexState });
         // this TypeScript conversion should always be correct, because `node` is
         // also either a component or an element
@@ -131,6 +134,7 @@ function updateUseValueIteratorValue<T>({
           | ExecutedVelesComponent
           | ExecutedVelesElement;
         node.executedVersion = renderedNode;
+        popPublicContext()
 
         newRenderedElements.push([node, calculatedKey, elementState]);
         newElementsByKey[calculatedKey] = {
