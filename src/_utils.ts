@@ -70,11 +70,12 @@ function renderTree(
     if (parentVelesElement) {
       if (component.insertAfter) {
         if ("velesComponentObject" in component.insertAfter) {
-          insertNode({
+          const lastNode = insertNode({
             velesElement: newNode,
             adjacentNode: component.insertAfter.html,
             parentVelesElement,
           });
+          component.html = lastNode;
         } else {
           const lastNode = insertNode({
             velesElement: newNode,

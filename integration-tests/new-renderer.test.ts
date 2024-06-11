@@ -403,4 +403,44 @@ describe("new renderer engine", () => {
       "helloapplicationanother line,test"
     );
   });
+
+  test("supports several components as children", () => {
+    function App() {
+      return createElement("div", {
+        "data-testid": "app",
+        children: [
+          createElement(FirstComponent),
+          createElement(SecondComponent),
+          createElement(ThirdComponent),
+        ],
+      });
+    }
+
+    function FirstComponent() {
+      return createElement("div", {
+        children: "first component",
+      });
+    }
+    function SecondComponent() {
+      return createElement("div", {
+        children: "second component",
+      });
+    }
+    function ThirdComponent() {
+      return createElement("div", {
+        children: "third component",
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement("div", {
+        children: [createElement(App)],
+      }),
+    });
+
+    expect(screen.getByTestId("app").textContent).toBe(
+      "first componentsecond componentthird component"
+    );
+  });
 });
