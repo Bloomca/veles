@@ -1,12 +1,16 @@
-import { getComponentVelesNode, callMountHandlers } from "../_utils";
+import {
+  callMountHandlers,
+  callUnmountHandlers,
+  renderTree,
+  getExecutedComponentVelesNode,
+} from "../_utils";
 import { createTextElement } from "../create-element/create-text-element";
 
 import type {
-  VelesElement,
-  VelesStringElement,
-  VelesComponent,
+  ExecutedVelesElement,
+  ExecutedVelesStringElement,
 } from "../types";
-import type { TrackingSelectorElement, StateTrackers, State } from "./types";
+import type { TrackingSelectorElement, StateTrackers } from "./types";
 
 function updateUseValueSelector<T>({
   value,
@@ -40,9 +44,22 @@ function updateUseValueSelector<T>({
       ? createTextElement(returnednewNode as string)
       : returnednewNode;
 
-  const { velesElementNode: oldVelesElementNode } = getComponentVelesNode(node);
-  const { velesElementNode: newVelesElementNode } =
-    getComponentVelesNode(newNode);
+  const newRenderedNode = renderTree(newNode);
+  newNode.executedVersion = newRenderedNode;
+
+  // `executedVersion` is added when we convert it to tree. It doesn't have
+  // to be mounted, but mounting happens right after.
+  // If there is no this property, it means that it was not mounted, and
+  // somehow the subscription was added
+  if (!node.executedVersion) {
+    console.error("the node was not mounted");
+    return;
+  }
+
+  const oldVelesElementNode = getExecutedComponentVelesNode(
+    node.executedVersion
+  );
+  const newVelesElementNode = getExecutedComponentVelesNode(newRenderedNode);
 
   const parentVelesElement = oldVelesElementNode.parentVelesElement;
 
@@ -59,19 +76,22 @@ function updateUseValueSelector<T>({
     // we need to treat phantom nodes slightly differently
     // because it is not a single node removal/insert, but all
     // the children at once
-    if ("velesNode" in newVelesElementNode && newVelesElementNode.phantom) {
+    if (
+      "executedVelesNode" in newVelesElementNode &&
+      newVelesElementNode.phantom
+    ) {
       const insertAllPhantomChildren = (
-        adjacentNode: VelesElement | VelesStringElement
+        adjacentNode: ExecutedVelesElement | ExecutedVelesStringElement
       ) => {
         // we need to get ALL the children of it and attach it to this node
         newVelesElementNode.childComponents.forEach(
           (childComponentofPhantom) => {
-            if ("velesNode" in childComponentofPhantom) {
+            if ("executedVelesNode" in childComponentofPhantom) {
               adjacentNode.html.before(childComponentofPhantom.html);
               childComponentofPhantom.parentVelesElement =
                 adjacentNode.parentVelesElement;
             } else {
-              const { velesElementNode } = getComponentVelesNode(
+              const velesElementNode = getExecutedComponentVelesNode(
                 childComponentofPhantom
               );
 
@@ -86,18 +106,21 @@ function updateUseValueSelector<T>({
           }
         );
       };
-      if ("velesNode" in oldVelesElementNode && oldVelesElementNode.phantom) {
+      if (
+        "executedVelesNode" in oldVelesElementNode &&
+        oldVelesElementNode.phantom
+      ) {
         let isInserted = false;
         oldVelesElementNode.childComponents.forEach(
           (childComponentofPhantom) => {
-            if ("velesNode" in childComponentofPhantom) {
+            if ("executedVelesNode" in childComponentofPhantom) {
               if (!isInserted) {
                 insertAllPhantomChildren(childComponentofPhantom);
                 isInserted = true;
               }
               childComponentofPhantom.html.remove();
             } else {
-              const { velesElementNode } = getComponentVelesNode(
+              const velesElementNode = getExecutedComponentVelesNode(
                 childComponentofPhantom
               );
 
@@ -118,18 +141,21 @@ function updateUseValueSelector<T>({
         oldVelesElementNode.html.remove();
       }
     } else {
-      if ("velesNode" in oldVelesElementNode && oldVelesElementNode.phantom) {
+      if (
+        "executedVelesNode" in oldVelesElementNode &&
+        oldVelesElementNode.phantom
+      ) {
         let isInserted = false;
         oldVelesElementNode.childComponents.forEach(
           (childComponentofPhantom) => {
-            if ("velesNode" in childComponentofPhantom) {
+            if ("executedVelesNode" in childComponentofPhantom) {
               if (!isInserted) {
                 childComponentofPhantom.html.before(newVelesElementNode.html);
                 isInserted = true;
               }
               childComponentofPhantom.html.remove();
             } else {
-              const { velesElementNode } = getComponentVelesNode(
+              const velesElementNode = getExecutedComponentVelesNode(
                 childComponentofPhantom
               );
 
@@ -157,10 +183,13 @@ function updateUseValueSelector<T>({
     // if the parent node is removed from DOM, it calls correct unmount
     // callbacks
     parentVelesElement.childComponents = parentVelesElement.childComponents.map(
-      (childComponent) => (childComponent === node ? newNode : childComponent)
+      (childComponent) =>
+        childComponent === node.executedVersion
+          ? newRenderedNode
+          : childComponent
     );
     // we call unmount handlers right after we replace it
-    node._privateMethods._callUnmountHandlers();
+    callUnmountHandlers(node.executedVersion);
 
     addUseValueMountHandler({
       usedValue: value,
@@ -170,7 +199,7 @@ function updateUseValueSelector<T>({
     });
     // at this point the new Node is mounted, childComponents are updated
     // and unmount handlers for the old node are called
-    callMountHandlers(newNode);
+    callMountHandlers(newRenderedNode);
 
     // right after that, we add the callback back
     // the top level node is guaranteed to be rendered again (at least right now)

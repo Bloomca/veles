@@ -3,7 +3,7 @@ import { assignAttributes } from "./assign-attributes";
 import { parseComponent } from "./parse-component";
 
 import type {
-  VelesComponent,
+  VelesComponentObject,
   VelesElement,
   VelesElementProps,
   ComponentFunction,
@@ -12,9 +12,10 @@ import type {
 function createElement(
   element: string | ComponentFunction,
   props: VelesElementProps = {}
-): VelesElement | VelesComponent {
+): VelesElement | VelesComponentObject {
   if (typeof element === "string") {
     const { children, ref, phantom = false, ...otherProps } = props;
+
     const newElement = document.createElement(element);
     const velesNode = {} as VelesElement;
 
@@ -33,15 +34,6 @@ function createElement(
     // using `useValue` function and also listeners from
     // `useAttribute`
     const unmountHandlers: Function[] = [];
-    const callUnmountHandlers = () => {
-      // `onUnmount` is logically better to be executed on children first
-      velesNode.childComponents.forEach((childComponent) => {
-        childComponent._privateMethods._callUnmountHandlers();
-      });
-
-      unmountHandlers.forEach((cb) => cb());
-    };
-
     velesNode.html = newElement;
     velesNode.velesNode = true;
     velesNode.childComponents = childComponents;
@@ -60,7 +52,9 @@ function createElement(
       _addUnmountHandler(cb: Function) {
         unmountHandlers.push(cb);
       },
-      _callUnmountHandlers: callUnmountHandlers,
+      _callUnmountHandlers() {
+        unmountHandlers.forEach((cb) => cb());
+      },
     };
 
     // assign all the DOM attributes, including event listeners

@@ -1,27 +1,31 @@
-import { getComponentVelesNode, callMountHandlers } from "./_utils";
+import {
+  getExecutedComponentVelesNode,
+  callMountHandlers,
+  callUnmountHandlers,
+  renderTree,
+} from "./_utils";
 import { createElement } from "./create-element";
 
-import type { VelesElement, VelesComponent } from "./types";
+import type { VelesElement, VelesComponentObject } from "./types";
 
 function attachComponent({
   htmlElement,
   component,
 }: {
   htmlElement: HTMLElement;
-  component: VelesElement | VelesComponent;
+  component: VelesElement | VelesComponentObject;
 }) {
   // we wrap the whole app into an additional <div>. While it is not ideal
   // for the consumers, it greatly simplifies some things, namely, mount callbacks
   // for components or supporting conditional rendering at the top level
   const wrappedApp = createElement("div", { children: [component] });
-  const { velesElementNode } = getComponentVelesNode(wrappedApp);
+  const wrappedAppTree = renderTree(wrappedApp);
+  const velesElementNode = getExecutedComponentVelesNode(wrappedAppTree);
   htmlElement.appendChild(velesElementNode.html);
-  callMountHandlers(wrappedApp);
+  callMountHandlers(wrappedAppTree);
 
-  // TODO: iterate over every child and call their `onUnmout` method
-  // and add tests for that
   return () => {
-    wrappedApp._privateMethods._callUnmountHandlers();
+    callUnmountHandlers(wrappedAppTree);
     velesElementNode.html.remove();
   };
 }
