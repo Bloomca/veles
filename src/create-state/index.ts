@@ -20,6 +20,16 @@ import type {
   TrackingSelectorElement,
 } from "./types";
 
+/**
+ * Main state factory function.
+ * 
+ * This primitive is pretty much a simple observable implementation,
+ * which is tightly integrated with the UI framework for two things:
+ * 
+ * - based on subscription callback, update DOM node and replace it
+ * - correctly unsbuscribe when the Node/component is unmounted
+ */
+
 function createState<T>(
   initialValue: T,
   subscribeCallback?: (
@@ -29,6 +39,7 @@ function createState<T>(
   let value = initialValue;
   let previousValue: undefined | T = undefined;
 
+  // all subscription types we track
   const trackers: StateTrackers = {
     trackingEffects: [],
     trackingSelectorElements: [],

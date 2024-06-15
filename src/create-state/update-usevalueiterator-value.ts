@@ -80,7 +80,7 @@ function updateUseValueIteratorValue<T>({
       [calculatedKey: string]: boolean;
     } = {};
 
-    elements.forEach((element, index) => {
+    elements.forEach((element, index) => {      
       let calculatedKey: string = "";
       if (
         typeof key === "string" &&
@@ -98,6 +98,25 @@ function updateUseValueIteratorValue<T>({
       if (!calculatedKey) {
         return;
       }
+
+      // first, we check if there is a node by this key
+      // if there is, we do `getValue()` and compare whether the
+      // item is the same.
+      // if it is not, we need to do `elementState.setValue()`
+      // with the new value
+      // if the value is the same, nothing to do.
+      //
+      // after that, we need to put the new position down
+      // (we'll reshuffle items at the end)
+      //
+      // if there is no node by this key, we need to:
+      // 1. create a state for it
+      // 2. create a node for it
+      // 3. mark the new index for that node
+      //
+      // at the end, we need to find elements which were rendered, but are
+      // not rendered anymore, and remove them from DOM and trigger `onUnmount`
+      // for them.
 
       const existingElement = elementsByKey[calculatedKey];
 
@@ -144,25 +163,6 @@ function updateUseValueIteratorValue<T>({
           node,
         };
       }
-
-      // first, we check if there is a node by this key
-      // if there is, we do `getValue()` and compare whether the
-      // item is the same.
-      // if it is not, we need to do `elementState.setValue()`
-      // with the new value
-      // if the value is the same, nothing to do.
-      //
-      // after that, we need to put the new position down
-      // (we'll reshuffle items at the end)
-      //
-      // if there is no node by this key, we need to:
-      // 1. create a state for it
-      // 2. create a node for it
-      // 3. mark the new index for that node
-      //
-      // at the end, we need to find elements which were rendered, but are
-      // not rendered anymore, and remove them from DOM and trigger `onUnmount`
-      // for them.
     });
 
     // to replace old wrapper's children to make sure they are removed correctly
