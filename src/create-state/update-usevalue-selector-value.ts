@@ -31,10 +31,23 @@ function updateUseValueSelector<T>({
   const newSelectedValue = selector ? selector(value) : value;
 
   if (comparator(selectedValue, newSelectedValue)) {
+    /**
+     * if there is no need for update, we push the existing element
+     * to the new array. once we merge all subscriptions, we run
+     * `unique` function which will make sure there are no double
+     * subscriptions.
+     * 
+     * This is needed because using `map` can potentially create
+     * some weird side effects, since in case the node changed,
+     * some elements will be dynamically removed from the array
+     */
+
     newTrackingSelectorElements.push(selectorTrackingElement);
     return;
   }
 
+  // we need to re-execute the rendering callback with the same
+  // context values as before
   addPublicContext(savedContext);
   const returnednewNode = cb
     ? cb(newSelectedValue)
@@ -46,7 +59,11 @@ function updateUseValueSelector<T>({
       ? createTextElement(returnednewNode as string)
       : returnednewNode;
 
+  // Since we render a new Node, we need to insert it into the DOM
+  // manually and immediately. So we render the full HTML tree.
   const newRenderedNode = renderTree(newNode);
+  // this should remove our saved context value from the stack
+  // so that other components will be executed within their own context
   popPublicContext();
   newNode.executedVersion = newRenderedNode;
 
@@ -67,6 +84,8 @@ function updateUseValueSelector<T>({
   const parentVelesElement = node.parentVelesElement;
   const parentVelesElementRendered = oldVelesElementNode.parentVelesElement;
 
+  // at this point we can construct the new tracking selector element
+  // the old will be removed by the unmount lifecycle hook from the node
   const newTrackingSelectorElement: TrackingSelectorElement = {
     selector,
     selectedValue: newSelectedValue,
@@ -214,6 +233,7 @@ function updateUseValueSelector<T>({
     }
 
     // we call unmount handlers right after we replace it
+    // this is where the old 
     callUnmountHandlers(node.executedVersion);
 
     addUseValueMountHandler({
@@ -223,7 +243,7 @@ function updateUseValueSelector<T>({
       trackingSelectorElement: newTrackingSelectorElement,
     });
     // at this point the new Node is mounted, childComponents are updated
-    // and unmount handlers for the old node are called
+    // old tracking selector element will be removed in the `unmount` handler
     callMountHandlers(newRenderedNode);
 
     // right after that, we add the callback back

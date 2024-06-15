@@ -3,11 +3,11 @@ import { ComponentAPI } from "../types";
 // lifecycle hooks
 // currently, all components need to be synchronous
 // so we execute them and set background context
-// since components can be nested, we need to keep the array
+// since components can be nested, we need to use the stack
 const contextStack: ComponentAPI[] = [];
 // all hooks need to know the current context
-// it should way more convenient this way compared to passing
-// `componentAPI` to every method
+// it should be way more convenient to use it this way
+// compared to passing `componentAPI` to every method
 let currentContext: ComponentAPI | null = null;
 
 function addContext(newContext: ComponentAPI) {
