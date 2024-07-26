@@ -34,11 +34,7 @@ function assignAttribute({
     typeof value === "function" &&
     key.startsWith("on")
   ) {
-    // TODO: think if this is robust enough
-    htmlElement.addEventListener(
-      key[2].toLocaleLowerCase() + key.slice(3),
-      value
-    );
+    htmlElement.addEventListener(key.slice(2).toLocaleLowerCase(), value);
   } else {
     if (typeof value === "boolean") {
       // according to the spec, boolean values should just get either an empty string

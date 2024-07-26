@@ -298,4 +298,75 @@ describe("assign-attributes", () => {
     expect(spyFn).toHaveBeenCalledTimes(3);
     expect(state.getValue()).toBe(4);
   });
+
+  test("adds listeners with multiple words in them correctly", async () => {
+    const user = userEvent.setup();
+    const spyFn = jest.fn();
+    function App() {
+      const handler = () => {
+        spyFn();
+      };
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onDblClick: handler,
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const btn = screen.getByTestId("button");
+
+    await user.dblClick(btn);
+    expect(spyFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("allows to assign and remove event listeners dynamically passing the same callback with multiple words in event", async () => {
+    const user = userEvent.setup();
+    const state = createState(0);
+    const spyFn = jest.fn();
+    function App() {
+      const handler = () => {
+        spyFn();
+        state.setValue((currentValue) => currentValue + 1);
+      };
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onDblClick: state.useAttribute((value) =>
+              value !== 0 && value < 4 ? handler : undefined
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const btn = screen.getByTestId("button");
+
+    await user.dblClick(btn);
+    await user.dblClick(btn);
+
+    state.setValue(1);
+
+    await user.dblClick(btn);
+    await user.dblClick(btn);
+    await user.dblClick(btn);
+    await user.dblClick(btn);
+    await user.dblClick(btn);
+
+    expect(spyFn).toHaveBeenCalledTimes(3);
+    expect(state.getValue()).toBe(4);
+  });
 });
