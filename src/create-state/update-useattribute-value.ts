@@ -28,8 +28,7 @@ function updateUseAttributeValue<T>({
       return;
     }
 
-    const eventName =
-      attributeName[2].toLocaleLowerCase() + attributeName.slice(3);
+    const eventName = attributeName.slice(2).toLocaleLowerCase();
     if (attributeValue) {
       // we remove the previous value, `removeEventListener` needs
       // to have the same value as the one that was added
