@@ -12,7 +12,8 @@ function selectState<F, T>(
   state.trackValueSelector(
     selector,
     (selectedState) => {
-      newState.setValue(selectedState);
+      // we use a function because `selectedState` can be a function itself
+      newState.setValue(() => selectedState);
     },
     { skipFirstCall: true }
   );

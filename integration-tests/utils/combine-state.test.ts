@@ -13,6 +13,7 @@ describe("createState", () => {
   });
 
   test("allows to combine several states", async () => {
+    const spy = jest.fn();
     const user = userEvent.setup();
     function StateComponent() {
       const valueState1 = createState(0);
@@ -23,6 +24,8 @@ describe("createState", () => {
         valueState2,
         valueState3
       );
+
+      combinedValueState.trackValue(spy);
 
       return createElement("div", {
         children: [
@@ -58,6 +61,8 @@ describe("createState", () => {
       component: createElement(StateComponent),
     });
 
+    expect(spy).toHaveBeenCalledTimes(1);
+
     expect(await screen.findByText("current value is 0")).toBeVisible();
     const btn1 = screen.getByTestId("button1");
     const btn2 = screen.getByTestId("button2");
@@ -68,9 +73,13 @@ describe("createState", () => {
     await user.click(btn3);
     expect(await screen.findByText("current value is 3")).toBeVisible();
 
+    expect(spy).toHaveBeenCalledTimes(4);
+
     await user.click(btn2);
     await user.click(btn2);
     await user.click(btn1);
     expect(await screen.findByText("current value is 6")).toBeVisible();
+
+    expect(spy).toHaveBeenCalledTimes(7);
   });
 });
