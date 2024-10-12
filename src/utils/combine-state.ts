@@ -79,13 +79,18 @@ export function combineState(...states) {
   const combinedState = createState(initialValue);
 
   states.forEach((state) => {
-    state.trackValue(() => {
-      // by the time trackValue callback is called
-      // it is guaranteed that reading `state.getValue` will
-      // return the updated value
-      const updatedValue = states.map((state) => state.getValue());
-      combinedState.setValue(updatedValue);
-    });
+    state.trackValue(
+      () => {
+        // by the time trackValue callback is called
+        // it is guaranteed that reading `state.getValue` will
+        // return the updated value
+        const updatedValue = states.map((state) => state.getValue());
+        combinedState.setValue(updatedValue);
+        // the first call wouldn't affect anything anyway, since we can't have any
+        // subscriptions yet, small optimization
+      },
+      { skipFirstCall: true }
+    );
   });
 
   return combinedState;
