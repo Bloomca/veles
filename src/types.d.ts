@@ -33,6 +33,7 @@ export type ExecutedVelesElement = {
   html: HTMLElement;
 
   phantom?: boolean;
+  portal?: HTMLElement;
 
   // every element except the most top one should have one
   parentVelesElement?: ExecutedVelesElement;

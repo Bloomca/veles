@@ -118,6 +118,9 @@ function renderTree(
     if (component.phantom) {
       executedNode.phantom = component.phantom;
     }
+    if (component.portal) {
+      executedNode.portal = component.portal;
+    }
     executedNode.childComponents = component.childComponents.map(
       (childComponent) =>
         renderTree(childComponent, { parentVelesElement: executedNode })
