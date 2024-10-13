@@ -70,7 +70,11 @@ function renderTree(
       },
     };
     const newNode = getExecutedComponentVelesNode(executedComponent);
-    if (parentVelesElement) {
+    // if there is a portal, we don't need to render directly
+    // instead, we need to do so in the mount callback
+    if (component.portal) {
+      // it is handled by the portal parent element
+    } else if (parentVelesElement) {
       if (component.insertAfter) {
         if ("velesComponentObject" in component.insertAfter) {
           const lastNode = insertNode({
@@ -99,7 +103,7 @@ function renderTree(
 
       newNode.parentVelesElement = parentVelesElement;
     }
-    if (component.needExecutedVersion) {
+    if (component.needExecutedVersion || component.portal) {
       component.executedVersion = executedComponent;
     }
     return executedComponent;

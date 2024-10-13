@@ -9,6 +9,7 @@ export type VelesElement = {
   html: HTMLElement;
 
   phantom?: boolean;
+  portal?: null | HTMLElement;
 
   needExecutedVersion?: boolean;
   executedVersion?: ExecutedVelesElement;
@@ -136,6 +137,8 @@ export type VelesElementProps = {
     current: any;
   };
 
+  portal?: HTMLElement;
+
   // event handlers + any html properties
   // the value can be either a string value
   // or a function in case we support reactivity
@@ -167,6 +170,7 @@ export type VelesComponentObject = {
   insertAfter?: VelesComponentObject | HTMLElement | Text | null;
   html?: HTMLElement | Text;
   parentVelesElement?: VelesElement;
+  portal?: HTMLElement;
 
   needExecutedVersion?: boolean;
   executedVersion?: ExecutedVelesComponent;

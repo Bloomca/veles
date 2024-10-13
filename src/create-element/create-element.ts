@@ -1,6 +1,7 @@
 import { parseChildren } from "./parse-children";
 import { assignAttributes } from "./assign-attributes";
 import { parseComponent } from "./parse-component";
+import { getExecutedComponentVelesNode } from "../_utils";
 
 import type {
   VelesComponentObject,
@@ -14,7 +15,13 @@ function createElement(
   props: VelesElementProps = {}
 ): VelesElement | VelesComponentObject {
   if (typeof element === "string") {
-    const { children, ref, phantom = false, ...otherProps } = props;
+    const {
+      children,
+      ref,
+      phantom = false,
+      portal = null,
+      ...otherProps
+    } = props;
 
     const newElement = document.createElement(element);
     const velesNode = {} as VelesElement;
@@ -27,6 +34,7 @@ function createElement(
       children,
       htmlElement: newElement,
       velesNode,
+      portal,
     });
 
     // these handlers are attached directly to the DOM element
@@ -38,6 +46,7 @@ function createElement(
     velesNode.velesNode = true;
     velesNode.childComponents = childComponents;
     velesNode.phantom = phantom;
+    velesNode.portal = portal;
 
     // these handlers are used to start tracking `useValue` only when the node
     // is actually mounted in the DOM
@@ -56,6 +65,51 @@ function createElement(
         unmountHandlers.forEach((cb) => cb());
       },
     };
+
+    /**
+     * Since portal node is already mounted in DOM, we can't just attach our HTML to it
+     * imediately. So we attach it only when the component is actually mounted, and detach
+     * when it is unmounted. This way we don't need to iterate the tree manually and
+     * attach/detach in every case we need to change the tree.
+     */
+    if (portal) {
+      velesNode._privateMethods._addMountHandler(function attachNodeOnMount() {
+        velesNode.childComponents.forEach((childComponent) => {
+          if ("velesNode" in childComponent) {
+            portal.append(childComponent.html);
+
+            // TODO: handle phantom nodes as content
+          } else if ("velesStringElement" in childComponent) {
+            portal.append(childComponent.html);
+          } else {
+            const componentNode = getExecutedComponentVelesNode(
+              childComponent.executedVersion
+            );
+            childComponent.html = componentNode.html;
+            portal.append(componentNode.html);
+
+            // TODO: handle phantom nodes as content
+          }
+        });
+      });
+
+      velesNode._privateMethods._addUnmountHandler(
+        function removeNodeOnUnmount() {
+          velesNode.childComponents.forEach((childComponent) => {
+            if ("velesNode" in childComponent) {
+              childComponent.html.remove();
+            } else if ("velesStringElement" in childComponent) {
+              childComponent.html.remove();
+            } else {
+              const componentNode = getExecutedComponentVelesNode(
+                childComponent.executedVersion
+              );
+              componentNode.html.remove();
+            }
+          });
+        }
+      );
+    }
 
     // assign all the DOM attributes, including event listeners
     assignAttributes({ props: otherProps, htmlElement: newElement, velesNode });

@@ -5,5 +5,6 @@ export { createState } from "./create-state";
 export { createRef } from "./create-ref";
 export { Fragment } from "./fragment";
 export { createContext } from "./context";
+export { Portal } from "./portal";
 
 export type { State } from "./create-state/types";
