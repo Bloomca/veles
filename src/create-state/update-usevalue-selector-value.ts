@@ -210,14 +210,7 @@ function updateUseValueSelector<T>({
             );
           }
         } catch (e) {
-          console.error("failed to update...");
-          console.log(document.body.innerHTML);
-          console.log(oldVelesElementNode.parentVelesElement.html.innerHTML);
-          console.log(
-            //@ts-expect-error
-            oldVelesElementNode.parentVelesElement.childComponents[0].html
-              .textContent
-          );
+          console.error("failed to update in useValueSelector", e);
         }
       }
     }
