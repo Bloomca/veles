@@ -29,8 +29,4 @@ Overall, with the correct approach, both libraries should give you good interact
 
 ## Veles' drawbacks
 
-The library is pretty much in alpha state, and there are several missing concepts:
-
-- Portals
-- Not ideal TypeScript support
-- No server rendering (this one is not planned to be supported)
+`Veles` strives to provide a small core of features. For example, server rendering is not really planned to support, at least right now.

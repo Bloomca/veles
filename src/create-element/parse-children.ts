@@ -11,10 +11,12 @@ function parseChildren({
   children,
   htmlElement,
   velesNode,
+  portal,
 }: {
   children: VelesElementProps["children"];
   htmlElement: HTMLElement;
   velesNode: VelesElement;
+  portal?: HTMLElement;
 }) {
   const childComponents: (
     | VelesElement
@@ -71,6 +73,12 @@ function parseChildren({
           });
           childComponent.parentVelesElement = velesNode;
           childComponents.push(childComponent);
+        } else if (childComponent.portal) {
+          // portal HTML is inserted in `mount` and `unmount` hooks, so we don't do it here
+          // we still need to update the parent element so that iterating over the tree works
+          // properly to call these callbacks
+          childComponent.parentVelesElement = velesNode;
+          childComponents.push(childComponent);
         } else {
           // TODO: check that it is a valid DOM Node
           htmlElement.append(childComponent.html);
@@ -83,10 +91,17 @@ function parseChildren({
         childComponent &&
         "velesComponentObject" in childComponent
       ) {
-        childComponent.insertAfter = lastInsertedNode;
         childComponent.parentVelesElement = velesNode;
         childComponents.push(childComponent);
-        lastInsertedNode = childComponent;
+        // If the parent is a portal Node, we don't need to insert it. We also don't need to
+        // maintain the order, since the insertion happens when it is mounted in children order
+        // however, we need to add that code to the mount/unmount callbacks
+        if (portal) {
+          childComponent.portal = portal;
+        } else {
+          childComponent.insertAfter = lastInsertedNode;
+          lastInsertedNode = childComponent;
+        }
       } else if (
         typeof childComponent === "object" &&
         childComponent &&

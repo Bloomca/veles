@@ -36,7 +36,7 @@ function updateUseValueSelector<T>({
      * to the new array. once we merge all subscriptions, we run
      * `unique` function which will make sure there are no double
      * subscriptions.
-     * 
+     *
      * This is needed because using `map` can potentially create
      * some weird side effects, since in case the node changed,
      * some elements will be dynamically removed from the array
@@ -198,19 +198,19 @@ function updateUseValueSelector<T>({
         );
       } else {
         try {
-          parentVelesElementRendered.html.replaceChild(
-            newVelesElementNode.html,
-            oldVelesElementNode.html
-          );
+          if (parentVelesElementRendered.portal) {
+            parentVelesElementRendered.portal.replaceChild(
+              newVelesElementNode.html,
+              oldVelesElementNode.html
+            );
+          } else {
+            parentVelesElementRendered.html.replaceChild(
+              newVelesElementNode.html,
+              oldVelesElementNode.html
+            );
+          }
         } catch (e) {
-          console.error("failed to update...");
-          console.log(document.body.innerHTML);
-          console.log(oldVelesElementNode.parentVelesElement.html.innerHTML);
-          console.log(
-            //@ts-expect-error
-            oldVelesElementNode.parentVelesElement.childComponents[0].html
-              .textContent
-          );
+          console.error("failed to update in useValueSelector", e);
         }
       }
     }
@@ -233,7 +233,7 @@ function updateUseValueSelector<T>({
     }
 
     // we call unmount handlers right after we replace it
-    // this is where the old 
+    // this is where the old
     callUnmountHandlers(node.executedVersion);
 
     addUseValueMountHandler({
