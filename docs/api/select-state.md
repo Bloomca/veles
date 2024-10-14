@@ -11,7 +11,7 @@ parent: API
 
 > This function is also available as `select`
 
-When working with multiple states, often by using [combineState](./combine-state.html), you end up with not the ideal state value representation. E.g. if you want to pass it down as a property to multiple component, you might want to avoid doing the same selector work on all of them, and want to do them at once. It becomes even more important if you want to combine that state with something else.
+When working with multiple states, often by using [combineState](./combine-state.html), you end up with not the ideal state value representation. E.g. if you want to pass it down as a property to multiple component, you might want to avoid doing the same selector work on all of them, and want to do them at once. It becomes even more important if you want to combine that state with something else. If you want to control the updates, you can pass a comparator function as the third argument.
 
 To change the state value, you can use `selectState`/`select` functions. Here is an example:
 
@@ -25,6 +25,9 @@ function Component() {
   const fullNameState = selectState(
     combineState(nameState, lastNameState),
     ([firstName, lastName]) => `${firstName} ${lastName}`
+    // you can pass a comparator as the third argument
+    // by default, it uses referential equality:
+    // function comparator(previous, next) { return previous === next}
   );
 
   return (

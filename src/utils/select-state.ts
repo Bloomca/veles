@@ -4,7 +4,8 @@ type State<StateType> = ReturnType<typeof createState<StateType>>;
 
 function selectState<F, T>(
   state: State<F>,
-  selector: (state: F) => T
+  selector: (state: F) => T,
+  comparator?: (previousSelectedState: T, nextSelectedState: T) => boolean
 ): State<T> {
   const initialValue = selector(state.getValue());
 
@@ -15,7 +16,7 @@ function selectState<F, T>(
       // we use a function because `selectedState` can be a function itself
       newState.setValue(() => selectedState);
     },
-    { skipFirstCall: true }
+    { skipFirstCall: true, comparator }
   );
 
   return newState;
