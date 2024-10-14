@@ -625,6 +625,11 @@ describe("portals", () => {
       `portal titleportal container`
     );
 
+    fragmentShowState.setValue(true);
+    expect(screen.getByTestId("portal").textContent).toBe(
+      `portal titleportal fragment titlefragment string1fragment componentportal container`
+    );
+
     checkCleanup();
   });
 });

@@ -73,7 +73,14 @@ function renderTree(
     // if there is a portal, we don't need to render directly
     // instead, we need to do so in the mount callback
     if (component.portal) {
-      // it is handled by the portal parent element
+      /**
+       * Inserting nodes is handled by the portal parent element.
+       * We still need to assign `parentVelesElement`, so that
+       * `useValue` updates correctly
+       */
+      if (parentVelesElement) {
+        newNode.parentVelesElement = parentVelesElement;
+      }
     } else if (parentVelesElement) {
       if (component.insertAfter) {
         if ("velesComponentObject" in component.insertAfter) {
