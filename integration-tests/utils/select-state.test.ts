@@ -75,4 +75,43 @@ describe("createState", () => {
     await user.click(btn1);
     expect(await screen.findByText("current value is 24")).toBeVisible();
   });
+
+  test("allows to use comparator in selectState", () => {
+    const firstSpy = jest.fn();
+    const secondSpy = jest.fn();
+    const state = createState({
+      firstValue: 1,
+      secondValue: 2,
+    });
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    function StateComponent() {
+      const selectedState = selectState(
+        state,
+        (state) => state,
+        (a, b) =>
+          a.firstValue === b.firstValue && a.secondValue === b.secondValue
+      );
+      const selectedStateNoComparator = selectState(state, (state) => state);
+      selectedState.trackValue(firstSpy);
+      selectedStateNoComparator.trackValue(secondSpy);
+
+      return null;
+    }
+
+    expect(firstSpy).toHaveBeenCalledTimes(1);
+    expect(secondSpy).toHaveBeenCalledTimes(1);
+
+    state.setValue({ firstValue: 2, secondValue: 5 });
+    expect(firstSpy).toHaveBeenCalledTimes(2);
+    expect(secondSpy).toHaveBeenCalledTimes(2);
+
+    state.setValue({ firstValue: 2, secondValue: 5 });
+    expect(firstSpy).toHaveBeenCalledTimes(2);
+    expect(secondSpy).toHaveBeenCalledTimes(3);
+  });
 });
