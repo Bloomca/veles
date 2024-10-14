@@ -8,6 +8,8 @@ import type {
   VelesElement,
   VelesElementProps,
   ComponentFunction,
+  ExecutedVelesElement,
+  ExecutedVelesStringElement,
 } from "../types";
 
 function createElement(
@@ -76,19 +78,22 @@ function createElement(
       velesNode._privateMethods._addMountHandler(function attachNodeOnMount() {
         velesNode.childComponents.forEach((childComponent) => {
           if ("velesNode" in childComponent) {
-            portal.append(childComponent.html);
-
-            // TODO: handle phantom nodes as content
+            if (childComponent.phantom) {
+              childComponent.childComponents.forEach(
+                (fragmentChildComponent) => {
+                  portal.append(fragmentChildComponent.html);
+                }
+              );
+            } else {
+              portal.append(childComponent.html);
+            }
           } else if ("velesStringElement" in childComponent) {
             portal.append(childComponent.html);
           } else {
             const componentNode = getExecutedComponentVelesNode(
               childComponent.executedVersion
             );
-            childComponent.html = componentNode.html;
-            portal.append(componentNode.html);
-
-            // TODO: handle phantom nodes as content
+            appendComponentToPortal(componentNode, portal);
           }
         });
       });
@@ -104,7 +109,7 @@ function createElement(
               const componentNode = getExecutedComponentVelesNode(
                 childComponent.executedVersion
               );
-              componentNode.html.remove();
+              cleanupComponentFromPortal(componentNode);
             }
           });
         }
@@ -125,6 +130,47 @@ function createElement(
   throw new Error(
     "Veles createElement expects a valid DOM string or another component"
   );
+}
+
+function appendComponentToPortal(
+  componentNode: ExecutedVelesElement | ExecutedVelesStringElement,
+  portal: HTMLElement
+) {
+  if ("executedVelesNode" in componentNode && componentNode.phantom) {
+    componentNode.childComponents.forEach((fragmentChildComponent) => {
+      if ("executedVelesComponent" in fragmentChildComponent) {
+        const childComponentNode = getExecutedComponentVelesNode(
+          fragmentChildComponent
+        );
+        appendComponentToPortal(childComponentNode, portal);
+      } else {
+        portal.append(fragmentChildComponent.html);
+      }
+    });
+    componentNode.phantom;
+  } else {
+    portal.append(componentNode.html);
+  }
+}
+
+function cleanupComponentFromPortal(
+  componentNode: ExecutedVelesElement | ExecutedVelesStringElement
+) {
+  if ("executedVelesNode" in componentNode && componentNode.phantom) {
+    componentNode.childComponents.forEach((fragmentChildComponent) => {
+      if ("executedVelesComponent" in fragmentChildComponent) {
+        const childComponentNode = getExecutedComponentVelesNode(
+          fragmentChildComponent
+        );
+        cleanupComponentFromPortal(childComponentNode);
+      } else {
+        fragmentChildComponent.html.remove();
+      }
+    });
+    componentNode.phantom;
+  } else {
+    componentNode.html.remove();
+  }
 }
 
 export { createElement };

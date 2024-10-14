@@ -1,4 +1,10 @@
-import { attachComponent, createElement, createState, Portal } from "../src";
+import {
+  attachComponent,
+  createElement,
+  createState,
+  Portal,
+  Fragment,
+} from "../src";
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
@@ -517,6 +523,106 @@ describe("portals", () => {
     await user.click(screen.getByRole("button", { name: "toggle content" }));
     expect(screen.getByTestId("portal").textContent).toBe(
       "portal titletoggle content"
+    );
+
+    checkCleanup();
+  });
+
+  test("it supports Fragments in Portal content", () => {
+    cleanup = attachComponent({
+      htmlElement: appContainer,
+      component: createElement("div", {
+        children: createElement(Application),
+      }),
+    });
+
+    function Application() {
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: ["app title"] }),
+          createElement(Portal, {
+            portalNode: portalContainer,
+            children: [
+              createElement("h2", { children: "portal title" }),
+              createElement(Fragment, {
+                children: [
+                  createElement("h3", { children: "portal fragment title" }),
+                  "fragment string",
+                  1,
+                  createElement(FragmentComponent),
+                ],
+              }),
+              createElement("div", { children: "portal container" }),
+            ],
+          }),
+          createElement("div", { children: "app content" }),
+        ],
+      });
+    }
+
+    function FragmentComponent() {
+      return "fragment component";
+    }
+
+    expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
+    expect(screen.getByTestId("portal").textContent).toBe(
+      `portal titleportal fragment titlefragment string1fragment componentportal container`
+    );
+
+    checkCleanup();
+  });
+
+  test("it supports conditional Fragments in Portal content", () => {
+    const fragmentShowState = createState(true);
+    cleanup = attachComponent({
+      htmlElement: appContainer,
+      component: createElement("div", {
+        children: createElement(Application),
+      }),
+    });
+
+    function Application() {
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: ["app title"] }),
+          createElement(Portal, {
+            portalNode: portalContainer,
+            children: [
+              createElement("h2", { children: "portal title" }),
+              fragmentShowState.useValue((shouldShow) =>
+                shouldShow
+                  ? createElement(Fragment, {
+                      children: [
+                        createElement("h3", {
+                          children: "portal fragment title",
+                        }),
+                        "fragment string",
+                        1,
+                        createElement(FragmentComponent),
+                      ],
+                    })
+                  : null
+              ),
+              createElement("div", { children: "portal container" }),
+            ],
+          }),
+          createElement("div", { children: "app content" }),
+        ],
+      });
+    }
+
+    function FragmentComponent() {
+      return "fragment component";
+    }
+
+    expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
+    expect(screen.getByTestId("portal").textContent).toBe(
+      `portal titleportal fragment titlefragment string1fragment componentportal container`
+    );
+
+    fragmentShowState.setValue(false);
+    expect(screen.getByTestId("portal").textContent).toBe(
+      `portal titleportal container`
     );
 
     checkCleanup();
