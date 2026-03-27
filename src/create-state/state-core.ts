@@ -1,3 +1,4 @@
+// explicit symbol for empty value, so it is 100% unique
 const emptyValue = Symbol("veles-state-core-empty");
 
 type CoreValue<T> = T | typeof emptyValue;
@@ -6,13 +7,17 @@ type Subscriber<T> = (value: T, prevValue: CoreValue<T>) => void;
 
 type EqualityFn<T> = (
   currentValue: CoreValue<T>,
-  newValue: CoreValue<T>
+  newValue: CoreValue<T>,
 ) => boolean;
 
 type CoreOptions<T> = {
+  // internal value, don't set it directly
   parents?: StateCore<any>[];
+  // internal value, don't set it directly
   compute?: () => CoreValue<T>;
+  // internal value, don't set it directly
   dirty?: boolean;
+  // custom equality function, by default it uses `===`. Provide `() => false` to have no comparator
   equality?: EqualityFn<T>;
 };
 
@@ -51,7 +56,7 @@ class StateCore<T> {
 
     return () => {
       this._subscribers = this._subscribers.filter(
-        (currentCb) => currentCb !== cb
+        (currentCb) => currentCb !== cb,
       );
     };
   }
@@ -78,7 +83,7 @@ class StateCore<T> {
 
   map<V>(
     fn: (value: T) => V,
-    options: { equality?: EqualityFn<V> } = {}
+    options: { equality?: EqualityFn<V> } = {},
   ): StateCore<V> {
     const result = new StateCore<V>(emptyValue, {
       parents: [this],
@@ -94,7 +99,7 @@ class StateCore<T> {
 
   filter(
     fn: (value: T, prevValue?: CoreValue<T>) => boolean,
-    options: { equality?: EqualityFn<T> } = {}
+    options: { equality?: EqualityFn<T> } = {},
   ): StateCore<T> {
     let result!: StateCore<T>;
     result = new StateCore<T>(emptyValue, {
@@ -115,12 +120,13 @@ class StateCore<T> {
   scan<V>(
     fn: (acc: V, value: T, prevValue?: CoreValue<T>) => V,
     initialValue: V,
-    options: { equality?: EqualityFn<V> } = {}
+    options: { equality?: EqualityFn<V> } = {},
   ): StateCore<V> {
     let result!: StateCore<V>;
     result = new StateCore<V>(initialValue, {
       parents: [this],
-      compute: (): V => fn(result._value as V, this.get() as T, this._prevValue),
+      compute: (): V =>
+        fn(result._value as V, this.get() as T, this._prevValue),
       dirty: true,
       equality: options.equality,
     });
@@ -143,7 +149,9 @@ class StateCore<T> {
     const result = new StateCore(emptyValue, {
       parents: [this, ...sources],
       compute: () => {
-        const values = [this.get()].concat(sources.map((source) => source.get()));
+        const values = [this.get()].concat(
+          sources.map((source) => source.get()),
+        );
 
         if (values.some((value) => value === emptyValue)) {
           return emptyValue;
@@ -257,7 +265,7 @@ class StateCore<T> {
 }
 
 function createCoreEquality<T>(
-  comparator?: (value1: T, value2: T) => boolean
+  comparator?: (value1: T, value2: T) => boolean,
 ): EqualityFn<T> | undefined {
   if (!comparator) {
     return undefined;

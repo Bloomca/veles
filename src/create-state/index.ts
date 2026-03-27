@@ -33,11 +33,28 @@ function getStateCore<T>(state: State<T>): StateCore<T> {
   return core;
 }
 
+type UseValueSelectorSignature<T> = {
+  (
+    selector: undefined,
+    cb?: (
+      value: T,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    comparator?: (value1: T, value2: T) => boolean,
+  ): VelesElement | VelesComponentObject | VelesStringElement;
+  <F>(
+    selector: (value: T) => F,
+    cb?: (
+      value: F,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    comparator?: (value1: F, value2: F) => boolean,
+  ): VelesElement | VelesComponentObject | VelesStringElement;
+};
+
 function createStateFromCore<T>(
   core: StateCore<T>,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"]
-  ) => Function
+    setValue: ReturnType<typeof createState<T>>["setValue"],
+  ) => Function,
 ): State<T> {
   // all subscription types we track
   const trackers: StateTrackers = {
@@ -55,6 +72,84 @@ function createStateFromCore<T>(
     });
   });
 
+  const useValueSelector: UseValueSelectorSignature<T> = ((
+    selector: ((value: T) => unknown) | undefined,
+    cb?: (
+      value: unknown,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    comparator: (value1: unknown, value2: unknown) => boolean = identity,
+  ) => {
+    const currentValue = core.get() as T;
+
+    if (selector) {
+      const selectedValue = selector(currentValue);
+      const returnedNode = cb
+        ? cb(selectedValue)
+        : selectedValue == undefined
+          ? ""
+          : String(selectedValue);
+      const node =
+        !returnedNode || typeof returnedNode === "string"
+          ? createTextElement(returnedNode as string)
+          : returnedNode;
+
+      const currentContext = getCurrentContext();
+
+      node.needExecutedVersion = true;
+
+      const trackingSelectorElement: TrackingSelectorElement = {
+        selector,
+        selectedValue,
+        cb,
+        node,
+        comparator,
+        savedContext: currentContext,
+      };
+
+      addUseValueMountHandler({
+        usedValue: currentValue,
+        getValue: () => core.get() as T,
+        trackers,
+        trackingSelectorElement,
+      });
+
+      return node;
+    }
+
+    const selectedValue = currentValue;
+    const returnedNode = cb
+      ? cb(selectedValue)
+      : selectedValue == undefined
+        ? ""
+        : String(selectedValue);
+    const node =
+      !returnedNode || typeof returnedNode === "string"
+        ? createTextElement(returnedNode as string)
+        : returnedNode;
+
+    const currentContext = getCurrentContext();
+
+    node.needExecutedVersion = true;
+
+    const trackingSelectorElement: TrackingSelectorElement = {
+      selector,
+      selectedValue,
+      cb,
+      node,
+      comparator,
+      savedContext: currentContext,
+    };
+
+    addUseValueMountHandler({
+      usedValue: currentValue,
+      getValue: () => core.get() as T,
+      trackers,
+      trackingSelectorElement,
+    });
+
+    return node;
+  }) as UseValueSelectorSignature<T>;
+
   const result: State<T> = {
     // supposed to be used at the component level
     trackValue: (cb, options = {}) => {
@@ -67,17 +162,17 @@ function createStateFromCore<T>(
         callOnMount?: boolean;
         skipFirstCall?: boolean;
         comparator?: (value1: F, value2: F) => boolean;
-      } = {}
+      } = {},
     ) {
       const selectedCore = selector
         ? core.map(selector, {
             equality: createCoreEquality(options.comparator),
           })
         : options.comparator
-        ? core.map((value) => value as unknown as F, {
-            equality: createCoreEquality(options.comparator),
-          })
-        : (core as unknown as StateCore<F>);
+          ? core.map((value) => value as unknown as F, {
+              equality: createCoreEquality(options.comparator),
+            })
+          : (core as unknown as StateCore<F>);
 
       const trackedValue = selectedCore.get() as F;
 
@@ -107,50 +202,15 @@ function createStateFromCore<T>(
       });
     },
     useValue: (cb, comparator) => {
-      return result.useValueSelector<T>(undefined, cb, comparator);
+      return result.useValueSelector(undefined, cb, comparator);
     },
-    useValueSelector<F>(
-      selector: ((value: T) => F) | undefined,
-      cb?: (
-        value: F
-      ) => VelesElement | VelesComponentObject | string | undefined | null,
-      comparator: (value1: F, value2: F) => boolean = identity
-    ): VelesElement | VelesComponentObject | VelesStringElement {
-      const currentValue = core.get() as T;
-      // @ts-expect-error
-      const selectedValue = selector ? selector(currentValue) : (currentValue as F);
-      const returnedNode = cb
-        ? cb(selectedValue)
-        : selectedValue == undefined
-        ? ""
-        : String(selectedValue);
-      const node =
-        !returnedNode || typeof returnedNode === "string"
-          ? createTextElement(returnedNode as string)
-          : returnedNode;
-
-      const currentContext = getCurrentContext();
-
-      node.needExecutedVersion = true;
-
-      const trackingSelectorElement: TrackingSelectorElement = {
-        selector,
-        selectedValue,
-        cb,
-        node,
-        comparator,
-        savedContext: currentContext,
-      };
-
-      addUseValueMountHandler({
-        usedValue: currentValue,
-        getValue: () => core.get() as T,
-        trackers,
-        trackingSelectorElement,
-      });
-
-      return node;
-    },
+    useValueSelector,
+    /**
+     * This function is used to iterate over the values and return tracked DOM nodes.
+     * When using it, the callback receives elementState and indexState props object
+     * to track changes; this way individual changes will not trigger any component
+     * re-renders.
+     */
     useValueIterator<Element>(
       options: {
         key: string | ((options: { element: any; index: number }) => string);
@@ -159,7 +219,7 @@ function createStateFromCore<T>(
       cb: (props: {
         elementState: State<Element>;
         indexState: State<number>;
-      }) => VelesElement | VelesComponentObject
+      }) => VelesElement | VelesComponentObject,
     ) {
       const currentContext = getCurrentContext();
       const trackingParams = {} as TrackingIterator;
@@ -169,7 +229,7 @@ function createStateFromCore<T>(
         const children: [
           VelesElement | VelesComponentObject,
           string,
-          State<Element>
+          State<Element>,
         ][] = [];
         const elementsByKey: {
           [key: string]: {
@@ -180,7 +240,9 @@ function createStateFromCore<T>(
           };
         } = {};
         const stateValue = core.get() as T;
-        const elements = options.selector ? options.selector(stateValue) : stateValue;
+        const elements = options.selector
+          ? options.selector(stateValue)
+          : stateValue;
 
         if (!Array.isArray(elements)) {
           console.error("useValueIterator received non-array value");
@@ -231,7 +293,7 @@ function createStateFromCore<T>(
           componentAPI.onUnmount(() => {
             trackers.trackingIterators = trackers.trackingIterators.filter(
               (currentTrackingParams) =>
-                currentTrackingParams !== trackingParams
+                currentTrackingParams !== trackingParams,
             );
           });
         });
@@ -268,7 +330,7 @@ function createStateFromCore<T>(
       const attributeHelper = (
         htmlElement: HTMLElement,
         attributeName: string,
-        node: VelesElement
+        node: VelesElement,
       ) => {
         // save it to the attribute array
         // read that array on `_triggerUpdates`
@@ -296,7 +358,10 @@ function createStateFromCore<T>(
           } else {
             // since the `element` will be modified in place, we don't need to
             // replace it in the array or anything
-            updateUseAttributeValue({ element: trackingElement, value: core.get() });
+            updateUseAttributeValue({
+              element: trackingElement,
+              value: core.get(),
+            });
           }
 
           if (!wasMounted) {
@@ -305,7 +370,7 @@ function createStateFromCore<T>(
 
           node._privateMethods._addUnmountHandler(() => {
             trackers.trackingAttributes = trackers.trackingAttributes.filter(
-              (trackingAttribute) => trackingAttribute !== trackingElement
+              (trackingAttribute) => trackingAttribute !== trackingElement,
             );
           });
         });
@@ -333,8 +398,9 @@ function createStateFromCore<T>(
     setValue: (newValueCB: ((currentValue: T) => T) | T): void => {
       const currentValue = core.get() as T;
       const newValue =
-        // @ts-expect-error
-        typeof newValueCB === "function" ? newValueCB(currentValue) : newValueCB;
+        typeof newValueCB === "function"
+          ? newValueCB(currentValue)
+          : newValueCB;
 
       core.set(newValue);
     },
@@ -365,8 +431,8 @@ function createStateFromCore<T>(
 function createState<T>(
   initialValue: T,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"]
-  ) => Function
+    setValue: ReturnType<typeof createState<T>>["setValue"],
+  ) => Function,
 ): State<T> {
   const core = new StateCore<T>(initialValue);
   return createStateFromCore(core, subscribeCallback);

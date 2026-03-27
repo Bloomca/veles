@@ -33,16 +33,25 @@ export type State<ValueType> = {
     ) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
   ): VelesElement | VelesComponentObject | VelesStringElement;
-  useValueSelector<SelectorValueType>(
-    selector: (value: ValueType) => SelectorValueType,
-    cb?: (
-      value: SelectorValueType
-    ) => VelesElement | VelesComponentObject | string | undefined | null,
-    comparator?: (
-      value1: SelectorValueType,
-      value2: SelectorValueType
-    ) => boolean
-  ): VelesElement | VelesComponentObject | VelesStringElement;
+  useValueSelector: {
+    (
+      selector: undefined,
+      cb?: (
+        value: ValueType
+      ) => VelesElement | VelesComponentObject | string | undefined | null,
+      comparator?: (value1: ValueType, value2: ValueType) => boolean
+    ): VelesElement | VelesComponentObject | VelesStringElement;
+    <SelectorValueType>(
+      selector: (value: ValueType) => SelectorValueType,
+      cb?: (
+        value: SelectorValueType
+      ) => VelesElement | VelesComponentObject | string | undefined | null,
+      comparator?: (
+        value1: SelectorValueType,
+        value2: SelectorValueType
+      ) => boolean
+    ): VelesElement | VelesComponentObject | VelesStringElement;
+  };
   useAttribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
   useValueIterator<Element>(
     options: {
