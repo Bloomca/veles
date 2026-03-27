@@ -6,6 +6,10 @@ import type {
 } from "../types";
 import type { ComponentContext } from "../context/types";
 
+type StateEquality<ValueType> = (value1: ValueType, value2: ValueType) => boolean;
+
+type StateLike<ValueType> = State<ValueType>;
+
 export type State<ValueType> = {
   trackValue(
     cb: (value: ValueType) => void | Function,
@@ -63,6 +67,42 @@ export type State<ValueType> = {
       indexState: State<number>;
     }) => VelesElement | VelesComponentObject
   ): VelesComponentObject | VelesElement | null;
+  map<SelectorValueType>(
+    selector: (value: ValueType) => SelectorValueType,
+    options?: {
+      equality?: StateEquality<SelectorValueType>;
+    }
+  ): State<SelectorValueType>;
+  filter(
+    predicate: (value: ValueType, prevValue?: ValueType | undefined) => boolean,
+    options?: {
+      equality?: StateEquality<ValueType>;
+    }
+  ): State<ValueType>;
+  scan<AccumulatorValueType>(
+    reducer: (
+      acc: AccumulatorValueType,
+      value: ValueType,
+      prevValue?: ValueType | undefined
+    ) => AccumulatorValueType,
+    initialValue: AccumulatorValueType,
+    options?: {
+      equality?: StateEquality<AccumulatorValueType>;
+    }
+  ): State<AccumulatorValueType>;
+  combine<Sources extends [StateLike<any>, ...StateLike<any>[]]>(
+    ...states: Sources
+  ): State<
+    [
+      ValueType,
+      ...{
+        [K in keyof Sources]: Sources[K] extends StateLike<infer U>
+          ? U
+          : never;
+      }
+    ]
+  >;
+  dispose(): void;
   getValue(): ValueType;
   getPreviousValue(): undefined | ValueType;
   setValue(newValue: ValueType): void;
