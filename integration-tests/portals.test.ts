@@ -337,7 +337,7 @@ describe("portals", () => {
           createElement("button", {
             children: "toggle menu",
             onClick: () =>
-              showPortalState.setValue((currentValue) => !currentValue),
+              showPortalState.updateValue((currentValue) => !currentValue),
           }),
           showPortalState.useValue((shouldShow) =>
             shouldShow
@@ -393,7 +393,7 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.setValue((currentValue) => !currentValue),
+                  showContentState.updateValue((currentValue) => !currentValue),
               }),
               showContentState.useValue((shouldShow) =>
                 shouldShow
@@ -445,7 +445,7 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.setValue((currentValue) => !currentValue),
+                  showContentState.updateValue((currentValue) => !currentValue),
               }),
               showContentState.useValue((shouldShow) =>
                 shouldShow ? "portal content" : null
@@ -495,7 +495,7 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.setValue((currentValue) => !currentValue),
+                  showContentState.updateValue((currentValue) => !currentValue),
               }),
               showContentState.useValue((shouldShow) =>
                 shouldShow ? createElement(PortalContent) : null

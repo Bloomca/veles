@@ -74,7 +74,7 @@ describe("<Fragment>", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => state.setValue((currentValue) => currentValue + 1),
+            onClick: () => state.updateValue((currentValue) => currentValue + 1),
           }),
           createElement("div", { children: "last child" }),
           createElement("hr"),

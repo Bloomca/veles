@@ -25,7 +25,7 @@ describe("attachComponent", () => {
   });
 
   test("calls all onUnmount callbacks when removing tree", () => {
-    const appUnmountSpy = jest.fn();
+    const appUnmountSpy = vi.fn();
     function App() {
       onUnmount(appUnmountSpy);
 
@@ -38,8 +38,8 @@ describe("attachComponent", () => {
       });
     }
     const state = createState(0);
-    const childUnmountSpy = jest.fn();
-    const childSubscriptionSpy = jest.fn();
+    const childUnmountSpy = vi.fn();
+    const childSubscriptionSpy = vi.fn();
     function Child() {
       onUnmount(childUnmountSpy);
       state.trackValue(childSubscriptionSpy, { skipFirstCall: true });

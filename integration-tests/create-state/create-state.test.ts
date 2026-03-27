@@ -36,7 +36,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
           valueState.useValue((value) =>
@@ -101,7 +101,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
           createElement(ReadingStateComponent, {
@@ -156,7 +156,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.setValue((currentValue) => ({
+              valueState.updateValue((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -165,7 +165,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.setValue((currentValue) => ({
+              valueState.updateValue((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
@@ -179,7 +179,7 @@ describe("createState", () => {
       });
     }
 
-    const unmountSpy = jest.fn();
+    const unmountSpy = vi.fn();
     function SecondValueComponent({ value }: { value: number }) {
       onUnmount(unmountSpy);
       return createElement("div", {
@@ -215,7 +215,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.setValue((currentValue) => ({
+              valueState.updateValue((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -224,7 +224,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.setValue((currentValue) => ({
+              valueState.updateValue((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
@@ -233,7 +233,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "fakeValueButton",
             onClick: () => {
-              valueState.setValue((currentValue) => ({
+              valueState.updateValue((currentValue) => ({
                 ...currentValue,
               }));
             },
@@ -249,7 +249,7 @@ describe("createState", () => {
       });
     }
 
-    const unmountSpy = jest.fn();
+    const unmountSpy = vi.fn();
     function ValueComponent({ value }: { value: number }) {
       onUnmount(unmountSpy);
       return createElement("div", {
@@ -285,7 +285,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
@@ -321,7 +321,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
@@ -550,7 +550,7 @@ describe("createState", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue((value) => !value),
+            onClick: () => showState.updateValue((value) => !value),
           }),
           showState.useValue((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
@@ -559,7 +559,7 @@ describe("createState", () => {
       });
     }
 
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function NestedComponent() {
       const x = createElement("div", {
         children: [
@@ -575,7 +575,7 @@ describe("createState", () => {
           createElement("h1", { children: "nested component" }),
           createElement("button", {
             "data-testid": "nestedButton",
-            onClick: () => showState.setValue((value) => !value),
+            onClick: () => showState.updateValue((value) => !value),
           }),
           showState.useValue((shouldShow) => (shouldShow ? x : null)),
         ],

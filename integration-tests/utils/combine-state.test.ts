@@ -13,7 +13,7 @@ describe("createState", () => {
   });
 
   test("allows to combine several states", async () => {
-    const spy = jest.fn();
+    const spy = vi.fn();
     const user = userEvent.setup();
     function StateComponent() {
       const valueState1 = createState(0);
@@ -32,19 +32,19 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.setValue((currentValue) => currentValue + 1);
+              valueState1.updateValue((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.setValue((currentValue) => currentValue + 1);
+              valueState2.updateValue((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.setValue((currentValue) => currentValue + 1);
+              valueState3.updateValue((currentValue) => currentValue + 1);
             },
           }),
           combinedValueState.useValueSelector(

@@ -33,19 +33,19 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.setValue((currentValue) => currentValue + 1);
+              valueState1.updateValue((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.setValue((currentValue) => currentValue + 1);
+              valueState2.updateValue((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.setValue((currentValue) => currentValue + 1);
+              valueState3.updateValue((currentValue) => currentValue + 1);
             },
           }),
           changedState.useValue((value) =>
@@ -77,8 +77,8 @@ describe("createState", () => {
   });
 
   test("allows to use comparator in selectState", () => {
-    const firstSpy = jest.fn();
-    const secondSpy = jest.fn();
+    const firstSpy = vi.fn();
+    const secondSpy = vi.fn();
     const state = createState({
       firstValue: 1,
       secondValue: 2,

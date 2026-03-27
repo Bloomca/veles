@@ -21,8 +21,8 @@ describe("track-value", () => {
   // and they are called correctly when the state changes
   test("supports custom subscriptions to state", async () => {
     const user = userEvent.setup();
-    const spyFn = jest.fn();
-    const onUnmountCheck = jest.fn();
+    const spyFn = vi.fn();
+    const onUnmountCheck = vi.fn();
     function StateComponent() {
       const valueState = createState(0);
       valueState.trackValue((value) => spyFn(value));
@@ -34,7 +34,7 @@ describe("track-value", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
           valueState.useValue((value) =>
@@ -65,7 +65,7 @@ describe("track-value", () => {
 
   it("supports custom subscriptions with state.trackValue with skipFirstCall option", async () => {
     const user = userEvent.setup();
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function StateComponent() {
       const valueState = createState(0);
       valueState.trackValue((value) => spyFn(value), { skipFirstCall: true });
@@ -75,7 +75,7 @@ describe("track-value", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
           valueState.useValue((value) =>
@@ -103,7 +103,7 @@ describe("track-value", () => {
 
   it("supports custom subscriptions with state.trackValue with callOnMount option", async () => {
     const user = userEvent.setup();
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function StateComponent() {
       const valueState = createState(0);
       valueState.trackValue((value) => spyFn(value), { callOnMount: true });
@@ -113,7 +113,7 @@ describe("track-value", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
           valueState.useValue((value) =>
@@ -146,8 +146,8 @@ describe("track-value", () => {
 
   it("runs trackValueSelector only when the selector value changes", async () => {
     const user = userEvent.setup();
-    const nameSpy = jest.fn();
-    const emailSpy = jest.fn();
+    const nameSpy = vi.fn();
+    const emailSpy = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
       const userState = createState({ name: "", email: "" });
@@ -169,7 +169,7 @@ describe("track-value", () => {
             name: "name",
             value: userState.useAttribute((user) => user.name),
             onInput: (e) =>
-              userState.setValue((currentUser) => ({
+              userState.updateValue((currentUser) => ({
                 ...currentUser,
                 name: (e.target as HTMLInputElement).value,
               })),
@@ -181,7 +181,7 @@ describe("track-value", () => {
             name: "email",
             value: userState.useAttribute((user) => user.email),
             onInput: (e) =>
-              userState.setValue((currentUser) => ({
+              userState.updateValue((currentUser) => ({
                 ...currentUser,
                 email: (e.target as HTMLInputElement).value,
               })),
@@ -209,8 +209,8 @@ describe("track-value", () => {
 
   it("allows to run custom comparator", async () => {
     const user = userEvent.setup();
-    const nameSpy = jest.fn();
-    const emailSpy = jest.fn();
+    const nameSpy = vi.fn();
+    const emailSpy = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
       const userState = createState({ name: "", email: "" });
@@ -235,7 +235,7 @@ describe("track-value", () => {
             name: "name",
             value: userState.useAttribute((user) => user.name),
             onInput: (e) =>
-              userState.setValue((currentUser) => ({
+              userState.updateValue((currentUser) => ({
                 ...currentUser,
                 name: (e.target as HTMLInputElement).value,
               })),
@@ -247,7 +247,7 @@ describe("track-value", () => {
             name: "email",
             value: userState.useAttribute((user) => user.email),
             onInput: (e) =>
-              userState.setValue((currentUser) => ({
+              userState.updateValue((currentUser) => ({
                 ...currentUser,
                 email: (e.target as HTMLInputElement).value,
               })),

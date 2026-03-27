@@ -19,9 +19,9 @@ describe("lifecycle hooks", () => {
   });
 
   test("triggers onMount hook on all components in the tree", async () => {
-    const appMountSpy = jest.fn();
-    const firstComponentMountSpy = jest.fn();
-    const secondComponentMountSpy = jest.fn();
+    const appMountSpy = vi.fn();
+    const firstComponentMountSpy = vi.fn();
+    const secondComponentMountSpy = vi.fn();
     function App() {
       onMount(appMountSpy);
       return createElement("div", {
@@ -79,8 +79,8 @@ describe("lifecycle hooks", () => {
       });
     }
 
-    const firstComponentUnmountSpy = jest.fn();
-    const secondComponentUnmountSpy = jest.fn();
+    const firstComponentUnmountSpy = vi.fn();
+    const secondComponentUnmountSpy = vi.fn();
     function FirstNestedComponent() {
       onUnmount(firstComponentUnmountSpy);
       return createElement("div", {
@@ -153,7 +153,7 @@ describe("lifecycle hooks", () => {
           "app component",
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(() => true),
+            onClick: () => showState.updateValue(() => true),
           }),
           showState.useValue((shouldShow) =>
             shouldShow ? createElement(Wrapper) : null
@@ -168,7 +168,7 @@ describe("lifecycle hooks", () => {
       });
     }
 
-    const spy = jest.fn();
+    const spy = vi.fn();
     function ConditionalComponent() {
       onMount(spy);
 
@@ -200,7 +200,7 @@ describe("lifecycle hooks", () => {
   });
 
   test("onMount is called one time", async () => {
-    const appMountSpy = jest.fn();
+    const appMountSpy = vi.fn();
     function App() {
       onMount(appMountSpy);
       return createElement("div", {
@@ -209,7 +209,7 @@ describe("lifecycle hooks", () => {
       });
     }
 
-    const firstComponentMountSpy = jest.fn();
+    const firstComponentMountSpy = vi.fn();
     function FirstComponent() {
       onMount(firstComponentMountSpy);
 
@@ -218,14 +218,14 @@ describe("lifecycle hooks", () => {
       });
     }
 
-    const secondComponentMountSpy = jest.fn();
+    const secondComponentMountSpy = vi.fn();
     function SecondComponent() {
       onMount(secondComponentMountSpy);
 
       return createElement(ThirdComponent);
     }
 
-    const thirdComponentMountSpy = jest.fn();
+    const thirdComponentMountSpy = vi.fn();
     function ThirdComponent() {
       onMount(thirdComponentMountSpy);
 
@@ -261,7 +261,7 @@ describe("lifecycle hooks", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              tasksState.setValue((currentTasks) =>
+              tasksState.updateValue((currentTasks) =>
                 currentTasks.concat({ id: 3, title: "third task" })
               );
             },
@@ -273,7 +273,7 @@ describe("lifecycle hooks", () => {
       });
     }
 
-    const taskMountSpy = jest.fn();
+    const taskMountSpy = vi.fn();
     function Task({
       taskState,
     }: {
@@ -329,8 +329,8 @@ describe("lifecycle hooks", () => {
       });
     }
 
-    const mountSpy = jest.fn();
-    const unmountSpy = jest.fn();
+    const mountSpy = vi.fn();
+    const unmountSpy = vi.fn();
     function ConditionalComponent() {
       onMount(() => {
         mountSpy();
@@ -363,7 +363,7 @@ describe("lifecycle hooks", () => {
 
   test("calls unmounted correct amount of times", async () => {
     const user = userEvent.setup();
-    const unmountSpy = jest.fn();
+    const unmountSpy = vi.fn();
     function App() {
       onUnmount(() => {
         unmountSpy("unmounting app");

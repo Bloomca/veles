@@ -1,4 +1,7 @@
 node_modules/
 src/**/*.js
 integration-tests/**/*.js
+setupTestFramework.js
+tsup.config.js
+vitest.config.js
 dist/
