@@ -65,9 +65,8 @@ export type State<ValueType> = {
   ): VelesComponentObject | VelesElement | null;
   getValue(): ValueType;
   getPreviousValue(): undefined | ValueType;
-  setValue(
-    newValueCB: ((currentValue: ValueType) => ValueType) | ValueType
-  ): void;
+  setValue(newValue: ValueType): void;
+  updateValue(newValueCB: (currentValue: ValueType) => ValueType): void;
 };
 
 export function createState<T>(

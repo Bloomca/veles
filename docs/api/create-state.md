@@ -29,7 +29,7 @@ function Counter() {
     <div>
       <button
         onClick={() =>
-          counterState.setValue((currentValue) => currentValue + 1)
+          counterState.updateValue((currentValue) => currentValue + 1)
         }
       >
         +
@@ -47,7 +47,7 @@ A created state object has many methods, including several types of subscription
 ### `state.setValue`
 
 - `state.setValue(newValue)`
-- `state.setValue((currentValue) => newValue)`
+- `state.updateValue((currentValue) => newValue)`
 
 First, let's look at how to update values. You can either call `setValue` with the new value outright, or you can pass a callback which will receive the current value as the first argument. When this function is called and the new value is different from the previous one (it uses referential equality check, `===`), all subscriptions will be called.
 

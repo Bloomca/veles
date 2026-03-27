@@ -29,7 +29,7 @@ function Counter() {
   const counterState = createState(0);
   return (
     <div>
-      <button onClick={() => counterState.setValue((value) => value + 1)}>
+      <button onClick={() => counterState.updateValue((value) => value + 1)}>
         +
       </button>
       <p>
@@ -75,7 +75,7 @@ function App() {
         />
         <button
           onClick={() => {
-            tasksState.setValue((tasks) =>
+            tasksState.updateValue((tasks) =>
               tasks.concat({ id: idCounter++, title: taskState.getValue() })
             );
           }}

@@ -392,17 +392,12 @@ function createStateFromCore<T>(
         ? undefined
         : (previousValue as undefined | T);
     },
-    // set up new value only through the callback which
-    // gives the latest value to ensure no outdated data
-    // can be used for the state
-    setValue: (newValueCB: ((currentValue: T) => T) | T): void => {
-      const currentValue = core.get() as T;
-      const newValue =
-        typeof newValueCB === "function"
-          ? newValueCB(currentValue)
-          : newValueCB;
-
+    setValue: (newValue: T): void => {
       core.set(newValue);
+    },
+    updateValue: (newValueCB: (currentValue: T) => T): void => {
+      const currentValue = core.get() as T;
+      core.set(newValueCB(currentValue));
     },
   };
 
