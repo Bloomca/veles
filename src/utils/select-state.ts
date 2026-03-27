@@ -1,4 +1,6 @@
-import { createState } from "../create-state";
+import { createState, createStateFromCore, getStateCore } from "../create-state";
+import { createCoreEquality } from "../create-state/state-core";
+import { onUnmount } from "../hooks";
 
 type State<StateType> = ReturnType<typeof createState<StateType>>;
 
@@ -7,17 +9,15 @@ function selectState<F, T>(
   selector: (state: F) => T,
   comparator?: (previousSelectedState: T, nextSelectedState: T) => boolean
 ): State<T> {
-  const initialValue = selector(state.getValue());
+  const selectedCore = getStateCore(state).map(selector, {
+    equality: createCoreEquality(comparator),
+  });
 
-  const newState = createState(initialValue);
-  state.trackValueSelector(
-    selector,
-    (selectedState) => {
-      // we use a function because `selectedState` can be a function itself
-      newState.setValue(() => selectedState);
-    },
-    { skipFirstCall: true, comparator }
-  );
+  const newState = createStateFromCore(selectedCore);
+
+  onUnmount(() => {
+    selectedCore.dispose();
+  });
 
   return newState;
 }

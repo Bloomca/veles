@@ -68,13 +68,6 @@ export function createState<T>(
   ) => Function
 ): State<T>;
 
-type TrackingEffect = {
-  cb: (value: any) => void;
-  selector?: Function;
-  comparator?: (value1: any, value2: any) => boolean;
-  selectedValue: any;
-};
-
 export type TrackingSelectorElement = {
   cb?: (
     value: any
@@ -118,7 +111,6 @@ export type TrackingIterator = {
 };
 
 export type StateTrackers = {
-  trackingEffects: TrackingEffect[];
   trackingSelectorElements: TrackingSelectorElement[];
   trackingAttributes: TrackingAttribute[];
   trackingIterators: TrackingIterator[];

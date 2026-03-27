@@ -38,25 +38,6 @@ function triggerUpdates<T>({
     updateUseAttributeValue({ element, value });
   });
 
-  // tracked values
-  trackers.trackingEffects.forEach((trackingEffect) => {
-    const { cb, selectedValue, selector, comparator } = trackingEffect;
-
-    const newSelectedValue = selector ? selector(value) : value;
-
-    if (
-      comparator
-        ? comparator(selectedValue, newSelectedValue)
-        : selectedValue === newSelectedValue
-    ) {
-      return;
-    }
-
-    cb(newSelectedValue);
-    // update selected value
-    trackingEffect.selectedValue = newSelectedValue;
-  });
-
   trackers.trackingIterators.forEach((trackingIterator) => {
     updateUseValueIteratorValue({ value, trackingIterator, createState });
   });
