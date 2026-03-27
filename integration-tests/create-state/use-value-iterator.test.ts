@@ -26,8 +26,8 @@ describe("state.useValueIterator", () => {
     const item3: Item = { id: 3, text: "third item" };
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
-    const unmountSpy = jest.fn();
-    const textSpy = jest.fn()
+    const unmountSpy = vi.fn();
+    const textSpy = vi.fn()
     function IteratorComponent() {
       const state = createState<Item[]>([item1, item3, item4]);
 
@@ -36,14 +36,14 @@ describe("state.useValueIterator", () => {
           createElement("button", {
             "data-testid": "updateArrayButton",
             onClick: () => {
-              state.setValue(() => [item2, item1, item3, item5]);
+              state.updateValue(() => [item2, item1, item3, item5]);
             },
             children: ["update array values"],
           }),
           createElement("button", {
             "data-testid": "updateFirstItem",
             onClick: () => {
-              state.setValue((currentValues) =>
+              state.updateValue((currentValues) =>
                 currentValues.map((value) => {
                   if (value.id === 1) {
                     return {
@@ -117,8 +117,8 @@ describe("state.useValueIterator", () => {
     const item3: Item = { id: 3, text: "third item" };
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
-    const unmountSpy = jest.fn();
-    const textSpy = jest.fn()
+    const unmountSpy = vi.fn();
+    const textSpy = vi.fn()
     function IteratorComponent() {
       const state = createState<{ value: Item[] }>({
         value: [item1, item3, item4],
@@ -129,14 +129,14 @@ describe("state.useValueIterator", () => {
           createElement("button", {
             "data-testid": "updateArrayButton",
             onClick: () => {
-              state.setValue(() => ({ value: [item2, item1, item3, item5] }));
+              state.updateValue(() => ({ value: [item2, item1, item3, item5] }));
             },
             children: ["update array values"],
           }),
           createElement("button", {
             "data-testid": "updateFirstItem",
             onClick: () => {
-              state.setValue((currentValues) => ({
+              state.updateValue((currentValues) => ({
                 value: currentValues.value.map((value) => {
                   if (value.id === 1) {
                     return {
@@ -214,8 +214,8 @@ describe("state.useValueIterator", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     let items = [item1, item2, item3, item4, item5];
-    const textSpy = jest.fn()
-    const indexSpy = jest.fn()
+    const textSpy = vi.fn()
+    const indexSpy = vi.fn()
     function App() {
       const itemsState = createState(items);
 
@@ -311,7 +311,7 @@ describe("state.useValueIterator", () => {
           createElement("h1", { children: "Application" }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue((value) => !value),
+            onClick: () => showState.updateValue((value) => !value),
           }),
           createElement("div", {
             "data-testid": "container",
@@ -323,8 +323,8 @@ describe("state.useValueIterator", () => {
       });
     }
 
-    const textSpy = jest.fn();
-    const indexSpy = jest.fn();
+    const textSpy = vi.fn();
+    const indexSpy = vi.fn();
     function Item({
       elementState,
       indexState,

@@ -18,7 +18,7 @@ describe("state.useAttribute", () => {
 
   test("useAttribute does not re-mount the component", async () => {
     const user = userEvent.setup();
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function StateComponent() {
       onUnmount(spyFn);
       const valueState = createState(0);
@@ -28,7 +28,7 @@ describe("state.useAttribute", () => {
             "data-testvalue": valueState.useAttribute((value) => String(value)),
             "data-testid": "button",
             onClick: () => {
-              valueState.setValue((currentValue) => currentValue + 1);
+              valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
         ],
@@ -53,7 +53,7 @@ describe("state.useAttribute", () => {
 
   test("does not track updates in useAttribute until mounted", async () => {
     const user = userEvent.setup();
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
 
     const valueState = createState("initialValue");
     function App() {
@@ -72,7 +72,7 @@ describe("state.useAttribute", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue((currentValue) => !currentValue),
+            onClick: () => showState.updateValue((currentValue) => !currentValue),
           }),
           showState.useValue((shouldShow) => (shouldShow ? content : null)),
         ],

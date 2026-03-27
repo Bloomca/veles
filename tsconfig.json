@@ -2,8 +2,10 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "ESNext",
+    "target": "ES2020",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["@testing-library/jest-dom"],
-    "moduleResolution": "node"
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "moduleResolution": "bundler",
+    "skipLibCheck": true
   }
 }

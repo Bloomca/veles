@@ -14,8 +14,8 @@ describe("assign-attributes", () => {
   // basic test to make sure event handlers are supported
   test("supports state updates", async () => {
     const user = userEvent.setup();
-    const focusFn = jest.fn();
-    const blurFn = jest.fn();
+    const focusFn = vi.fn();
+    const blurFn = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
       const nameState = createState("");
@@ -24,7 +24,7 @@ describe("assign-attributes", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.setValue(() => "");
+              nameState.updateValue(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -73,8 +73,8 @@ describe("assign-attributes", () => {
 
   test("supports assigning attributes directly without a callback", async () => {
     const user = userEvent.setup();
-    const focusFn = jest.fn();
-    const blurFn = jest.fn();
+    const focusFn = vi.fn();
+    const blurFn = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
       const nameState = createState("");
@@ -83,7 +83,7 @@ describe("assign-attributes", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.setValue(() => "");
+              nameState.updateValue(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -184,7 +184,7 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "toggleButton",
-            onClick: () => disabledState.setValue((value) => !value),
+            onClick: () => disabledState.updateValue((value) => !value),
           }),
           createElement("button", {
             "data-testid": "button",
@@ -215,7 +215,7 @@ describe("assign-attributes", () => {
   it("allows to assign and remove event listeners dynamically", async () => {
     const user = userEvent.setup();
     const state = createState(0);
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function App() {
       return createElement("div", {
         children: [
@@ -225,7 +225,7 @@ describe("assign-attributes", () => {
               value !== 0 && value < 4
                 ? () => {
                     spyFn();
-                    state.setValue((currentValue) => currentValue + 1);
+                    state.updateValue((currentValue) => currentValue + 1);
                   }
                 : undefined
             ),
@@ -259,11 +259,11 @@ describe("assign-attributes", () => {
   it("allows to assign and remove event listeners dynamically passing the same callback", async () => {
     const user = userEvent.setup();
     const state = createState(0);
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function App() {
       const handler = () => {
         spyFn();
-        state.setValue((currentValue) => currentValue + 1);
+        state.updateValue((currentValue) => currentValue + 1);
       };
       return createElement("div", {
         children: [
@@ -301,7 +301,7 @@ describe("assign-attributes", () => {
 
   test("adds listeners with multiple words in them correctly", async () => {
     const user = userEvent.setup();
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function App() {
       const handler = () => {
         spyFn();
@@ -330,11 +330,11 @@ describe("assign-attributes", () => {
   it("allows to assign and remove event listeners dynamically passing the same callback with multiple words in event", async () => {
     const user = userEvent.setup();
     const state = createState(0);
-    const spyFn = jest.fn();
+    const spyFn = vi.fn();
     function App() {
       const handler = () => {
         spyFn();
-        state.setValue((currentValue) => currentValue + 1);
+        state.updateValue((currentValue) => currentValue + 1);
       };
       return createElement("div", {
         children: [

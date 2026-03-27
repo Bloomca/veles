@@ -33,16 +33,25 @@ export type State<ValueType> = {
     ) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
   ): VelesElement | VelesComponentObject | VelesStringElement;
-  useValueSelector<SelectorValueType>(
-    selector: (value: ValueType) => SelectorValueType,
-    cb?: (
-      value: SelectorValueType
-    ) => VelesElement | VelesComponentObject | string | undefined | null,
-    comparator?: (
-      value1: SelectorValueType,
-      value2: SelectorValueType
-    ) => boolean
-  ): VelesElement | VelesComponentObject | VelesStringElement;
+  useValueSelector: {
+    (
+      selector: undefined,
+      cb?: (
+        value: ValueType
+      ) => VelesElement | VelesComponentObject | string | undefined | null,
+      comparator?: (value1: ValueType, value2: ValueType) => boolean
+    ): VelesElement | VelesComponentObject | VelesStringElement;
+    <SelectorValueType>(
+      selector: (value: ValueType) => SelectorValueType,
+      cb?: (
+        value: SelectorValueType
+      ) => VelesElement | VelesComponentObject | string | undefined | null,
+      comparator?: (
+        value1: SelectorValueType,
+        value2: SelectorValueType
+      ) => boolean
+    ): VelesElement | VelesComponentObject | VelesStringElement;
+  };
   useAttribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
   useValueIterator<Element>(
     options: {
@@ -56,9 +65,8 @@ export type State<ValueType> = {
   ): VelesComponentObject | VelesElement | null;
   getValue(): ValueType;
   getPreviousValue(): undefined | ValueType;
-  setValue(
-    newValueCB: ((currentValue: ValueType) => ValueType) | ValueType
-  ): void;
+  setValue(newValue: ValueType): void;
+  updateValue(newValueCB: (currentValue: ValueType) => ValueType): void;
 };
 
 export function createState<T>(
@@ -67,13 +75,6 @@ export function createState<T>(
     setValue: ReturnType<typeof createState<T>>["setValue"]
   ) => Function
 ): State<T>;
-
-type TrackingEffect = {
-  cb: (value: any) => void;
-  selector?: Function;
-  comparator?: (value1: any, value2: any) => boolean;
-  selectedValue: any;
-};
 
 export type TrackingSelectorElement = {
   cb?: (
@@ -118,7 +119,6 @@ export type TrackingIterator = {
 };
 
 export type StateTrackers = {
-  trackingEffects: TrackingEffect[];
   trackingSelectorElements: TrackingSelectorElement[];
   trackingAttributes: TrackingAttribute[];
   trackingIterators: TrackingIterator[];

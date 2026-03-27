@@ -6,6 +6,7 @@ import { triggerUpdates } from "./trigger-updates";
 import { addUseValueMountHandler } from "./update-usevalue-selector-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
 import { getCurrentContext } from "../context";
+import { StateCore, createCoreEquality, emptyValue } from "./state-core";
 
 import type {
   VelesElement,
@@ -20,90 +21,73 @@ import type {
   TrackingSelectorElement,
 } from "./types";
 
-/**
- * Main state factory function.
- * 
- * This primitive is pretty much a simple observable implementation,
- * which is tightly integrated with the UI framework for two things:
- * 
- * - based on subscription callback, update DOM node and replace it
- * - correctly unsbuscribe when the Node/component is unmounted
- */
+const STATE_CORE_PROPERTY = "__velesStateCore";
 
-function createState<T>(
-  initialValue: T,
+function getStateCore<T>(state: State<T>): StateCore<T> {
+  const core = (state as any)[STATE_CORE_PROPERTY] as StateCore<T> | undefined;
+
+  if (!core) {
+    throw new Error("Can't find state core");
+  }
+
+  return core;
+}
+
+type UseValueSelectorSignature<T> = {
+  (
+    selector: undefined,
+    cb?: (
+      value: T,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    comparator?: (value1: T, value2: T) => boolean,
+  ): VelesElement | VelesComponentObject | VelesStringElement;
+  <F>(
+    selector: (value: T) => F,
+    cb?: (
+      value: F,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    comparator?: (value1: F, value2: F) => boolean,
+  ): VelesElement | VelesComponentObject | VelesStringElement;
+};
+
+function createStateFromCore<T>(
+  core: StateCore<T>,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"]
-  ) => Function
+    setValue: ReturnType<typeof createState<T>>["setValue"],
+  ) => Function,
 ): State<T> {
-  let value = initialValue;
-  let previousValue: undefined | T = undefined;
-
   // all subscription types we track
   const trackers: StateTrackers = {
-    trackingEffects: [],
     trackingSelectorElements: [],
     trackingAttributes: [],
     trackingIterators: [],
   };
 
-  const result: State<T> = {
-    // supposed to be used at the component level
-    trackValue: (cb, options = {}) => {
-      result.trackValueSelector<T>(undefined, cb, options);
-    },
-    trackValueSelector<F>(
-      selector: ((value: T) => F) | undefined,
-      cb: (value: F) => void | Function,
-      options: {
-        callOnMount?: boolean;
-        skipFirstCall?: boolean;
-        comparator?: (value1: F, value2: F) => boolean;
-      } = {}
-    ) {
-      // @ts-expect-error
-      const trackedValue = selector ? selector(value) : (value as F);
-      trackers.trackingEffects.push({
-        cb,
-        selector,
-        comparator: options.comparator,
-        selectedValue: trackedValue,
-      });
-      if (!options.skipFirstCall) {
-        // trigger the callback first time
-        // execute the first callback when the component is mounted
-        if (options.callOnMount) {
-          onMount(() => {
-            cb(trackedValue);
-          });
-        } else {
-          cb(trackedValue);
-        }
-      }
-      // track value is attached at the component level
-      onUnmount(() => {
-        trackers.trackingEffects = trackers.trackingEffects.filter(
-          (trackingCallback) => trackingCallback.cb !== cb
-        );
-      });
-    },
-    useValue: (cb, comparator) => {
-      return result.useValueSelector<T>(undefined, cb, comparator);
-    },
-    useValueSelector<F>(
-      selector: ((value: T) => F) | undefined,
-      cb?: (
-        value: F
-      ) => VelesElement | VelesComponentObject | string | undefined | null,
-      comparator: (value1: F, value2: F) => boolean = identity
-    ): VelesElement | VelesComponentObject | VelesStringElement {
-      // @ts-expect-error
-      const selectedValue = selector ? selector(value) : (value as F);
+  core.on((nextValue) => {
+    triggerUpdates({
+      value: nextValue,
+      createState,
+      trackers,
+      getValue: () => core.get() as T,
+    });
+  });
+
+  const useValueSelector: UseValueSelectorSignature<T> = ((
+    selector: ((value: T) => unknown) | undefined,
+    cb?: (
+      value: unknown,
+    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    comparator: (value1: unknown, value2: unknown) => boolean = identity,
+  ) => {
+    const currentValue = core.get() as T;
+
+    if (selector) {
+      const selectedValue = selector(currentValue);
       const returnedNode = cb
         ? cb(selectedValue)
         : selectedValue == undefined
-        ? ""
-        : String(selectedValue);
+          ? ""
+          : String(selectedValue);
       const node =
         !returnedNode || typeof returnedNode === "string"
           ? createTextElement(returnedNode as string)
@@ -123,14 +107,110 @@ function createState<T>(
       };
 
       addUseValueMountHandler({
-        usedValue: value,
-        getValue: () => value,
+        usedValue: currentValue,
+        getValue: () => core.get() as T,
         trackers,
         trackingSelectorElement,
       });
 
       return node;
+    }
+
+    const selectedValue = currentValue;
+    const returnedNode = cb
+      ? cb(selectedValue)
+      : selectedValue == undefined
+        ? ""
+        : String(selectedValue);
+    const node =
+      !returnedNode || typeof returnedNode === "string"
+        ? createTextElement(returnedNode as string)
+        : returnedNode;
+
+    const currentContext = getCurrentContext();
+
+    node.needExecutedVersion = true;
+
+    const trackingSelectorElement: TrackingSelectorElement = {
+      selector,
+      selectedValue,
+      cb,
+      node,
+      comparator,
+      savedContext: currentContext,
+    };
+
+    addUseValueMountHandler({
+      usedValue: currentValue,
+      getValue: () => core.get() as T,
+      trackers,
+      trackingSelectorElement,
+    });
+
+    return node;
+  }) as UseValueSelectorSignature<T>;
+
+  const result: State<T> = {
+    // supposed to be used at the component level
+    trackValue: (cb, options = {}) => {
+      result.trackValueSelector<T>(undefined, cb, options);
     },
+    trackValueSelector<F>(
+      selector: ((value: T) => F) | undefined,
+      cb: (value: F) => void | Function,
+      options: {
+        callOnMount?: boolean;
+        skipFirstCall?: boolean;
+        comparator?: (value1: F, value2: F) => boolean;
+      } = {},
+    ) {
+      const selectedCore = selector
+        ? core.map(selector, {
+            equality: createCoreEquality(options.comparator),
+          })
+        : options.comparator
+          ? core.map((value) => value as unknown as F, {
+              equality: createCoreEquality(options.comparator),
+            })
+          : (core as unknown as StateCore<F>);
+
+      const trackedValue = selectedCore.get() as F;
+
+      if (!options.skipFirstCall) {
+        // trigger the callback first time
+        // execute the first callback when the component is mounted
+        if (options.callOnMount) {
+          onMount(() => {
+            cb(trackedValue);
+          });
+        } else {
+          cb(trackedValue);
+        }
+      }
+
+      const unsubscribe = selectedCore.on((newSelectedValue) => {
+        cb(newSelectedValue as F);
+      });
+
+      // track value is attached at the component level
+      onUnmount(() => {
+        unsubscribe();
+
+        if ((selectedCore as unknown) !== (core as unknown)) {
+          selectedCore.dispose();
+        }
+      });
+    },
+    useValue: (cb, comparator) => {
+      return result.useValueSelector(undefined, cb, comparator);
+    },
+    useValueSelector,
+    /**
+     * This function is used to iterate over the values and return tracked DOM nodes.
+     * When using it, the callback receives elementState and indexState props object
+     * to track changes; this way individual changes will not trigger any component
+     * re-renders.
+     */
     useValueIterator<Element>(
       options: {
         key: string | ((options: { element: any; index: number }) => string);
@@ -139,17 +219,17 @@ function createState<T>(
       cb: (props: {
         elementState: State<Element>;
         indexState: State<number>;
-      }) => VelesElement | VelesComponentObject
+      }) => VelesElement | VelesComponentObject,
     ) {
       const currentContext = getCurrentContext();
       const trackingParams = {} as TrackingIterator;
-      trackingParams.savedContext = currentContext
+      trackingParams.savedContext = currentContext;
 
       const wrapperComponent = createElement((_props, componentAPI) => {
         const children: [
           VelesElement | VelesComponentObject,
           string,
-          State<Element>
+          State<Element>,
         ][] = [];
         const elementsByKey: {
           [key: string]: {
@@ -159,7 +239,10 @@ function createState<T>(
             node: VelesElement | VelesComponentObject;
           };
         } = {};
-        const elements = options.selector ? options.selector(value) : value;
+        const stateValue = core.get() as T;
+        const elements = options.selector
+          ? options.selector(stateValue)
+          : stateValue;
 
         if (!Array.isArray(elements)) {
           console.error("useValueIterator received non-array value");
@@ -210,7 +293,7 @@ function createState<T>(
           componentAPI.onUnmount(() => {
             trackers.trackingIterators = trackers.trackingIterators.filter(
               (currentTrackingParams) =>
-                currentTrackingParams !== trackingParams
+                currentTrackingParams !== trackingParams,
             );
           });
         });
@@ -240,14 +323,14 @@ function createState<T>(
       //    It should be a separate subscription.
     },
     useAttribute: (cb?: (value: T) => any) => {
-      const originalValue = value;
+      const originalValue = core.get() as T;
       let wasMounted = false;
-      const attributeValue = cb ? cb(value) : value;
+      const attributeValue = cb ? cb(originalValue) : originalValue;
 
       const attributeHelper = (
         htmlElement: HTMLElement,
         attributeName: string,
-        node: VelesElement
+        node: VelesElement,
       ) => {
         // save it to the attribute array
         // read that array on `_triggerUpdates`
@@ -263,7 +346,7 @@ function createState<T>(
         node._privateMethods._addMountHandler(() => {
           trackers.trackingAttributes.push(trackingElement);
 
-          if (!wasMounted && value === originalValue) {
+          if (!wasMounted && core.get() === originalValue) {
             /**
              * We avoid recalculating in one case:
              * 1. the component was never mounted
@@ -275,7 +358,10 @@ function createState<T>(
           } else {
             // since the `element` will be modified in place, we don't need to
             // replace it in the array or anything
-            updateUseAttributeValue({ element: trackingElement, value });
+            updateUseAttributeValue({
+              element: trackingElement,
+              value: core.get(),
+            });
           }
 
           if (!wasMounted) {
@@ -284,7 +370,7 @@ function createState<T>(
 
           node._privateMethods._addUnmountHandler(() => {
             trackers.trackingAttributes = trackers.trackingAttributes.filter(
-              (trackingAttribute) => trackingAttribute !== trackingElement
+              (trackingAttribute) => trackingAttribute !== trackingElement,
             );
           });
         });
@@ -297,26 +383,25 @@ function createState<T>(
     },
     // useful for stuff like callbacks
     getValue: () => {
-      return value;
+      return core.get() as T;
     },
     getPreviousValue: () => {
-      return previousValue;
-    },
-    // set up new value only through the callback which
-    // gives the latest value to ensure no outdated data
-    // can be used for the state
-    setValue: (newValueCB: ((currentValue: T) => T) | T): void => {
-      const newValue =
-        // @ts-expect-error
-        typeof newValueCB === "function" ? newValueCB(value) : newValueCB;
+      const previousValue = core.getPrevious();
 
-      if (newValue !== value) {
-        previousValue = value;
-        value = newValue;
-        triggerUpdates({ value, createState, trackers, getValue: () => value });
-      }
+      return previousValue === emptyValue
+        ? undefined
+        : (previousValue as undefined | T);
+    },
+    setValue: (newValue: T): void => {
+      core.set(newValue);
+    },
+    updateValue: (newValueCB: (currentValue: T) => T): void => {
+      const currentValue = core.get() as T;
+      core.set(newValueCB(currentValue));
     },
   };
+
+  (result as any)[STATE_CORE_PROPERTY] = core;
 
   if (subscribeCallback) {
     const unsubscribe = subscribeCallback(result.setValue);
@@ -329,4 +414,23 @@ function createState<T>(
   return result;
 }
 
-export { createState };
+/**
+ * Main state factory function.
+ *
+ * This primitive is a small observable implementation,
+ * which is tightly integrated with the UI framework for two things:
+ *
+ * - based on subscription callback, update DOM node and replace it
+ * - correctly unsubscribe when the Node/component is unmounted
+ */
+function createState<T>(
+  initialValue: T,
+  subscribeCallback?: (
+    setValue: ReturnType<typeof createState<T>>["setValue"],
+  ) => Function,
+): State<T> {
+  const core = new StateCore<T>(initialValue);
+  return createStateFromCore(core, subscribeCallback);
+}
+
+export { createState, createStateFromCore, getStateCore };

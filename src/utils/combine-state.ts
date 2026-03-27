@@ -1,4 +1,9 @@
-import { createState } from "../create-state";
+import {
+  createState,
+  createStateFromCore,
+  getStateCore,
+} from "../create-state";
+import { onUnmount } from "../hooks";
 
 type createdState<StateType> = ReturnType<typeof createState<StateType>>;
 
@@ -75,22 +80,19 @@ export function combineState<A, B, C, D, E, F, G, H, I, J>(
   state10: createdState<J>
 ): createdState<[A, B, C, D, E, F, G, H, I, J]>;
 export function combineState(...states) {
-  const initialValue = states.map((state) => state.getValue());
-  const combinedState = createState(initialValue);
+  if (states.length === 0) {
+    return createState([]);
+  }
 
-  states.forEach((state) => {
-    state.trackValue(
-      () => {
-        // by the time trackValue callback is called
-        // it is guaranteed that reading `state.getValue` will
-        // return the updated value
-        const updatedValue = states.map((state) => state.getValue());
-        combinedState.setValue(updatedValue);
-        // the first call wouldn't affect anything anyway, since we can't have any
-        // subscriptions yet, small optimization
-      },
-      { skipFirstCall: true }
-    );
+  const [firstState, ...restStates] = states;
+  const firstCore = getStateCore(firstState);
+  const restCores = restStates.map((state) => getStateCore(state));
+
+  const combinedCore = firstCore.combine(...restCores);
+  const combinedState = createStateFromCore(combinedCore as any);
+
+  onUnmount(() => {
+    combinedCore.dispose();
   });
 
   return combinedState;

@@ -95,7 +95,7 @@ function App() {
         <h1>Application</h1>
         <NestedComponent />
         <button
-          onClick={() => showState.setValue((currentValue) => !currentValue)}
+          onClick={() => showState.updateValue((currentValue) => !currentValue)}
         >
           Toggle conditional component
         </button>
