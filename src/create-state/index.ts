@@ -509,4 +509,8 @@ function createState<T>(
   return createStateFromCore(core, subscribeCallback);
 }
 
+namespace createState {
+  export const empty = emptyValue;
+}
+
 export { createState, createStateFromCore, getStateCore };

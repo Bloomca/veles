@@ -116,6 +116,10 @@ export function createState<T>(
   ) => Function
 ): State<T>;
 
+export namespace createState {
+  const empty: symbol;
+}
+
 export type TrackingSelectorElement = {
   cb?: (
     value: any
