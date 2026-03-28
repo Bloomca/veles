@@ -210,7 +210,7 @@ function updateUseValueSelector<T>({
             );
           }
         } catch (e) {
-          console.error("failed to update in useValueSelector", e);
+          console.error("failed to update in renderSelected", e);
         }
       }
     }

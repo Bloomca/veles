@@ -142,9 +142,9 @@ describe("createState", () => {
     expect(await screen.findByText("child value is 2")).toBeVisible();
   });
 
-  // test to make sure that `useValueSelector` is correctly called only when
+  // test to make sure that `renderSelected` is correctly called only when
   // the selector function returns a different result
-  test("support selector functions correctly with useValueSelector", async () => {
+  test("support selector functions correctly with renderSelected", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState({
@@ -171,7 +171,7 @@ describe("createState", () => {
               }));
             },
           }),
-          valueState.useValueSelector(
+          valueState.renderSelected(
             (value) => value.secondValue,
             (value) => createElement(SecondValueComponent, { value })
           ),
@@ -380,7 +380,7 @@ describe("createState", () => {
     expect(screen.getByTestId("container").textContent).toBe("new title");
   });
 
-  test("supports no callback in useValueSelector to return the value directly", async () => {
+  test("supports no callback in renderSelected to return the value directly", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const titleState = createState({ title: "title" });
@@ -394,7 +394,7 @@ describe("createState", () => {
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValueSelector((data) => data.title),
+            children: titleState.renderSelected((data) => data.title),
           }),
         ],
       });
@@ -427,7 +427,7 @@ describe("createState", () => {
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValueSelector(
+            children: titleState.renderSelected(
               (data) => data.title.length > 3,
               (isLong) =>
                 isLong
@@ -491,7 +491,7 @@ describe("createState", () => {
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValueSelector(
+            children: titleState.renderSelected(
               (data) => data.title.length > 3,
               (isLong) =>
                 isLong

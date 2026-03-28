@@ -1,5 +1,5 @@
 import { unique } from "../_utils";
-import { updateUseValueSelector } from "./update-usevalue-selector-value";
+import { updateUseValueSelector } from "./update-render-selected-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
 import { updateUseValueIteratorValue } from "./update-usevalueiterator-value";
 
@@ -25,11 +25,11 @@ function triggerUpdates<T>({
       newTrackingSelectorElements,
       trackers,
       getValue,
-    })
+    }),
   );
 
   trackers.trackingSelectorElements = unique(
-    trackers.trackingSelectorElements.concat(newTrackingSelectorElements)
+    trackers.trackingSelectorElements.concat(newTrackingSelectorElements),
   );
 
   // attributes

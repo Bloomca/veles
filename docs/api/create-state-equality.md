@@ -73,10 +73,10 @@ state.trackValueSelector(
 
 ## Comparator in rendering
 
-`render` and `useValueSelector` also accept comparators.
+`render` and `renderSelected` also accept comparators.
 
 ```jsx
-state.useValueSelector(
+state.renderSelected(
   (value) => value.user,
   (user) => <UserCard user={user} />,
   (a, b) => a.id === b.id,

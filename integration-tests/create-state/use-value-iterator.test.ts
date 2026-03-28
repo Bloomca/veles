@@ -65,7 +65,7 @@ describe("state.useValueIterator", () => {
                   onUnmount(unmountSpy);
                   return createElement("li", {
                     children: [
-                      elementState.useValueSelector(
+                      elementState.renderSelected(
                         (element) => element.text,
                         (text) => {
                           textSpy()
@@ -160,7 +160,7 @@ describe("state.useValueIterator", () => {
                     onUnmount(unmountSpy);
                     return createElement("li", {
                       children: [
-                        elementState.useValueSelector(
+                        elementState.renderSelected(
                           (element) => element.text,
                           (text) => {
                             textSpy()
@@ -241,7 +241,7 @@ describe("state.useValueIterator", () => {
                       }),
                       ".",
                       createElement("div", {
-                        children: elementState.useValueSelector(
+                        children: elementState.renderSelected(
                           (item) => item.text,
                           value => {
                             textSpy()
@@ -335,7 +335,7 @@ describe("state.useValueIterator", () => {
       return createElement("div", {
         children: [
           createElement("h3", {
-            children: elementState.useValueSelector((element) => {
+            children: elementState.renderSelected((element) => {
               textSpy();
               return element.text;
             }),

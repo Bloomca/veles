@@ -67,23 +67,23 @@ const titleState = createState("hello");
 return titleState.render();
 ```
 
-## `state.useValueSelector`
+## `state.renderSelected`
 
-- `state.useValueSelector(selector)`
-- `state.useValueSelector(selector, selectedValue => Veles.Node, comparator?)`
+- `state.renderSelected(selector)`
+- `state.renderSelected(selector, selectedValue => Veles.Node, comparator?)`
 
 Works like `render`, but first selects a smaller piece of the state. This will make updates more atomic.
 
 ```jsx
 const taskState = createState({ title: "task", completed: false });
 
-return taskState.useValueSelector((task) => task.title, (title) => <p>{title}</p>);
+return taskState.renderSelected((task) => task.title, (title) => <p>{title}</p>);
 ```
 
 This can be used for conditionals.
 
 ```jsx
-titleState.useValueSelector(
+titleState.renderSelected(
   (title) => title.length > 100,
   (isTooLong) => (isTooLong ? <Warning /> : null),
 );
@@ -124,7 +124,7 @@ const tasksState = createState([
 ]);
 
 return tasksState.useValueIterator({ key: "id" }, ({ elementState }) => {
-  return <div>{elementState.useValueSelector((task) => task.title)}</div>;
+  return <div>{elementState.renderSelected((task) => task.title)}</div>;
 });
 ```
 

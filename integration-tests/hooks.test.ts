@@ -283,7 +283,7 @@ describe("lifecycle hooks", () => {
       return createElement("div", {
         children: [
           "task",
-          taskState.useValueSelector(
+          taskState.renderSelected(
             (task) => task.title,
             (title) => title
           ),

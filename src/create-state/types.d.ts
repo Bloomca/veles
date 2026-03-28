@@ -37,7 +37,7 @@ export type State<ValueType> = {
     ) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
   ): VelesElement | VelesComponentObject | VelesStringElement;
-  useValueSelector: {
+  renderSelected: {
     (
       selector: undefined,
       cb?: (

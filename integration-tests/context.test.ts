@@ -152,9 +152,9 @@ describe("Context", () => {
 
       return createElement("div", {
         children: [
-          elementState.useValueSelector((element) => element.text),
+          elementState.renderSelected((element) => element.text),
           " ",
-          elementState.useValueSelector(
+          elementState.renderSelected(
             (element) => element.value,
             (value) => String(value * exampleValue)
           ),

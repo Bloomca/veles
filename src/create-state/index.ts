@@ -7,7 +7,7 @@ import {
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
-import { addUseValueMountHandler } from "./update-usevalue-selector-value";
+import { addUseValueMountHandler } from "./update-render-selected-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
 import { getCurrentContext } from "../context";
 import { StateCore, createCoreEquality, emptyValue } from "./state-core";
@@ -47,7 +47,7 @@ function autoDisposeStateOnUnmount<T>(state: State<T>) {
   return state;
 }
 
-type UseValueSelectorSignature<T> = {
+type RenderSelectedSignature<T> = {
   (
     selector: undefined,
     cb?: (
@@ -86,7 +86,7 @@ function createStateFromCore<T>(
     });
   });
 
-  const useValueSelector: UseValueSelectorSignature<T> = ((
+  const renderSelected: RenderSelectedSignature<T> = ((
     selector: ((value: T) => unknown) | undefined,
     cb?: (
       value: unknown,
@@ -162,7 +162,7 @@ function createStateFromCore<T>(
     });
 
     return node;
-  }) as UseValueSelectorSignature<T>;
+  }) as RenderSelectedSignature<T>;
 
   const result: State<T> = {
     // supposed to be used at the component level
@@ -229,9 +229,9 @@ function createStateFromCore<T>(
       });
     },
     render: (cb, comparator) => {
-      return result.useValueSelector(undefined, cb, comparator);
+      return result.renderSelected(undefined, cb, comparator);
     },
-    useValueSelector,
+    renderSelected,
     /**
      * This function is used to iterate over the values and return tracked DOM nodes.
      * When using it, the callback receives elementState and indexState props object
@@ -406,7 +406,9 @@ function createStateFromCore<T>(
       const stateCores = states.map((state) => getStateCore(state));
       const combinedCore = core.combine(...stateCores);
 
-      return autoDisposeStateOnUnmount(createStateFromCore(combinedCore as any));
+      return autoDisposeStateOnUnmount(
+        createStateFromCore(combinedCore as any),
+      );
     },
     useAttribute: (cb?: (value: T) => any) => {
       const originalValue = core.get() as T;

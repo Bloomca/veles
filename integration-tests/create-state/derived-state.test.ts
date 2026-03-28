@@ -43,7 +43,7 @@ describe("derived state", () => {
               valueState3.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          combinedValueState.useValueSelector(
+          combinedValueState.renderSelected(
             (values) => values.reduce((acc, num) => acc + num, 0),
             (value) =>
               createElement("div", { children: [`current value is ${value}`] }),

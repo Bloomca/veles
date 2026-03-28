@@ -35,7 +35,7 @@ But in general for dynamic content you want to avoid it as much as possible and 
 
 ```jsx
 function Component({ taskState }) {
- return <div>{taskState.useValueSelector(task => task.name)}</div>
+ return <div>{taskState.renderSelected(task => task.name)}</div>
 }
 ```
 
