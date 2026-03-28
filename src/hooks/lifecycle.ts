@@ -38,4 +38,16 @@ function onUnmount(cb: Function) {
   }
 }
 
-export { addContext, popContext, onMount, onUnmount };
+// determine whether we are rendering a component right now
+// if yes, then we can potentially schedule automatic cleanup
+function hasCurrentLifecycleContext() {
+  return Boolean(currentContext);
+}
+
+export {
+  addContext,
+  popContext,
+  onMount,
+  onUnmount,
+  hasCurrentLifecycleContext,
+};

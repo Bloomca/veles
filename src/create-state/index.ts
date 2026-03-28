@@ -1,5 +1,9 @@
 import { identity } from "../_utils";
-import { onUnmount, onMount } from "../hooks/lifecycle";
+import {
+  hasCurrentLifecycleContext,
+  onUnmount,
+  onMount,
+} from "../hooks/lifecycle";
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
@@ -31,6 +35,16 @@ function getStateCore<T>(state: State<T>): StateCore<T> {
   }
 
   return core;
+}
+
+function autoDisposeStateOnUnmount<T>(state: State<T>) {
+  if (hasCurrentLifecycleContext()) {
+    onUnmount(() => {
+      state.dispose();
+    });
+  }
+
+  return state;
 }
 
 type UseValueSelectorSignature<T> = {
@@ -322,6 +336,65 @@ function createStateFromCore<T>(
       // 4. provide a way to listen to position value.
       //    It should be a separate subscription.
     },
+    map: <F>(
+      selector: (value: T) => F,
+      options: {
+        equality?: (value1: F, value2: F) => boolean;
+      } = {},
+    ) => {
+      const selectedCore = core.map(selector, {
+        equality: createCoreEquality(options.equality),
+      });
+
+      return autoDisposeStateOnUnmount(createStateFromCore(selectedCore));
+    },
+    filter: (
+      predicate: (value: T, prevValue?: T) => boolean,
+      options: {
+        equality?: (value1: T, value2: T) => boolean;
+      } = {},
+    ) => {
+      const filteredCore = core.filter(
+        (value, prevValue) =>
+          predicate(
+            value,
+            prevValue === emptyValue ? undefined : (prevValue as T),
+          ),
+        {
+          equality: createCoreEquality(options.equality),
+        },
+      );
+
+      return autoDisposeStateOnUnmount(createStateFromCore(filteredCore));
+    },
+    scan: <V>(
+      reducer: (acc: V, value: T, prevValue?: T) => V,
+      initialValue: V,
+      options: {
+        equality?: (value1: V, value2: V) => boolean;
+      } = {},
+    ) => {
+      const scannedCore = core.scan(
+        (acc, value, prevValue) =>
+          reducer(
+            acc,
+            value,
+            prevValue === emptyValue ? undefined : (prevValue as T),
+          ),
+        initialValue,
+        {
+          equality: createCoreEquality(options.equality),
+        },
+      );
+
+      return autoDisposeStateOnUnmount(createStateFromCore(scannedCore));
+    },
+    combine: (...states) => {
+      const stateCores = states.map((state) => getStateCore(state));
+      const combinedCore = core.combine(...stateCores);
+
+      return autoDisposeStateOnUnmount(createStateFromCore(combinedCore as any));
+    },
     useAttribute: (cb?: (value: T) => any) => {
       const originalValue = core.get() as T;
       let wasMounted = false;
@@ -381,6 +454,9 @@ function createStateFromCore<T>(
 
       return attributeHelper;
     },
+    dispose: () => {
+      core.dispose();
+    },
     // useful for stuff like callbacks
     getValue: () => {
       return core.get() as T;
@@ -431,6 +507,10 @@ function createState<T>(
 ): State<T> {
   const core = new StateCore<T>(initialValue);
   return createStateFromCore(core, subscribeCallback);
+}
+
+namespace createState {
+  export const empty = emptyValue;
 }
 
 export { createState, createStateFromCore, getStateCore };
