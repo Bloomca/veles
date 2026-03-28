@@ -101,6 +101,37 @@ describe("track-value", () => {
     expect(spyFn).toHaveBeenLastCalledWith(2);
   });
 
+  it("calls cleanup returned from trackValue callback on unmount", () => {
+    const callbackSpy = vi.fn();
+    const cleanupSpy = vi.fn();
+
+    function StateComponent() {
+      const valueState = createState(0);
+
+      valueState.trackValue(() => {
+        callbackSpy();
+        return cleanupSpy;
+      });
+
+      return createElement("div", {
+        children: ["content"],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    expect(callbackSpy).toHaveBeenCalledTimes(1);
+    expect(cleanupSpy).not.toHaveBeenCalled();
+
+    cleanup?.();
+    cleanup = undefined;
+
+    expect(cleanupSpy).toHaveBeenCalledTimes(1);
+  });
+
   it("supports custom subscriptions with state.trackValue with callOnMount option", async () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();

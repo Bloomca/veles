@@ -188,27 +188,40 @@ function createStateFromCore<T>(
             })
           : (core as unknown as StateCore<F>);
 
+      let latestCleanup: Function | void;
       const trackedValue = selectedCore.get() as F;
+
+      const runCallback = (value: F) => {
+        if (latestCleanup) {
+          latestCleanup();
+        }
+
+        latestCleanup = cb(value);
+      };
 
       if (!options.skipFirstCall) {
         // trigger the callback first time
         // execute the first callback when the component is mounted
         if (options.callOnMount) {
           onMount(() => {
-            cb(trackedValue);
+            runCallback(trackedValue);
           });
         } else {
-          cb(trackedValue);
+          runCallback(trackedValue);
         }
       }
 
       const unsubscribe = selectedCore.on((newSelectedValue) => {
-        cb(newSelectedValue as F);
+        runCallback(newSelectedValue as F);
       });
 
       // track value is attached at the component level
       onUnmount(() => {
         unsubscribe();
+
+        if (latestCleanup) {
+          latestCleanup();
+        }
 
         if ((selectedCore as unknown) !== (core as unknown)) {
           selectedCore.dispose();
