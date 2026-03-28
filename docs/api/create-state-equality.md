@@ -1,0 +1,98 @@
+---
+layout: default
+title: Equality and update control
+nav_order: 4
+parent: createState
+---
+
+## Equality and update control
+
+By default, Veles uses referential equality (`===`) to decide whether something changed.
+
+That applies to:
+
+- `setValue`
+- `updateValue`
+- derived state updates
+- selector-based subscriptions
+- selector-based rendering
+
+## Custom equality in derived state
+
+Derived methods accept an `equality` option.
+
+### `state.map`
+
+```jsx
+const parityState = numberState.map(
+  (value) => ({ parity: value % 2 }),
+  {
+    equality: (a, b) => a.parity === b.parity,
+  },
+);
+```
+
+### `state.filter`
+
+```jsx
+const activeTaskState = taskState.filter(
+  (task) => task.active,
+  {
+    equality: (a, b) => a.id === b.id,
+  },
+);
+```
+
+### `state.scan`
+
+```jsx
+const summaryState = numberState.scan(
+  (acc, value) => ({ parity: (acc.parity + value) % 2 }),
+  { parity: 0 },
+  {
+    equality: (a, b) => a.parity === b.parity,
+  },
+);
+```
+
+## Comparator in subscriptions
+
+`trackValue` and `trackValueSelector` accept `comparator` options.
+
+```jsx
+state.trackValueSelector(
+  (value) => value.user,
+  (user) => {
+    console.log(user);
+  },
+  {
+    comparator: (a, b) => a.id === b.id,
+  },
+);
+```
+
+## Comparator in rendering
+
+`useValue` and `useValueSelector` also accept comparators.
+
+```jsx
+state.useValueSelector(
+  (value) => value.user,
+  (user) => <UserCard user={user} />,
+  (a, b) => a.id === b.id,
+);
+```
+
+## When to use custom equality
+
+Custom equality is useful when:
+- you create new objects often
+- only some fields matter for rendering
+- you want to avoid unnecessary derived updates
+- you want to avoid unnecessary DOM replacements
+
+If simple referential equality is enough, prefer the default behavior.
+
+## Disabling equality
+
+To disable equality completely, simply pass `() => false` function for equality checks, and it will always call all the subscribers.
