@@ -11,7 +11,7 @@ Veles allows you to subscribe to individual updates on very granular level, down
 
 ```jsx
 <div>
-  {taskState.useValue((task) => (
+  {taskState.render((task) => (
     <div>
       <h2>{task.name}</h2>
       <p>{task.description}</p>

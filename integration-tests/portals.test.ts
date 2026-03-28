@@ -148,7 +148,7 @@ describe("portals", () => {
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
-          showFirstPortalState.useValue((shouldShow) =>
+          showFirstPortalState.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -200,7 +200,7 @@ describe("portals", () => {
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
-          showFirstPortalState.useValue((shouldShow) =>
+          showFirstPortalState.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -339,7 +339,7 @@ describe("portals", () => {
             onClick: () =>
               showPortalState.updateValue((currentValue) => !currentValue),
           }),
-          showPortalState.useValue((shouldShow) =>
+          showPortalState.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -395,7 +395,7 @@ describe("portals", () => {
                 onClick: () =>
                   showContentState.updateValue((currentValue) => !currentValue),
               }),
-              showContentState.useValue((shouldShow) =>
+              showContentState.render((shouldShow) =>
                 shouldShow
                   ? createElement("div", { children: "portal content" })
                   : null
@@ -447,7 +447,7 @@ describe("portals", () => {
                 onClick: () =>
                   showContentState.updateValue((currentValue) => !currentValue),
               }),
-              showContentState.useValue((shouldShow) =>
+              showContentState.render((shouldShow) =>
                 shouldShow ? "portal content" : null
               ),
             ],
@@ -497,7 +497,7 @@ describe("portals", () => {
                 onClick: () =>
                   showContentState.updateValue((currentValue) => !currentValue),
               }),
-              showContentState.useValue((shouldShow) =>
+              showContentState.render((shouldShow) =>
                 shouldShow ? createElement(PortalContent) : null
               ),
             ],
@@ -589,7 +589,7 @@ describe("portals", () => {
             portalNode: portalContainer,
             children: [
               createElement("h2", { children: "portal title" }),
-              fragmentShowState.useValue((shouldShow) =>
+              fragmentShowState.render((shouldShow) =>
                 shouldShow
                   ? createElement(Fragment, {
                       children: [

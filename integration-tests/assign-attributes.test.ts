@@ -39,7 +39,7 @@ describe("assign-attributes", () => {
             onInput: (e) =>
               nameState.setValue((e.target as HTMLInputElement).value),
           }),
-          nameState.useValue((value) =>
+          nameState.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
             })
@@ -98,7 +98,7 @@ describe("assign-attributes", () => {
             onInput: (e) =>
               nameState.setValue((e.target as HTMLInputElement).value),
           }),
-          nameState.useValue((value) =>
+          nameState.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
             })

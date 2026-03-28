@@ -234,7 +234,7 @@ describe("state.useValueIterator", () => {
                   createElement("div", {
                     children: [
                       createElement("div", {
-                        children: indexState.useValue(value => {
+                        children: indexState.render(value => {
                           indexSpy()
                           return String(value)
                         }),
@@ -315,7 +315,7 @@ describe("state.useValueIterator", () => {
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.useValue((shouldShow) =>
+            children: showState.render((shouldShow) =>
               shouldShow ? itemsMarkup : null
             ),
           }),
@@ -342,7 +342,7 @@ describe("state.useValueIterator", () => {
           }),
           " ",
           createElement("p", {
-            children: indexState.useValue((value) => {
+            children: indexState.render((value) => {
               indexSpy();
               return `number: ${value}`;
             }),

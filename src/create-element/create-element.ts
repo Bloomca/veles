@@ -41,7 +41,7 @@ function createElement(
 
     // these handlers are attached directly to the DOM element
     // specifically, the top level node which is rendered after
-    // using `useValue` function and also listeners from
+    // using `render` function and also listeners from
     // `useAttribute`
     const unmountHandlers: Function[] = [];
     velesNode.html = newElement;
@@ -50,7 +50,7 @@ function createElement(
     velesNode.phantom = phantom;
     velesNode.portal = portal;
 
-    // these handlers are used to start tracking `useValue` only when the node
+    // these handlers are used to start tracking `render` only when the node
     // is actually mounted in the DOM
     const mountHandlers: Function[] = [];
     velesNode._privateMethods = {

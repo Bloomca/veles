@@ -72,7 +72,7 @@ describe("lifecycle hooks", () => {
             "data-testid": "button",
             onClick: () => showChildrenState.setValue(false),
           }),
-          showChildrenState.useValue((shouldShow) =>
+          showChildrenState.render((shouldShow) =>
             shouldShow ? createElement(FirstNestedComponent) : null
           ),
         ],
@@ -155,7 +155,7 @@ describe("lifecycle hooks", () => {
             "data-testid": "button",
             onClick: () => showState.updateValue(() => true),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow ? createElement(Wrapper) : null
           ),
         ],
@@ -322,7 +322,7 @@ describe("lifecycle hooks", () => {
             "data-testid": "button",
             onClick: () => shouldShowState.setValue(false),
           }),
-          shouldShowState.useValue((shouldShow) =>
+          shouldShowState.render((shouldShow) =>
             shouldShow ? createElement(ConditionalComponent) : null
           ),
         ],
@@ -376,7 +376,7 @@ describe("lifecycle hooks", () => {
             "data-testid": "button",
             onClick: () => showState.setValue(false),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow
               ? createElement(NestedComponent)
               : createElement("div", { children: "other" })

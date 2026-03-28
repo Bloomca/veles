@@ -228,7 +228,7 @@ function createStateFromCore<T>(
         }
       });
     },
-    useValue: (cb, comparator) => {
+    render: (cb, comparator) => {
       return result.useValueSelector(undefined, cb, comparator);
     },
     useValueSelector,

@@ -63,7 +63,7 @@ export type VelesStringElement = {
   // not intended to be used directly
   // despite being a text component, having same lifecycle
   // methods is useful for state changes, to remove tracking
-  // when the said Text is returned from `useValue` state method
+  // when the said Text is returned from `render` state method
   _privateMethods: {
     _addMountHandler: Function;
     _callMountHandlers: Function;
@@ -80,7 +80,7 @@ export type ExecutedVelesStringElement = {
   // not intended to be used directly
   // despite being a text component, having same lifecycle
   // methods is useful for state changes, to remove tracking
-  // when the said Text is returned from `useValue` state method
+  // when the said Text is returned from `render` state method
   _privateMethods: {
     _addMountHandler: Function;
     _callMountHandlers: Function;

@@ -31,7 +31,7 @@ export type State<ValueType> = {
       ) => boolean;
     }
   ): void;
-  useValue(
+  render(
     cb?: (
       value: ValueType
     ) => VelesElement | VelesComponentObject | string | undefined | null,

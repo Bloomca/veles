@@ -166,7 +166,7 @@ function updateUseValueIteratorValue<T>({
     });
 
     // to replace old wrapper's children to make sure they are removed correctly
-    // on `useValue` unmount
+    // on `render` unmount
     const newChildRenderedComponents: (
       | ExecutedVelesComponent
       | ExecutedVelesElement

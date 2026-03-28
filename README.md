@@ -37,7 +37,7 @@ function NameComponent() {
         value={nameState.useAttribute()}
         onInput={(e) => nameState.setValue(e.target.value)}
       />
-      <p>{nameState.useValue()}</p>
+      <p>{nameState.render()}</p>
     </div>
   );
 }

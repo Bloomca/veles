@@ -99,7 +99,7 @@ function App() {
         >
           Toggle conditional component
         </button>
-        {showState.useValue((shouldShow) =>
+        {showState.render((shouldShow) =>
           shouldShow ? <ConditionalComponent /> : null
         )}
       </div>

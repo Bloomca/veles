@@ -31,7 +31,7 @@ function Counter() {
       >
         +
       </button>
-      <p>{counterState.useValue((value) => `counter value is ${value}`)}</p>
+      <p>{counterState.render((value) => `counter value is ${value}`)}</p>
     </div>
   );
 }
@@ -88,6 +88,6 @@ function FullName() {
     .combine(lastNameState)
     .map(([name, lastName]) => `${name} ${lastName}`);
 
-  return fullNameState.useValue((value) => <p>{value}</p>);
+  return fullNameState.render((value) => <p>{value}</p>);
 }
 ```

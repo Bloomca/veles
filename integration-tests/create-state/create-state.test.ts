@@ -39,7 +39,7 @@ describe("createState", () => {
               valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          valueState.useValue((value) =>
+          valueState.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -73,7 +73,7 @@ describe("createState", () => {
               nameState.setValue(e.target.value);
             },
           }),
-          nameState.useValue((value) =>
+          nameState.render((value) =>
             createElement("div", { children: [`current name is ${value}`] })
           ),
         ],
@@ -118,7 +118,7 @@ describe("createState", () => {
     }) {
       return createElement("div", {
         children: [
-          valueState.useValue((value) =>
+          valueState.render((value) =>
             createElement("div", {
               children: [`child value is ${value}`],
             })
@@ -203,7 +203,7 @@ describe("createState", () => {
     expect(unmountSpy).toHaveBeenCalledTimes(2);
   });
 
-  test("supports custom comparator in useValue", async () => {
+  test("supports custom comparator in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState({
@@ -238,7 +238,7 @@ describe("createState", () => {
               }));
             },
           }),
-          valueState.useValue(
+          valueState.render(
             (value) =>
               createElement(ValueComponent, {
                 value: value.firstValue + value.secondValue,
@@ -276,7 +276,7 @@ describe("createState", () => {
     expect(unmountSpy).toHaveBeenCalledTimes(3);
   });
 
-  test("supports strings as returned value in useValue", async () => {
+  test("supports strings as returned value in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState(0);
@@ -289,7 +289,7 @@ describe("createState", () => {
             },
           }),
           createElement("div", {
-            children: valueState.useValue(
+            children: valueState.render(
               (value) => `current value is ${value}`
             ),
           }),
@@ -312,7 +312,7 @@ describe("createState", () => {
     expect(await screen.findByText("current value is 2")).toBeVisible();
   });
 
-  test("correctly supports null as a return value in useValue", async () => {
+  test("correctly supports null as a return value in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState(0);
@@ -325,7 +325,7 @@ describe("createState", () => {
             },
           }),
           createElement("div", {
-            children: valueState.useValue((value) =>
+            children: valueState.render((value) =>
               value === 0 ? null : `current value is ${value}`
             ),
           }),
@@ -348,7 +348,7 @@ describe("createState", () => {
     expect(await screen.findByText("current value is 2")).toBeVisible();
   });
 
-  test("supports no callback in useValue to return the value directly", async () => {
+  test("supports no callback in render to return the value directly", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const titleState = createState("title");
@@ -362,7 +362,7 @@ describe("createState", () => {
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValue(),
+            children: titleState.render(),
           }),
         ],
       });
@@ -448,7 +448,7 @@ describe("createState", () => {
         children: [
           createElement("div", {
             "data-testid": "text",
-            children: state.useValue(
+            children: state.render(
               (value) => `length is ${value.title.length}`
             ),
           }),
@@ -512,7 +512,7 @@ describe("createState", () => {
         children: [
           createElement("div", {
             "data-testid": "text",
-            children: state.useValue(
+            children: state.render(
               (value) => `length is ${value.title.length}`
             ),
           }),
@@ -552,7 +552,7 @@ describe("createState", () => {
             "data-testid": "button",
             onClick: () => showState.updateValue((value) => !value),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
           ),
         ],
@@ -563,7 +563,7 @@ describe("createState", () => {
     function NestedComponent() {
       const x = createElement("div", {
         children: [
-          valueState.useValue((value) => {
+          valueState.render((value) => {
             spyFn();
             return `value is ${value}`;
           }),
@@ -577,7 +577,7 @@ describe("createState", () => {
             "data-testid": "nestedButton",
             onClick: () => showState.updateValue((value) => !value),
           }),
-          showState.useValue((shouldShow) => (shouldShow ? x : null)),
+          showState.render((shouldShow) => (shouldShow ? x : null)),
         ],
       });
     }

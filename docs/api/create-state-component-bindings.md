@@ -47,24 +47,24 @@ userState.trackValueSelector(
 );
 ```
 
-## `state.useValue`
+## `state.render`
 
-- `state.useValue()`
-- `state.useValue(value => Veles.Node, comparator?)`
+- `state.render()`
+- `state.render(value => Veles.Node, comparator?)`
 
-`useValue` renders markup based on the current state value and updates it whenever the value changes.
+`render` renders markup based on the current state value and updates it whenever the value changes.
 
 ```jsx
 const titleState = createState("hello");
 
-return titleState.useValue((title) => <p>{title}</p>);
+return titleState.render((title) => <p>{title}</p>);
 ```
 
 If called without a callback, it renders the value directly.
 
 ```jsx
 const titleState = createState("hello");
-return titleState.useValue();
+return titleState.render();
 ```
 
 ## `state.useValueSelector`
@@ -72,7 +72,7 @@ return titleState.useValue();
 - `state.useValueSelector(selector)`
 - `state.useValueSelector(selector, selectedValue => Veles.Node, comparator?)`
 
-Works like `useValue`, but first selects a smaller piece of the state. This will make updates more atomic.
+Works like `render`, but first selects a smaller piece of the state. This will make updates more atomic.
 
 ```jsx
 const taskState = createState({ title: "task", completed: false });

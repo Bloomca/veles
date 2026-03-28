@@ -95,7 +95,7 @@ describe("Context", () => {
             "data-testid": "button",
             onClick: () => showState.updateValue((value) => !value),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
           ),
         ],

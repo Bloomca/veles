@@ -73,7 +73,7 @@ state.trackValueSelector(
 
 ## Comparator in rendering
 
-`useValue` and `useValueSelector` also accept comparators.
+`render` and `useValueSelector` also accept comparators.
 
 ```jsx
 state.useValueSelector(

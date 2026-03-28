@@ -110,7 +110,7 @@ describe("derived state", () => {
               valueState3.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          changedState.useValue((value) =>
+          changedState.render((value) =>
             createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
@@ -190,7 +190,7 @@ describe("derived state", () => {
               numberState.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          evenNumberState.useValue((value) =>
+          evenNumberState.render((value) =>
             createElement("div", {
               children: [
                 `current even value is ${((value as any) === createState.empty) ? "empty" : value}`,
@@ -234,7 +234,7 @@ describe("derived state", () => {
               numberState.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          totalState.useValue((value) =>
+          totalState.render((value) =>
             createElement("div", {
               children: [`current total value is ${value}`],
             }),

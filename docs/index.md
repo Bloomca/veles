@@ -33,7 +33,7 @@ function Counter() {
         +
       </button>
       <p>
-        {counterState.useValue(value => `current value is ${value}`)}
+        {counterState.render(value => `current value is ${value}`)}
       <p>
     </div>
   );

@@ -74,7 +74,7 @@ describe("state.useAttribute", () => {
             "data-testid": "button",
             onClick: () => showState.updateValue((currentValue) => !currentValue),
           }),
-          showState.useValue((shouldShow) => (shouldShow ? content : null)),
+          showState.render((shouldShow) => (shouldShow ? content : null)),
         ],
       });
     }

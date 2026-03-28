@@ -37,7 +37,7 @@ describe("track-value", () => {
               valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          valueState.useValue((value) =>
+          valueState.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -78,7 +78,7 @@ describe("track-value", () => {
               valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          valueState.useValue((value) =>
+          valueState.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -147,7 +147,7 @@ describe("track-value", () => {
               valueState.updateValue((currentValue) => currentValue + 1);
             },
           }),
-          valueState.useValue((value) =>
+          valueState.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],

@@ -25,7 +25,7 @@ function Component() {
       onMouseOut={() => showMenu.setState(false)}
     >
       <h1>Title</h1>
-      {showMenu.useValue((shouldShow) =>
+      {showMenu.render((shouldShow) =>
         shouldShow ? (
           <Portal portalNode={document.getElementById("portal")}>
             <div>Component menu</div>
