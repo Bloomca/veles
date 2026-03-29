@@ -9,6 +9,7 @@ import type { ComponentContext } from "../context/types";
 type StateEquality<ValueType> = (value1: ValueType, value2: ValueType) => boolean;
 
 type StateLike<ValueType> = State<ValueType>;
+type ArrayElement<T> = T extends ReadonlyArray<infer Element> ? Element : never;
 
 export type State<ValueType> = {
   track(
@@ -57,10 +58,36 @@ export type State<ValueType> = {
     ): VelesElement | VelesComponentObject | VelesStringElement;
   };
   attribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
-  renderEach<Element>(
+  renderEach<Element extends ArrayElement<ValueType> = ArrayElement<ValueType>>(
+    options: ValueType extends ReadonlyArray<any>
+      ? {
+          key:
+            | string
+            | ((options: {
+                element: Element;
+                index: number;
+              }) => string);
+          selector?: undefined;
+        }
+      : never,
+    cb: (props: {
+      elementState: State<Element>;
+      indexState: State<number>;
+    }) => VelesElement | VelesComponentObject
+  ): VelesComponentObject | VelesElement | null;
+  renderEach<
+    SelectorValueType extends ReadonlyArray<any>,
+    Element extends ArrayElement<SelectorValueType> =
+      ArrayElement<SelectorValueType>,
+  >(
     options: {
-      key: string | ((options: { element: Element; index: number }) => string);
-      selector?: (value: ValueType) => Element[];
+      key:
+        | string
+        | ((options: {
+            element: Element;
+            index: number;
+          }) => string);
+      selector: (value: ValueType) => SelectorValueType;
     },
     cb: (props: {
       elementState: State<Element>;

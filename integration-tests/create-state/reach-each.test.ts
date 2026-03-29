@@ -27,7 +27,7 @@ describe("state.renderEach", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     const unmountSpy = vi.fn();
-    const textSpy = vi.fn()
+    const textSpy = vi.fn();
     function IteratorComponent() {
       const state = createState<Item[]>([item1, item3, item4]);
 
@@ -53,14 +53,14 @@ describe("state.renderEach", () => {
                   } else {
                     return value;
                   }
-                })
+                }),
               );
             },
           }),
           createElement("ul", {
             "data-testid": "listComponent",
             children: [
-              state.renderEach<Item>({ key: "id" }, ({ elementState }) =>
+              state.renderEach({ key: "id" }, ({ elementState }) =>
                 createElement(() => {
                   onUnmount(unmountSpy);
                   return createElement("li", {
@@ -68,13 +68,13 @@ describe("state.renderEach", () => {
                       elementState.renderSelected(
                         (element) => element.text,
                         (text) => {
-                          textSpy()
-                          return createElement("span", { children: text })
-                        }
+                          textSpy();
+                          return createElement("span", { children: text });
+                        },
                       ),
                     ],
                   });
-                })
+                }),
               ),
             ],
           }),
@@ -92,7 +92,7 @@ describe("state.renderEach", () => {
     const firstListElement = listElement.childNodes[0];
     const secondListElement = listElement.childNodes[1];
     const thirdListElement = listElement.childNodes[2];
-    expect(textSpy).toHaveBeenCalledTimes(3)
+    expect(textSpy).toHaveBeenCalledTimes(3);
 
     expect(firstListElement.textContent).toBe(item1.text);
     expect(secondListElement.textContent).toBe(item3.text);
@@ -101,12 +101,12 @@ describe("state.renderEach", () => {
     await user.click(screen.getByTestId("updateFirstItem"));
     expect(unmountSpy).not.toHaveBeenCalled();
     expect(listElement.childNodes[0].textContent).toBe("updated first value");
-    expect(textSpy).toHaveBeenCalledTimes(4)
+    expect(textSpy).toHaveBeenCalledTimes(4);
 
     await user.click(screen.getByTestId("updateArrayButton"));
     expect(listElement.childNodes.length).toBe(4);
     expect(unmountSpy).toHaveBeenCalledTimes(1);
-    expect(textSpy).toHaveBeenCalledTimes(7)
+    expect(textSpy).toHaveBeenCalledTimes(7);
   });
 
   test("renderEach does support selector option", async () => {
@@ -118,7 +118,7 @@ describe("state.renderEach", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     const unmountSpy = vi.fn();
-    const textSpy = vi.fn()
+    const textSpy = vi.fn();
     function IteratorComponent() {
       const state = createState<{ value: Item[] }>({
         value: [item1, item3, item4],
@@ -163,13 +163,13 @@ describe("state.renderEach", () => {
                         elementState.renderSelected(
                           (element) => element.text,
                           (text) => {
-                            textSpy()
-                            return createElement("span", { children: text })
-                          }
+                            textSpy();
+                            return createElement("span", { children: text });
+                          },
                         ),
                       ],
                     });
-                  })
+                  }),
               ),
             ],
           }),
@@ -192,17 +192,17 @@ describe("state.renderEach", () => {
     expect(secondListElement.textContent).toBe(item3.text);
     expect(thirdListElement.textContent).toBe(item4.text);
 
-    expect(textSpy).toHaveBeenCalledTimes(3)
+    expect(textSpy).toHaveBeenCalledTimes(3);
 
     await user.click(screen.getByTestId("updateFirstItem"));
     expect(unmountSpy).not.toHaveBeenCalled();
     expect(listElement.childNodes[0].textContent).toBe("updated first value");
-    expect(textSpy).toHaveBeenCalledTimes(4)
+    expect(textSpy).toHaveBeenCalledTimes(4);
 
     await user.click(screen.getByTestId("updateArrayButton"));
     expect(listElement.childNodes.length).toBe(4);
     expect(unmountSpy).toHaveBeenCalledTimes(1);
-    expect(textSpy).toHaveBeenCalledTimes(7)
+    expect(textSpy).toHaveBeenCalledTimes(7);
   });
 
   test("value iterator correctly updates indices after changing order", async () => {
@@ -214,8 +214,8 @@ describe("state.renderEach", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     let items = [item1, item2, item3, item4, item5];
-    const textSpy = vi.fn()
-    const indexSpy = vi.fn()
+    const textSpy = vi.fn();
+    const indexSpy = vi.fn();
     function App() {
       const items$ = createState(items);
 
@@ -228,29 +228,27 @@ describe("state.renderEach", () => {
           createElement("div", {
             "data-testid": "container",
             children: [
-              items$.renderEach<Item>(
-                { key: "id" },
-                ({ elementState, indexState }) =>
-                  createElement("div", {
-                    children: [
-                      createElement("div", {
-                        children: indexState.render(value => {
-                          indexSpy()
-                          return String(value)
-                        }),
+              items$.renderEach({ key: "id" }, ({ elementState, indexState }) =>
+                createElement("div", {
+                  children: [
+                    createElement("div", {
+                      children: indexState.render((value) => {
+                        indexSpy();
+                        return String(value);
                       }),
-                      ".",
-                      createElement("div", {
-                        children: elementState.renderSelected(
-                          (item) => item.text,
-                          value => {
-                            textSpy()
-                            return value
-                          }
-                        ),
-                      }),
-                    ],
-                  })
+                    }),
+                    ".",
+                    createElement("div", {
+                      children: elementState.renderSelected(
+                        (item) => item.text,
+                        (value) => {
+                          textSpy();
+                          return value;
+                        },
+                      ),
+                    }),
+                  ],
+                }),
               ),
             ],
           }),
@@ -263,8 +261,8 @@ describe("state.renderEach", () => {
       component: createElement(App),
     });
 
-    expect(textSpy).toHaveBeenCalledTimes(5)
-    expect(indexSpy).toHaveBeenCalledTimes(5)
+    expect(textSpy).toHaveBeenCalledTimes(5);
+    expect(indexSpy).toHaveBeenCalledTimes(5);
     const container = screen.getByTestId("container");
     const children = container.childNodes;
     expect(children.length).toBe(5);
@@ -276,8 +274,8 @@ describe("state.renderEach", () => {
 
     items = [item5, item3, item1, item4, item2];
     await user.click(screen.getByTestId("button"));
-    expect(textSpy).toHaveBeenCalledTimes(5)
-    expect(indexSpy).toHaveBeenCalledTimes(9)
+    expect(textSpy).toHaveBeenCalledTimes(5);
+    expect(indexSpy).toHaveBeenCalledTimes(9);
 
     expect(children[0].textContent).toBe("0.fifth item");
     expect(children[1].textContent).toBe("1.third item");
@@ -302,12 +300,12 @@ describe("state.renderEach", () => {
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: items$.renderEach<Item>(
-              { key: "id" },
-              ({ elementState }) =>
-                createElement("li", {
-                  children: elementState.renderSelected((element) => element.text),
-                })
+            children: items$.renderEach({ key: "id" }, ({ elementState }) =>
+              createElement("li", {
+                children: elementState.renderSelected(
+                  (element) => element.text,
+                ),
+              }),
             ),
           }),
         ],
@@ -349,12 +347,12 @@ describe("state.renderEach", () => {
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: items$.renderEach<Item>(
-              { key: "id" },
-              ({ elementState }) =>
-                createElement("li", {
-                  children: elementState.renderSelected((element) => element.text),
-                })
+            children: items$.renderEach({ key: "id" }, ({ elementState }) =>
+              createElement("li", {
+                children: elementState.renderSelected(
+                  (element) => element.text,
+                ),
+              }),
             ),
           }),
         ],
@@ -392,13 +390,13 @@ describe("state.renderEach", () => {
     const items$ = createState([item1, item2, item3]);
     function App() {
       const show$ = createState(false);
-      const itemsMarkup = items$.renderEach<Item>(
+      const itemsMarkup = items$.renderEach(
         { key: "id" },
         ({ elementState, indexState }) =>
           createElement(Item, {
             elementState,
             indexState,
-          })
+          }),
       );
       return createElement("div", {
         children: [
@@ -410,7 +408,7 @@ describe("state.renderEach", () => {
           createElement("div", {
             "data-testid": "container",
             children: show$.render((shouldShow) =>
-              shouldShow ? itemsMarkup : null
+              shouldShow ? itemsMarkup : null,
             ),
           }),
         ],
