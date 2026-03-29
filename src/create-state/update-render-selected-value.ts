@@ -42,6 +42,7 @@ function updateUseValueSelector<T>({
      * some elements will be dynamically removed from the array
      */
 
+    selectorTrackingElement._isActive = true;
     newTrackingSelectorElements.push(selectorTrackingElement);
     return;
   }
@@ -93,6 +94,7 @@ function updateUseValueSelector<T>({
     node: newNode,
     comparator,
     savedContext,
+    _isActive: true,
   };
 
   if (parentVelesElementRendered) {
@@ -251,6 +253,7 @@ function updateUseValueSelector<T>({
     // if there were children listening, they should be cleared
     // and added back into their respective unmount listeners if it is still viable
     newNode._privateMethods._addUnmountHandler(() => {
+      newTrackingSelectorElement._isActive = false;
       trackers.trackingSelectorElements =
         trackers.trackingSelectorElements.filter(
           (el) => el !== newTrackingSelectorElement
@@ -280,8 +283,10 @@ function addUseValueMountHandler<T>({
     // if the current value is the same as the one which was used to calculate
     // current node, nothing really changed, no need to run it again
     if (usedValue === currentValue) {
+      trackingSelectorElement._isActive = true;
       trackers.trackingSelectorElements.push(trackingSelectorElement);
       trackingSelectorElement.node._privateMethods._addUnmountHandler(() => {
+        trackingSelectorElement._isActive = false;
         trackers.trackingSelectorElements =
           trackers.trackingSelectorElements.filter(
             (el) => trackingSelectorElement !== el
@@ -301,9 +306,11 @@ function addUseValueMountHandler<T>({
         const newTrackingSelectorElement = newTrackingSelectorElements[0];
         // this means nothing really changed
         if (newTrackingSelectorElement.node === trackingSelectorElement.node) {
+          newTrackingSelectorElement._isActive = true;
           trackers.trackingSelectorElements.push(newTrackingSelectorElement);
           newTrackingSelectorElement.node._privateMethods._addUnmountHandler(
             () => {
+              newTrackingSelectorElement._isActive = false;
               trackers.trackingSelectorElements =
                 trackers.trackingSelectorElements.filter(
                   (el) => trackingSelectorElement !== el
