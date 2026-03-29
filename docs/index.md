@@ -86,7 +86,7 @@ function App() {
       {tasksState.renderSelected((tasks) =>
         tasks.length > 0 ? (
           <ul>
-            {tasksState.useValueIterator({ key: "id" }, ({ elementState }) => (
+            {tasksState.renderEach({ key: "id" }, ({ elementState }) => (
               <Task taskState={elementState} />
             ))}
           </ul>
@@ -109,4 +109,4 @@ Second, when we create states, we can still read from them without subscribing. 
 
 Third, we create a conditional using `renderSelected` and returning a `boolean` value from the selector function. When the returned value changes, the library will unmount all existing nodes and mount new ones. If the value is the same, the markup will not be re-evaluated and changed.
 
-Last point, we iterate over all tasks using `useValueIterator`. This is an efficient way to make sure that when we add a new task, all existing tasks will not be re-rendered.
+Last point, we iterate over all tasks using `renderEach`. This is an efficient way to make sure that when we add a new task, all existing tasks will not be re-rendered.

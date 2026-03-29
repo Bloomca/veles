@@ -110,12 +110,12 @@ const widthState = createState(100);
 return <div style={widthState.attribute((value) => `width: ${value}px`)} />;
 ```
 
-## `state.useValueIterator`
+## `state.renderEach`
 
-- `state.useValueIterator({ key: "id" }, ({ elementState }) => ...)`
-- `state.useValueIterator({ key, selector }, ({ elementState, indexState }) => ...)`
+- `state.renderEach({ key: "id" }, ({ elementState }) => ...)`
+- `state.renderEach({ key, selector }, ({ elementState, indexState }) => ...)`
 
-`useValueIterator` is the optimized way to render arrays. It works by comparing old and new states and only making necessary DOM changes, e.g. inserting a new component into a specific position, or simply swapping 2 nodes without re-rendering anything. It wraps each individual value into the state object, which allows to avoid any unnecessary re-renders.
+`renderEach` is the optimized way to render arrays. It works by comparing old and new states and only making necessary DOM changes, e.g. inserting a new component into a specific position, or simply swapping 2 nodes without re-rendering anything. It wraps each individual value into the state object, which allows to avoid any unnecessary re-renders.
 
 ```jsx
 const tasksState = createState([
@@ -123,7 +123,7 @@ const tasksState = createState([
   { id: "2", title: "second" },
 ]);
 
-return tasksState.useValueIterator({ key: "id" }, ({ elementState }) => {
+return tasksState.renderEach({ key: "id" }, ({ elementState }) => {
   return <div>{elementState.renderSelected((task) => task.title)}</div>;
 });
 ```

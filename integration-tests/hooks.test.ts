@@ -266,7 +266,7 @@ describe("lifecycle hooks", () => {
               );
             },
           }),
-          tasksState.useValueIterator({ key: "id" }, ({ elementState }) =>
+          tasksState.renderEach({ key: "id" }, ({ elementState }) =>
             createElement(Task, { taskState: elementState })
           ),
         ],

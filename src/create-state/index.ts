@@ -238,7 +238,7 @@ function createStateFromCore<T>(
      * to track changes; this way individual changes will not trigger any component
      * re-renders.
      */
-    useValueIterator<Element>(
+    renderEach<Element>(
       options: {
         key: string | ((options: { element: any; index: number }) => string);
         selector?: (value: T) => Element[];
@@ -272,7 +272,7 @@ function createStateFromCore<T>(
           : stateValue;
 
         if (!Array.isArray(elements)) {
-          console.error("useValueIterator received non-array value");
+          console.error("renderEach received non-array value");
           return null;
         }
 

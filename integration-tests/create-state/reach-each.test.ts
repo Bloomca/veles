@@ -10,7 +10,7 @@ import {
 
 import type { State } from "../../src";
 
-describe("state.useValueIterator", () => {
+describe("state.renderEach", () => {
   let cleanup: Function | undefined;
 
   afterEach(() => {
@@ -18,7 +18,7 @@ describe("state.useValueIterator", () => {
     cleanup = undefined;
   });
 
-  test("useValueIterator does not re-mount values which did not change their keys", async () => {
+  test("renderEach does not re-mount values which did not change their keys", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
     const item1: Item = { id: 1, text: "first item" };
@@ -60,7 +60,7 @@ describe("state.useValueIterator", () => {
           createElement("ul", {
             "data-testid": "listComponent",
             children: [
-              state.useValueIterator<Item>({ key: "id" }, ({ elementState }) =>
+              state.renderEach<Item>({ key: "id" }, ({ elementState }) =>
                 createElement(() => {
                   onUnmount(unmountSpy);
                   return createElement("li", {
@@ -109,7 +109,7 @@ describe("state.useValueIterator", () => {
     expect(textSpy).toHaveBeenCalledTimes(7)
   });
 
-  test("useValueIterator does support selector option", async () => {
+  test("renderEach does support selector option", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
     const item1: Item = { id: 1, text: "first item" };
@@ -153,7 +153,7 @@ describe("state.useValueIterator", () => {
           createElement("ul", {
             "data-testid": "listComponent",
             children: [
-              state.useValueIterator(
+              state.renderEach(
                 { key: "id", selector: (state) => state.value },
                 ({ elementState }) =>
                   createElement(() => {
@@ -228,7 +228,7 @@ describe("state.useValueIterator", () => {
           createElement("div", {
             "data-testid": "container",
             children: [
-              itemsState.useValueIterator<Item>(
+              itemsState.renderEach<Item>(
                 { key: "id" },
                 ({ elementState, indexState }) =>
                   createElement("div", {
@@ -286,7 +286,7 @@ describe("state.useValueIterator", () => {
     expect(children[4].textContent).toBe("4.second item");
   });
 
-  test("useValueIterator does not update until mounted", async () => {
+  test("renderEach does not update until mounted", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
     const item1: Item = { id: 1, text: "first item" };
@@ -298,7 +298,7 @@ describe("state.useValueIterator", () => {
     const itemsState = createState([item1, item2, item3]);
     function App() {
       const showState = createState(false);
-      const itemsMarkup = itemsState.useValueIterator<Item>(
+      const itemsMarkup = itemsState.renderEach<Item>(
         { key: "id" },
         ({ elementState, indexState }) =>
           createElement(Item, {

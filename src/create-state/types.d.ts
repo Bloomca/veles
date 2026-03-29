@@ -57,7 +57,7 @@ export type State<ValueType> = {
     ): VelesElement | VelesComponentObject | VelesStringElement;
   };
   attribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
-  useValueIterator<Element>(
+  renderEach<Element>(
     options: {
       key: string | ((options: { element: Element; index: number }) => string);
       selector?: (value: ValueType) => Element[];
