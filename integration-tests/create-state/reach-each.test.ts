@@ -217,18 +217,18 @@ describe("state.renderEach", () => {
     const textSpy = vi.fn()
     const indexSpy = vi.fn()
     function App() {
-      const itemsState = createState(items);
+      const items$ = createState(items);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => itemsState.set(items),
+            onClick: () => items$.set(items),
           }),
           createElement("div", {
             "data-testid": "container",
             children: [
-              itemsState.renderEach<Item>(
+              items$.renderEach<Item>(
                 { key: "id" },
                 ({ elementState, indexState }) =>
                   createElement("div", {
@@ -292,17 +292,17 @@ describe("state.renderEach", () => {
     const item1: Item = { id: 1, text: "first item" };
 
     function App() {
-      const itemsState = createState<Item[]>([]);
+      const items$ = createState<Item[]>([]);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => itemsState.set([item1]),
+            onClick: () => items$.set([item1]),
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: itemsState.renderEach<Item>(
+            children: items$.renderEach<Item>(
               { key: "id" },
               ({ elementState }) =>
                 createElement("li", {
@@ -335,21 +335,21 @@ describe("state.renderEach", () => {
     const item2: Item = { id: 2, text: "second item" };
 
     function App() {
-      const itemsState = createState<Item[]>([item1]);
+      const items$ = createState<Item[]>([item1]);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "removeButton",
-            onClick: () => itemsState.set([]),
+            onClick: () => items$.set([]),
           }),
           createElement("button", {
             "data-testid": "addButton",
-            onClick: () => itemsState.set([item2]),
+            onClick: () => items$.set([item2]),
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: itemsState.renderEach<Item>(
+            children: items$.renderEach<Item>(
               { key: "id" },
               ({ elementState }) =>
                 createElement("li", {
@@ -389,10 +389,10 @@ describe("state.renderEach", () => {
     const item4: Item = { id: 4, text: "fourth item" };
     const item5: Item = { id: 5, text: "fifth item" };
     const item6: Item = { id: 6, text: "sixth item" };
-    const itemsState = createState([item1, item2, item3]);
+    const items$ = createState([item1, item2, item3]);
     function App() {
-      const showState = createState(false);
-      const itemsMarkup = itemsState.renderEach<Item>(
+      const show$ = createState(false);
+      const itemsMarkup = items$.renderEach<Item>(
         { key: "id" },
         ({ elementState, indexState }) =>
           createElement(Item, {
@@ -405,11 +405,11 @@ describe("state.renderEach", () => {
           createElement("h1", { children: "Application" }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.update((value) => !value),
+            onClick: () => show$.update((value) => !value),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.render((shouldShow) =>
+            children: show$.render((shouldShow) =>
               shouldShow ? itemsMarkup : null
             ),
           }),
@@ -459,7 +459,7 @@ describe("state.renderEach", () => {
     const container = screen.getByTestId("container");
     const children = container.childNodes;
 
-    itemsState.set([item4, item2, item3, item1]);
+    items$.set([item4, item2, item3, item1]);
 
     // empty Text node
     expect(children.length).toBe(1);
@@ -478,7 +478,7 @@ describe("state.renderEach", () => {
     expect(children[2].textContent).toBe("third item number: 2");
     expect(children[3].textContent).toBe("first item number: 3");
 
-    itemsState.set([item4, item5, item3, item1, item2]);
+    items$.set([item4, item5, item3, item1, item2]);
     expect(textSpy).toHaveBeenCalledTimes(5);
     expect(indexSpy).toHaveBeenCalledTimes(6);
 
@@ -494,7 +494,7 @@ describe("state.renderEach", () => {
     // empty Text node
     expect(children.length).toBe(1);
 
-    itemsState.set([
+    items$.set([
       item4,
       item5,
       item3,
@@ -524,7 +524,7 @@ describe("state.renderEach", () => {
     // empty Text node
     expect(children.length).toBe(1);
 
-    itemsState.set([item3, item6]);
+    items$.set([item3, item6]);
 
     await user.click(screen.getByTestId("button"));
     expect(textSpy).toHaveBeenCalledTimes(13);

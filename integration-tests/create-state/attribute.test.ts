@@ -21,14 +21,14 @@ describe("state.attribute", () => {
     const spyFn = vi.fn();
     function StateComponent() {
       onUnmount(spyFn);
-      const valueState = createState(0);
+      const value$ = createState(0);
       return createElement("div", {
         children: [
           createElement("button", {
-            "data-testvalue": valueState.attribute((value) => String(value)),
+            "data-testvalue": value$.attribute((value) => String(value)),
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
         ],
@@ -55,12 +55,12 @@ describe("state.attribute", () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
 
-    const valueState = createState("initialValue");
+    const value$ = createState("initialValue");
     function App() {
-      const showState = createState(false);
+      const show$ = createState(false);
       const content = createElement("div", {
         "data-testid": "attributeTest",
-        "data-value": valueState.attribute((value) => {
+        "data-value": value$.attribute((value) => {
           spyFn();
           return value;
         }),
@@ -72,9 +72,9 @@ describe("state.attribute", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.update((currentValue) => !currentValue),
+            onClick: () => show$.update((currentValue) => !currentValue),
           }),
-          showState.render((shouldShow) => (shouldShow ? content : null)),
+          show$.render((shouldShow) => (shouldShow ? content : null)),
         ],
       });
     }
@@ -85,7 +85,7 @@ describe("state.attribute", () => {
     });
 
     expect(spyFn).toHaveBeenCalledTimes(1);
-    valueState.set("newValue1");
+    value$.set("newValue1");
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
@@ -93,7 +93,7 @@ describe("state.attribute", () => {
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "newValue1"
     );
-    valueState.set("newValue2");
+    value$.set("newValue2");
     expect(spyFn).toHaveBeenCalledTimes(3);
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "newValue2"
@@ -101,10 +101,10 @@ describe("state.attribute", () => {
 
     // remove the element again to see that subscriptions are correctly removed
     await user.click(screen.getByTestId("button"));
-    valueState.set("newValue3");
+    value$.set("newValue3");
     expect(spyFn).toHaveBeenCalledTimes(3);
 
-    valueState.set("initialValue");
+    value$.set("initialValue");
     await user.click(screen.getByTestId("button"));
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "initialValue"

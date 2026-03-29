@@ -18,14 +18,14 @@ If you want to render a part of your application in a different part of the DOM,
 import { Portal, useState } from "veles";
 
 function Component() {
-  const showMenu = useState(false);
+  const show$ = useState(false);
   return (
     <div
-      onMouseOver={() => showMenu.setState(true)}
-      onMouseOut={() => showMenu.setState(false)}
+      onMouseOver={() => show$.setState(true)}
+      onMouseOut={() => show$.setState(false)}
     >
       <h1>Title</h1>
-      {showMenu.render((shouldShow) =>
+      {show$.render((shouldShow) =>
         shouldShow ? (
           <Portal portalNode={document.getElementById("portal")}>
             <div>Component menu</div>

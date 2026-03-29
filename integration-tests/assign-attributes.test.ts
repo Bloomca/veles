@@ -18,13 +18,13 @@ describe("assign-attributes", () => {
     const blurFn = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
-      const nameState = createState("");
+      const name$ = createState("");
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.update(() => "");
+              name$.update(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -33,13 +33,13 @@ describe("assign-attributes", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: nameState.attribute((name) => name),
+            value: name$.attribute((name) => name),
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
-              nameState.set((e.target as HTMLInputElement).value),
+              name$.set((e.target as HTMLInputElement).value),
           }),
-          nameState.render((value) =>
+          name$.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
             })
@@ -77,13 +77,13 @@ describe("assign-attributes", () => {
     const blurFn = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
-      const nameState = createState("");
+      const name$ = createState("");
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.update(() => "");
+              name$.update(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -92,13 +92,13 @@ describe("assign-attributes", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: nameState.attribute(),
+            value: name$.attribute(),
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
-              nameState.set((e.target as HTMLInputElement).value),
+              name$.set((e.target as HTMLInputElement).value),
           }),
-          nameState.render((value) =>
+          name$.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
             })
@@ -179,16 +179,16 @@ describe("assign-attributes", () => {
   it("correctly updates boolean properties with attribute", async () => {
     const user = userEvent.setup();
     function App() {
-      const disabledState = createState(false);
+      const disabled$ = createState(false);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "toggleButton",
-            onClick: () => disabledState.update((value) => !value),
+            onClick: () => disabled$.update((value) => !value),
           }),
           createElement("button", {
             "data-testid": "button",
-            disabled: disabledState.attribute(),
+            disabled: disabled$.attribute(),
           }),
         ],
       });

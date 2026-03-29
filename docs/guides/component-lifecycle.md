@@ -34,8 +34,8 @@ function Component({ task }) {
 But in general for dynamic content you want to avoid it as much as possible and pass data wrapped in `state` and let children decide how they want to consume it. For example, the same component will look like this:
 
 ```jsx
-function Component({ taskState }) {
- return <div>{taskState.renderSelected(task => task.name)}</div>
+function Component({ task$ }) {
+ return <div>{task$.renderSelected(task => task.name)}</div>
 }
 ```
 

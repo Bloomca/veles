@@ -26,14 +26,14 @@ Let's build a simple counter application:
 import { createState } from "veles";
 
 function Counter() {
-  const counterState = createState(0);
+  const counter$ = createState(0);
   return (
     <div>
-      <button onClick={() => counterState.update((value) => value + 1)}>
+      <button onClick={() => counter$.update((value) => value + 1)}>
         +
       </button>
       <p>
-        {counterState.render(value => `current value is ${value}`)}
+        {counter$.render(value => `current value is ${value}`)}
       <p>
     </div>
   );
@@ -62,32 +62,32 @@ import { createState } from "veles";
 
 let idCounter = 1;
 function App() {
-  const taskState = createState("");
-  const tasksState = createState([]);
+  const task$ = createState("");
+  const tasks$ = createState([]);
 
   return (
     <div>
       <div>
         <input
           type="text"
-          value={taskState.attribute()}
-          onInput={(e) => taskState.set(e.target.value)}
+          value={task$.attribute()}
+          onInput={(e) => task$.set(e.target.value)}
         />
         <button
           onClick={() => {
-            tasksState.update((tasks) =>
-              tasks.concat({ id: idCounter++, title: taskState.get() })
+            tasks$.update((tasks) =>
+              tasks.concat({ id: idCounter++, title: task$.get() })
             );
           }}
         >
           Add task
         </button>
       </div>
-      {tasksState.renderSelected((tasks) =>
+      {tasks$.renderSelected((tasks) =>
         tasks.length > 0 ? (
           <ul>
-            {tasksState.renderEach({ key: "id" }, ({ elementState }) => (
-              <Task taskState={elementState} />
+            {tasks$.renderEach({ key: "id" }, ({ elementState }) => (
+              <Task task$={elementState} />
             ))}
           </ul>
         ) : (
@@ -98,8 +98,8 @@ function App() {
   );
 }
 
-function Task({ taskState }) {
-  return <li>{taskState.renderSelected((task) => task.title)}</li>;
+function Task({ task$ }) {
+  return <li>{task$.renderSelected((task) => task.title)}</li>;
 }
 ```
 

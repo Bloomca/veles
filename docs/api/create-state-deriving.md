@@ -19,8 +19,8 @@ Each function with `options?` accepts an object with custom equality function li
 Transforms one state into another.
 
 ```jsx
-const userState = createState({ name: "Seva", age: 30 });
-const nameState = userState.map((user) => user.name);
+const user$ = createState({ name: "Seva", age: 30 });
+const name$ = user$.map((user) => user.name);
 ```
 
 ## `state.filter`
@@ -30,14 +30,14 @@ const nameState = userState.map((user) => user.name);
 Keeps only values that pass a predicate. If a new value does not pass, the previous passing value is retained.
 
 ```jsx
-const numberState = createState(1);
-const evenNumberState = numberState.filter((value) => value % 2 === 0);
+const number$ = createState(1);
+const evenNumber$ = number$.filter((value) => value % 2 === 0);
 ```
 
 You can also access the previous source value.
 
 ```jsx
-const filteredState = state.filter((value, prevValue) => {
+const filtered$ = state.filter((value, prevValue) => {
   return value !== prevValue;
 });
 ```
@@ -49,8 +49,8 @@ const filteredState = state.filter((value, prevValue) => {
 Accumulates values over time, similar to `reduce`, but as a reactive state.
 
 ```jsx
-const numberState = createState(1);
-const totalState = numberState.scan((acc, value) => acc + value, 0);
+const number$ = createState(1);
+const total$ = number$.scan((acc, value) => acc + value, 0);
 ```
 
 ## `state.combine`
@@ -60,9 +60,9 @@ const totalState = numberState.scan((acc, value) => acc + value, 0);
 Combines several states into a single tuple state.
 
 ```jsx
-const nameState = createState("Seva");
-const lastNameState = createState("Zaikov");
-const fullNameState = nameState
-  .combine(lastNameState)
+const name$ = createState("Seva");
+const lastName$ = createState("Zaikov");
+const fullName$ = name$
+  .combine(lastName$)
   .map(([name, lastName]) => `${name} ${lastName}`);
 ```

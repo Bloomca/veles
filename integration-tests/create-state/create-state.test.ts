@@ -30,16 +30,16 @@ describe("createState", () => {
   test("supports state updates", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const valueState = createState(0);
+      const value$ = createState(0);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
-          valueState.render((value) =>
+          value$.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -64,16 +64,16 @@ describe("createState", () => {
   test("supports direct state updates", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const nameState = createState("");
+      const name$ = createState("");
       return createElement("div", {
         children: [
           createElement("input", {
             "data-testid": "nameInput",
             onInput: (e) => {
-              nameState.set(e.target.value);
+              name$.set(e.target.value);
             },
           }),
-          nameState.render((value) =>
+          name$.render((value) =>
             createElement("div", { children: [`current name is ${value}`] })
           ),
         ],
@@ -95,30 +95,30 @@ describe("createState", () => {
   test("supports passing state as a prop", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const valueState = createState(0);
+      const value$ = createState(0);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
           createElement(ReadingStateComponent, {
-            valueState,
+            value$,
           }),
         ],
       });
     }
 
     function ReadingStateComponent({
-      valueState,
+      value$,
     }: {
-      valueState: State<number>;
+      value$: State<number>;
     }) {
       return createElement("div", {
         children: [
-          valueState.render((value) =>
+          value$.render((value) =>
             createElement("div", {
               children: [`child value is ${value}`],
             })
@@ -147,7 +147,7 @@ describe("createState", () => {
   test("support selector functions correctly with renderSelected", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const valueState = createState({
+      const value$ = createState({
         firstValue: 0,
         secondValue: 0,
       });
@@ -156,7 +156,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.update((currentValue) => ({
+              value$.update((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -165,13 +165,13 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.update((currentValue) => ({
+              value$.update((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
             },
           }),
-          valueState.renderSelected(
+          value$.renderSelected(
             (value) => value.secondValue,
             (value) => createElement(SecondValueComponent, { value })
           ),
@@ -206,7 +206,7 @@ describe("createState", () => {
   test("supports custom comparator in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const valueState = createState({
+      const value$ = createState({
         firstValue: 0,
         secondValue: 0,
       });
@@ -215,7 +215,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.update((currentValue) => ({
+              value$.update((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -224,7 +224,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.update((currentValue) => ({
+              value$.update((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
@@ -233,12 +233,12 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "fakeValueButton",
             onClick: () => {
-              valueState.update((currentValue) => ({
+              value$.update((currentValue) => ({
                 ...currentValue,
               }));
             },
           }),
-          valueState.render(
+          value$.render(
             (value) =>
               createElement(ValueComponent, {
                 value: value.firstValue + value.secondValue,
@@ -279,17 +279,17 @@ describe("createState", () => {
   test("supports strings as returned value in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const valueState = createState(0);
+      const value$ = createState(0);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
-            children: valueState.render(
+            children: value$.render(
               (value) => `current value is ${value}`
             ),
           }),
@@ -315,17 +315,17 @@ describe("createState", () => {
   test("correctly supports null as a return value in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const valueState = createState(0);
+      const value$ = createState(0);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
-            children: valueState.render((value) =>
+            children: value$.render((value) =>
               value === 0 ? null : `current value is ${value}`
             ),
           }),
@@ -351,18 +351,18 @@ describe("createState", () => {
   test("supports no callback in render to return the value directly", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const titleState = createState("title");
+      const title$ = createState("title");
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.set("new title");
+              title$.set("new title");
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.render(),
+            children: title$.render(),
           }),
         ],
       });
@@ -383,18 +383,18 @@ describe("createState", () => {
   test("supports no callback in renderSelected to return the value directly", async () => {
     const user = userEvent.setup();
     function StateComponent() {
-      const titleState = createState({ title: "title" });
+      const title$ = createState({ title: "title" });
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.set({ title: "new title" });
+              title$.set({ title: "new title" });
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.renderSelected((data) => data.title),
+            children: title$.renderSelected((data) => data.title),
           }),
         ],
       });
@@ -416,22 +416,22 @@ describe("createState", () => {
     let newValue = "";
     const user = userEvent.setup();
     function StateComponent() {
-      const titleState = createState({ title: "title" });
+      const title$ = createState({ title: "title" });
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.set({ title: newValue });
+              title$.set({ title: newValue });
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.renderSelected(
+            children: title$.renderSelected(
               (data) => data.title.length > 3,
               (isLong) =>
                 isLong
-                  ? createElement(ConditionalComponent, { state: titleState })
+                  ? createElement(ConditionalComponent, { state: title$ })
                   : null
             ),
           }),
@@ -480,22 +480,22 @@ describe("createState", () => {
     let newValue = "";
     const user = userEvent.setup();
     function StateComponent() {
-      const titleState = createState({ title: "" });
+      const title$ = createState({ title: "" });
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.set({ title: newValue });
+              title$.set({ title: newValue });
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.renderSelected(
+            children: title$.renderSelected(
               (data) => data.title.length > 3,
               (isLong) =>
                 isLong
-                  ? createElement(ConditionalComponent, { state: titleState })
+                  ? createElement(ConditionalComponent, { state: title$ })
                   : null
             ),
           }),
@@ -548,34 +548,34 @@ describe("createState", () => {
     const secondNestedRenderSpy = vi.fn();
 
     function App() {
-      const streamState = createState({ value: 0 });
+      const stream$ = createState({ value: 0 });
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () =>
-              streamState.update((value) => ({
+              stream$.update((value) => ({
                 value: value.value + 1,
               })),
           }),
-          createElement(TopLevelConditional, { streamState }),
+          createElement(TopLevelConditional, { stream$ }),
         ],
       });
     }
 
     function TopLevelConditional({
-      streamState,
+      stream$,
     }: {
-      streamState: State<{ value: number }>;
+      stream$: State<{ value: number }>;
     }) {
-      return streamState.renderSelected(
+      return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
           topLevelRenderSpy(isEven);
 
           return isEven
-            ? createElement(FirstNestedConditional, { streamState })
+            ? createElement(FirstNestedConditional, { stream$ })
             : createElement("div", {
                 "data-testid": "top-level-odd",
                 children: "top level odd",
@@ -585,17 +585,17 @@ describe("createState", () => {
     }
 
     function FirstNestedConditional({
-      streamState,
+      stream$,
     }: {
-      streamState: State<{ value: number }>;
+      stream$: State<{ value: number }>;
     }) {
-      return streamState.renderSelected(
+      return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
           firstNestedRenderSpy(isEven);
 
           return isEven
-            ? createElement(SecondNestedConditional, { streamState })
+            ? createElement(SecondNestedConditional, { stream$ })
             : createElement("div", {
                 children: "first nested odd",
               });
@@ -604,11 +604,11 @@ describe("createState", () => {
     }
 
     function SecondNestedConditional({
-      streamState,
+      stream$,
     }: {
-      streamState: State<{ value: number }>;
+      stream$: State<{ value: number }>;
     }) {
-      return streamState.renderSelected(
+      return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
           secondNestedRenderSpy(isEven);
@@ -665,28 +665,28 @@ describe("createState", () => {
     const secondNestedRenderSpy = vi.fn();
 
     function App() {
-      const streamState = createState({ value: 0 });
+      const stream$ = createState({ value: 0 });
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () =>
-              streamState.update((value) => ({
+              stream$.update((value) => ({
                 value: value.value + 1,
               })),
           }),
-          createElement(TopLevelConditional, { streamState }),
+          createElement(TopLevelConditional, { stream$ }),
         ],
       });
     }
 
     function TopLevelConditional({
-      streamState,
+      stream$,
     }: {
-      streamState: State<{ value: number }>;
+      stream$: State<{ value: number }>;
     }) {
-      return streamState.renderSelected(
+      return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
           topLevelRenderSpy(isEven);
@@ -695,7 +695,7 @@ describe("createState", () => {
             "data-testid": "top-level",
             children: [
               `top level is ${isEven ? "even" : "odd"}`,
-              createElement(FirstNestedConditional, { streamState }),
+              createElement(FirstNestedConditional, { stream$ }),
             ],
           });
         }
@@ -703,11 +703,11 @@ describe("createState", () => {
     }
 
     function FirstNestedConditional({
-      streamState,
+      stream$,
     }: {
-      streamState: State<{ value: number }>;
+      stream$: State<{ value: number }>;
     }) {
-      return streamState.renderSelected(
+      return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
           firstNestedRenderSpy(isEven);
@@ -716,7 +716,7 @@ describe("createState", () => {
             "data-testid": "first-nested",
             children: [
               `first nested is ${isEven ? "even" : "odd"}`,
-              createElement(SecondNestedConditional, { streamState }),
+              createElement(SecondNestedConditional, { stream$ }),
             ],
           });
         }
@@ -724,11 +724,11 @@ describe("createState", () => {
     }
 
     function SecondNestedConditional({
-      streamState,
+      stream$,
     }: {
-      streamState: State<{ value: number }>;
+      stream$: State<{ value: number }>;
     }) {
-      return streamState.renderSelected(
+      return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
           secondNestedRenderSpy(isEven);
@@ -774,17 +774,17 @@ describe("createState", () => {
 
   test("unsubscribes from updates if wasn't mounted", async () => {
     const user = userEvent.setup();
-    const valueState = createState(0);
+    const value$ = createState(0);
     function App() {
-      const showState = createState(true);
+      const show$ = createState(true);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.update((value) => !value),
+            onClick: () => show$.update((value) => !value),
           }),
-          showState.render((shouldShow) =>
+          show$.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
           ),
         ],
@@ -795,21 +795,21 @@ describe("createState", () => {
     function NestedComponent() {
       const x = createElement("div", {
         children: [
-          valueState.render((value) => {
+          value$.render((value) => {
             spyFn();
             return `value is ${value}`;
           }),
         ],
       });
-      const showState = createState(false);
+      const show$ = createState(false);
       return createElement("div", {
         children: [
           createElement("h1", { children: "nested component" }),
           createElement("button", {
             "data-testid": "nestedButton",
-            onClick: () => showState.update((value) => !value),
+            onClick: () => show$.update((value) => !value),
           }),
-          showState.render((shouldShow) => (shouldShow ? x : null)),
+          show$.render((shouldShow) => (shouldShow ? x : null)),
         ],
       });
     }
@@ -819,18 +819,18 @@ describe("createState", () => {
       component: createElement(App),
     });
 
-    valueState.set(1);
+    value$.set(1);
     // it only was called one time, but it does not track because it is not mounted
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
 
-    valueState.set(2);
+    value$.set(2);
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
     expect(spyFn).toHaveBeenCalledTimes(2);
-    valueState.set(3);
+    value$.set(3);
     expect(spyFn).toHaveBeenCalledTimes(2);
 
     await user.click(screen.getByTestId("nestedButton"));
@@ -838,7 +838,7 @@ describe("createState", () => {
     expect(await screen.findByText("value is 3")).toBeVisible();
 
     await user.click(screen.getByTestId("nestedButton"));
-    valueState.set(4);
+    value$.set(4);
     await user.click(screen.getByTestId("nestedButton"));
     expect(spyFn).toHaveBeenCalledTimes(4);
     expect(await screen.findByText("value is 4")).toBeVisible();

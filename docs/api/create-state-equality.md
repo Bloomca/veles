@@ -25,7 +25,7 @@ Derived methods accept an `equality` option.
 ### `state.map`
 
 ```jsx
-const parityState = numberState.map(
+const parity$ = number$.map(
   (value) => ({ parity: value % 2 }),
   {
     equality: (a, b) => a.parity === b.parity,
@@ -36,7 +36,7 @@ const parityState = numberState.map(
 ### `state.filter`
 
 ```jsx
-const activeTaskState = taskState.filter(
+const activeTask$ = task$.filter(
   (task) => task.active,
   {
     equality: (a, b) => a.id === b.id,
@@ -47,7 +47,7 @@ const activeTaskState = taskState.filter(
 ### `state.scan`
 
 ```jsx
-const summaryState = numberState.scan(
+const summary$ = number$.scan(
   (acc, value) => ({ parity: (acc.parity + value) % 2 }),
   { parity: 0 },
   {

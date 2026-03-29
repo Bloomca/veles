@@ -165,22 +165,22 @@ describe("createElement", () => {
   test("support returning render directly from a component", async () => {
     const user = userEvent.setup();
     function App() {
-      const showState = createState(false);
+      const show$ = createState(false);
       return createElement("div", {
         children: [
           createElement("h1", { children: ["parent component"] }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.set(true),
+            onClick: () => show$.set(true),
           }),
-          createElement(StateComponent, { showState }),
+          createElement(StateComponent, { show$ }),
         ],
       });
     }
 
-    function StateComponent({ showState }: { showState: State<boolean> }) {
-      return showState.render((shouldShowState) =>
-        shouldShowState
+    function StateComponent({ show$ }: { show$: State<boolean> }) {
+      return show$.render((shouldShow) =>
+        shouldShow
           ? createElement("div", {
               "data-testid": "stateComponent",
               children: "state component",

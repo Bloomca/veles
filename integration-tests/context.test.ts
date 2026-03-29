@@ -88,14 +88,14 @@ describe("Context", () => {
     const exampleContext = createContext<number>();
 
     function App() {
-      const showState = createState(false);
+      const show$ = createState(false);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.update((value) => !value),
+            onClick: () => show$.update((value) => !value),
           }),
-          showState.render((shouldShow) =>
+          show$.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
           ),
         ],
@@ -132,13 +132,13 @@ describe("Context", () => {
 
     const exampleContext = createContext<number>();
 
-    const itemsState = createState<Item[]>([item1, item2]);
+    const items$ = createState<Item[]>([item1, item2]);
     function App() {
       return createElement("div", {
         children: [
           createElement("div", {
             "data-testid": "container",
-            children: itemsState.renderEach<Item>(
+            children: items$.renderEach<Item>(
               { key: "id" },
               ({ elementState }) => createElement(Item, { elementState })
             ),
@@ -175,7 +175,7 @@ describe("Context", () => {
     expect(listElement.childNodes[0].textContent).toBe("first item 3");
     expect(listElement.childNodes[1].textContent).toBe("second item 6");
 
-    itemsState.set([item1, item2, item3]);
+    items$.set([item1, item2, item3]);
     expect(listElement.childNodes.length).toBe(3);
     expect(listElement.childNodes[0].textContent).toBe("first item 3");
     expect(listElement.childNodes[1].textContent).toBe("second item 6");

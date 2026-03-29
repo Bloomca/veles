@@ -16,34 +16,34 @@ describe("derived state", () => {
     const user = userEvent.setup();
 
     function StateComponent() {
-      const valueState1 = createState(0);
-      const valueState2 = createState(0);
-      const valueState3 = createState(0);
-      const combinedValueState = valueState1.combine(valueState2, valueState3);
+      const value$1 = createState(0);
+      const value$2 = createState(0);
+      const value$3 = createState(0);
+      const combinedValue$ = value$1.combine(value$2, value$3);
 
-      combinedValueState.track(spy);
+      combinedValue$.track(spy);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.update((currentValue) => currentValue + 1);
+              value$1.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.update((currentValue) => currentValue + 1);
+              value$2.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.update((currentValue) => currentValue + 1);
+              value$3.update((currentValue) => currentValue + 1);
             },
           }),
-          combinedValueState.renderSelected(
+          combinedValue$.renderSelected(
             (values) => values.reduce((acc, num) => acc + num, 0),
             (value) =>
               createElement("div", { children: [`current value is ${value}`] }),
@@ -83,11 +83,11 @@ describe("derived state", () => {
     const user = userEvent.setup();
 
     function StateComponent() {
-      const valueState1 = createState(1);
-      const valueState2 = createState(1);
-      const valueState3 = createState(1);
-      const changedState = valueState1
-        .combine(valueState2, valueState3)
+      const value$1 = createState(1);
+      const value$2 = createState(1);
+      const value$3 = createState(1);
+      const changed$ = value$1
+        .combine(value$2, value$3)
         .map(([value1, value2, value3]) => value1 * value2 * value3);
 
       return createElement("div", {
@@ -95,22 +95,22 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.update((currentValue) => currentValue + 1);
+              value$1.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.update((currentValue) => currentValue + 1);
+              value$2.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.update((currentValue) => currentValue + 1);
+              value$3.update((currentValue) => currentValue + 1);
             },
           }),
-          changedState.render((value) =>
+          changed$.render((value) =>
             createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
@@ -147,12 +147,12 @@ describe("derived state", () => {
     });
 
     function StateComponent() {
-      const selectedState = state.map((value) => value, {
+      const selected$ = state.map((value) => value, {
         equality: (a, b) =>
           a.firstValue === b.firstValue && a.secondValue === b.secondValue,
       });
       const selectedStateNoComparator = state.map((value) => value);
-      selectedState.track(firstSpy);
+      selected$.track(firstSpy);
       selectedStateNoComparator.track(secondSpy);
 
       return null;
@@ -179,18 +179,18 @@ describe("derived state", () => {
     const user = userEvent.setup();
 
     function StateComponent() {
-      const numberState = createState(1);
-      const evenNumberState = numberState.filter((value) => value % 2 === 0);
+      const number$ = createState(1);
+      const evenNumber$ = number$.filter((value) => value % 2 === 0);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              numberState.update((currentValue) => currentValue + 1);
+              number$.update((currentValue) => currentValue + 1);
             },
           }),
-          evenNumberState.render((value) =>
+          evenNumber$.render((value) =>
             createElement("div", {
               children: [
                 `current even value is ${((value as any) === createState.empty) ? "empty" : value}`,
@@ -223,18 +223,18 @@ describe("derived state", () => {
     const user = userEvent.setup();
 
     function StateComponent() {
-      const numberState = createState(1);
-      const totalState = numberState.scan((acc, value) => acc + value, 0);
+      const number$ = createState(1);
+      const total$ = number$.scan((acc, value) => acc + value, 0);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              numberState.update((currentValue) => currentValue + 1);
+              number$.update((currentValue) => currentValue + 1);
             },
           }),
-          totalState.render((value) =>
+          total$.render((value) =>
             createElement("div", {
               children: [`current total value is ${value}`],
             }),

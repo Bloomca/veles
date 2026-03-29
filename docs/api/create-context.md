@@ -88,18 +88,18 @@ import { createContext, createState } from "veles";
 const exampleContext = createContext();
 
 function App() {
-  const showState = createState(false);
+  const show$ = createState(false);
   return (
     <exampleContext.Provider value={5}>
       <div>
         <h1>Application</h1>
         <NestedComponent />
         <button
-          onClick={() => showState.update((currentValue) => !currentValue)}
+          onClick={() => show$.update((currentValue) => !currentValue)}
         >
           Toggle conditional component
         </button>
-        {showState.render((shouldShow) =>
+        {show$.render((shouldShow) =>
           shouldShow ? <ConditionalComponent /> : null
         )}
       </div>
