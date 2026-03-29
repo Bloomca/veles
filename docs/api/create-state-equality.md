@@ -3,6 +3,7 @@ layout: default
 title: Equality and update control
 nav_order: 4
 parent: createState
+grand_parent: API
 ---
 
 ## Equality and update control

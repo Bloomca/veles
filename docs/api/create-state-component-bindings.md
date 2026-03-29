@@ -3,6 +3,7 @@ layout: default
 title: Component bindings
 nav_order: 2
 parent: createState
+grand_parent: API
 ---
 
 ## Component bindings
