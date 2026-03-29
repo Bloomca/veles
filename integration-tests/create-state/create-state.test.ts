@@ -772,6 +772,48 @@ describe("createState", () => {
     expect(secondNestedRenderSpy).toHaveBeenCalledTimes(3);
   });
 
+  test("does not execute pre-created conditional markup before mount", async () => {
+    const user = userEvent.setup();
+    const componentExecutionSpy = vi.fn();
+
+    function HeavyComponent() {
+      componentExecutionSpy();
+
+      return createElement("div", {
+        "data-testid": "heavy-component",
+        children: "heavy component",
+      });
+    }
+
+    function App() {
+      const show$ = createState(false);
+      const heavyMarkup = createElement(HeavyComponent);
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => show$.set(true),
+          }),
+          show$.render((shouldShow) => (shouldShow ? heavyMarkup : null)),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(componentExecutionSpy).toHaveBeenCalledTimes(0);
+    expect(screen.queryByTestId("heavy-component")).not.toBeInTheDocument();
+
+    await user.click(screen.getByTestId("button"));
+
+    expect(componentExecutionSpy).toHaveBeenCalledTimes(1);
+    expect(await screen.findByTestId("heavy-component")).toBeVisible();
+  });
+
   test("unsubscribes from updates if wasn't mounted", async () => {
     const user = userEvent.setup();
     const value$ = createState(0);
