@@ -657,6 +657,121 @@ describe("createState", () => {
     expect(secondNestedRenderSpy).toHaveBeenCalledTimes(2);
   });
 
+  test("executes parent and nested callbacks when parent changes but children stay mounted", async () => {
+    const user = userEvent.setup();
+
+    const topLevelRenderSpy = vi.fn();
+    const firstNestedRenderSpy = vi.fn();
+    const secondNestedRenderSpy = vi.fn();
+
+    function App() {
+      const streamState = createState({ value: 0 });
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () =>
+              streamState.update((value) => ({
+                value: value.value + 1,
+              })),
+          }),
+          createElement(TopLevelConditional, { streamState }),
+        ],
+      });
+    }
+
+    function TopLevelConditional({
+      streamState,
+    }: {
+      streamState: State<{ value: number }>;
+    }) {
+      return streamState.renderSelected(
+        (value) => value.value % 2 === 0,
+        (isEven) => {
+          topLevelRenderSpy(isEven);
+
+          return createElement("div", {
+            "data-testid": "top-level",
+            children: [
+              `top level is ${isEven ? "even" : "odd"}`,
+              createElement(FirstNestedConditional, { streamState }),
+            ],
+          });
+        }
+      );
+    }
+
+    function FirstNestedConditional({
+      streamState,
+    }: {
+      streamState: State<{ value: number }>;
+    }) {
+      return streamState.renderSelected(
+        (value) => value.value % 2 === 0,
+        (isEven) => {
+          firstNestedRenderSpy(isEven);
+
+          return createElement("div", {
+            "data-testid": "first-nested",
+            children: [
+              `first nested is ${isEven ? "even" : "odd"}`,
+              createElement(SecondNestedConditional, { streamState }),
+            ],
+          });
+        }
+      );
+    }
+
+    function SecondNestedConditional({
+      streamState,
+    }: {
+      streamState: State<{ value: number }>;
+    }) {
+      return streamState.renderSelected(
+        (value) => value.value % 2 === 0,
+        (isEven) => {
+          secondNestedRenderSpy(isEven);
+
+          return createElement("div", {
+            "data-testid": "leaf",
+            children: `leaf is ${isEven ? "even" : "odd"}`,
+          });
+        }
+      );
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(await screen.findByText("top level is even")).toBeVisible();
+    expect(await screen.findByText("first nested is even")).toBeVisible();
+    expect(await screen.findByText("leaf is even")).toBeVisible();
+    expect(topLevelRenderSpy).toHaveBeenCalledTimes(1);
+    expect(firstNestedRenderSpy).toHaveBeenCalledTimes(1);
+    expect(secondNestedRenderSpy).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByTestId("button"));
+
+    expect(await screen.findByText("top level is odd")).toBeVisible();
+    expect(await screen.findByText("first nested is odd")).toBeVisible();
+    expect(await screen.findByText("leaf is odd")).toBeVisible();
+    expect(topLevelRenderSpy).toHaveBeenCalledTimes(2);
+    expect(firstNestedRenderSpy).toHaveBeenCalledTimes(2);
+    expect(secondNestedRenderSpy).toHaveBeenCalledTimes(2);
+
+    await user.click(screen.getByTestId("button"));
+
+    expect(await screen.findByText("top level is even")).toBeVisible();
+    expect(await screen.findByText("first nested is even")).toBeVisible();
+    expect(await screen.findByText("leaf is even")).toBeVisible();
+    expect(topLevelRenderSpy).toHaveBeenCalledTimes(3);
+    expect(firstNestedRenderSpy).toHaveBeenCalledTimes(3);
+    expect(secondNestedRenderSpy).toHaveBeenCalledTimes(3);
+  });
+
   test("unsubscribes from updates if wasn't mounted", async () => {
     const user = userEvent.setup();
     const valueState = createState(0);
