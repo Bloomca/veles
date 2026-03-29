@@ -18,13 +18,13 @@ function updateUseValueSelector<T>({
   selectorTrackingElement,
   newTrackingSelectorElements,
   trackers,
-  getValue,
+  get,
 }: {
   value: T;
   selectorTrackingElement: TrackingSelectorElement;
   newTrackingSelectorElements: TrackingSelectorElement[];
   trackers: StateTrackers;
-  getValue: () => T;
+  get: () => T;
 }) {
   const { selectedValue, selector, cb, node, comparator, savedContext } =
     selectorTrackingElement;
@@ -239,7 +239,7 @@ function updateUseValueSelector<T>({
     addUseValueMountHandler({
       usedValue: value,
       trackers,
-      getValue,
+      get,
       trackingSelectorElement: newTrackingSelectorElement,
     });
     // at this point the new Node is mounted, childComponents are updated
@@ -265,17 +265,17 @@ function updateUseValueSelector<T>({
 
 function addUseValueMountHandler<T>({
   usedValue,
-  getValue,
+  get,
   trackers,
   trackingSelectorElement,
 }: {
   usedValue: T;
-  getValue(): T;
+  get(): T;
   trackers: StateTrackers;
   trackingSelectorElement: TrackingSelectorElement;
 }) {
   trackingSelectorElement.node._privateMethods._addMountHandler(() => {
-    const currentValue = getValue();
+    const currentValue = get();
 
     // if the current value is the same as the one which was used to calculate
     // current node, nothing really changed, no need to run it again
@@ -290,11 +290,11 @@ function addUseValueMountHandler<T>({
     } else {
       const newTrackingSelectorElements: TrackingSelectorElement[] = [];
       updateUseValueSelector({
-        value: getValue(),
+        value: get(),
         trackers,
         selectorTrackingElement: trackingSelectorElement,
         newTrackingSelectorElements,
-        getValue,
+        get,
       });
 
       if (newTrackingSelectorElements[0]) {

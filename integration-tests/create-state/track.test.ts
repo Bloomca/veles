@@ -34,7 +34,7 @@ describe("track-value", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           valueState.render((value) =>
@@ -75,7 +75,7 @@ describe("track-value", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           valueState.render((value) =>
@@ -144,7 +144,7 @@ describe("track-value", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           valueState.render((value) =>
@@ -200,7 +200,7 @@ describe("track-value", () => {
             name: "name",
             value: userState.attribute((user) => user.name),
             onInput: (e) =>
-              userState.updateValue((currentUser) => ({
+              userState.update((currentUser) => ({
                 ...currentUser,
                 name: (e.target as HTMLInputElement).value,
               })),
@@ -212,7 +212,7 @@ describe("track-value", () => {
             name: "email",
             value: userState.attribute((user) => user.email),
             onInput: (e) =>
-              userState.updateValue((currentUser) => ({
+              userState.update((currentUser) => ({
                 ...currentUser,
                 email: (e.target as HTMLInputElement).value,
               })),
@@ -266,7 +266,7 @@ describe("track-value", () => {
             name: "name",
             value: userState.attribute((user) => user.name),
             onInput: (e) =>
-              userState.updateValue((currentUser) => ({
+              userState.update((currentUser) => ({
                 ...currentUser,
                 name: (e.target as HTMLInputElement).value,
               })),
@@ -278,7 +278,7 @@ describe("track-value", () => {
             name: "email",
             value: userState.attribute((user) => user.email),
             onInput: (e) =>
-              userState.updateValue((currentUser) => ({
+              userState.update((currentUser) => ({
                 ...currentUser,
                 email: (e.target as HTMLInputElement).value,
               })),

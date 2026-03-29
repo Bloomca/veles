@@ -74,7 +74,7 @@ describe("<Fragment>", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => state.updateValue((currentValue) => currentValue + 1),
+            onClick: () => state.update((currentValue) => currentValue + 1),
           }),
           createElement("div", { children: "last child" }),
           createElement("hr"),
@@ -159,7 +159,7 @@ describe("<Fragment>", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(true),
+            onClick: () => showState.set(true),
           }),
           createElement("div", {
             "data-testid": "container",
@@ -204,7 +204,7 @@ describe("<Fragment>", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(false),
+            onClick: () => showState.set(false),
           }),
           createElement("div", {
             "data-testid": "container",
@@ -260,7 +260,7 @@ describe("<Fragment>", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(false),
+            onClick: () => showState.set(false),
           }),
           createElement("div", {
             "data-testid": "container",

@@ -26,7 +26,7 @@ function Counter() {
     <div>
       <button
         onClick={() =>
-          counterState.updateValue((currentValue) => currentValue + 1)
+          counterState.update((currentValue) => currentValue + 1)
         }
       >
         +
@@ -47,15 +47,15 @@ function Counter() {
 ## Parameters
 
 - `initialValue`: the initial state value
-- **optional** `subscribeCallback`: receives `state.setValue` and can return a cleanup function. If the state is created inside a component, that cleanup function will run on unmount. Used to set up internal updates and usually not required directly.
+- **optional** `subscribeCallback`: receives `state.set` and can return a cleanup function. If the state is created inside a component, that cleanup function will run on unmount. Used to set up internal updates and usually not required directly.
 
 ## More on `subscribeCallback`
 
 You can connect external sources to a state by passing a second argument to `createState`. This is mostly useful to create self-contained listeners, as they will be automatically cleaned up when the component unmounts.
 
 ```jsx
-const widthState = createState(window.innerWidth, (setValue) => {
-  const listener = () => setValue(window.innerWidth);
+const widthState = createState(window.innerWidth, (set) => {
+  const listener = () => set(window.innerWidth);
   window.addEventListener("resize", listener);
 
   return () => {

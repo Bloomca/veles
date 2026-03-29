@@ -36,14 +36,14 @@ describe("state.renderEach", () => {
           createElement("button", {
             "data-testid": "updateArrayButton",
             onClick: () => {
-              state.updateValue(() => [item2, item1, item3, item5]);
+              state.update(() => [item2, item1, item3, item5]);
             },
             children: ["update array values"],
           }),
           createElement("button", {
             "data-testid": "updateFirstItem",
             onClick: () => {
-              state.updateValue((currentValues) =>
+              state.update((currentValues) =>
                 currentValues.map((value) => {
                   if (value.id === 1) {
                     return {
@@ -129,14 +129,14 @@ describe("state.renderEach", () => {
           createElement("button", {
             "data-testid": "updateArrayButton",
             onClick: () => {
-              state.updateValue(() => ({ value: [item2, item1, item3, item5] }));
+              state.update(() => ({ value: [item2, item1, item3, item5] }));
             },
             children: ["update array values"],
           }),
           createElement("button", {
             "data-testid": "updateFirstItem",
             onClick: () => {
-              state.updateValue((currentValues) => ({
+              state.update((currentValues) => ({
                 value: currentValues.value.map((value) => {
                   if (value.id === 1) {
                     return {
@@ -223,7 +223,7 @@ describe("state.renderEach", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => itemsState.setValue(items),
+            onClick: () => itemsState.set(items),
           }),
           createElement("div", {
             "data-testid": "container",
@@ -311,7 +311,7 @@ describe("state.renderEach", () => {
           createElement("h1", { children: "Application" }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
           createElement("div", {
             "data-testid": "container",
@@ -365,7 +365,7 @@ describe("state.renderEach", () => {
     const container = screen.getByTestId("container");
     const children = container.childNodes;
 
-    itemsState.setValue([item4, item2, item3, item1]);
+    itemsState.set([item4, item2, item3, item1]);
 
     // empty Text node
     expect(children.length).toBe(1);
@@ -384,7 +384,7 @@ describe("state.renderEach", () => {
     expect(children[2].textContent).toBe("third item number: 2");
     expect(children[3].textContent).toBe("first item number: 3");
 
-    itemsState.setValue([item4, item5, item3, item1, item2]);
+    itemsState.set([item4, item5, item3, item1, item2]);
     expect(textSpy).toHaveBeenCalledTimes(5);
     expect(indexSpy).toHaveBeenCalledTimes(6);
 
@@ -400,7 +400,7 @@ describe("state.renderEach", () => {
     // empty Text node
     expect(children.length).toBe(1);
 
-    itemsState.setValue([
+    itemsState.set([
       item4,
       item5,
       item3,
@@ -430,7 +430,7 @@ describe("state.renderEach", () => {
     // empty Text node
     expect(children.length).toBe(1);
 
-    itemsState.setValue([item3, item6]);
+    itemsState.set([item3, item6]);
 
     await user.click(screen.getByTestId("button"));
     expect(textSpy).toHaveBeenCalledTimes(15);

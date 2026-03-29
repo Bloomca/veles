@@ -9,12 +9,12 @@ function triggerUpdates<T>({
   value,
   createState,
   trackers,
-  getValue,
+  get,
 }: {
   value: T;
   createState: typeof createStateType;
   trackers: StateTrackers;
-  getValue: () => T;
+  get: () => T;
 }) {
   const newTrackingSelectorElements: StateTrackers["trackingSelectorElements"] =
     [];
@@ -24,7 +24,7 @@ function triggerUpdates<T>({
       selectorTrackingElement,
       newTrackingSelectorElements,
       trackers,
-      getValue,
+      get,
     }),
   );
 

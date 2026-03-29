@@ -24,7 +24,7 @@ describe("assign-attributes", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.updateValue(() => "");
+              nameState.update(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -37,7 +37,7 @@ describe("assign-attributes", () => {
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
-              nameState.setValue((e.target as HTMLInputElement).value),
+              nameState.set((e.target as HTMLInputElement).value),
           }),
           nameState.render((value) =>
             createElement("div", {
@@ -83,7 +83,7 @@ describe("assign-attributes", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.updateValue(() => "");
+              nameState.update(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -96,7 +96,7 @@ describe("assign-attributes", () => {
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
-              nameState.setValue((e.target as HTMLInputElement).value),
+              nameState.set((e.target as HTMLInputElement).value),
           }),
           nameState.render((value) =>
             createElement("div", {
@@ -184,7 +184,7 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "toggleButton",
-            onClick: () => disabledState.updateValue((value) => !value),
+            onClick: () => disabledState.update((value) => !value),
           }),
           createElement("button", {
             "data-testid": "button",
@@ -225,7 +225,7 @@ describe("assign-attributes", () => {
               value !== 0 && value < 4
                 ? () => {
                     spyFn();
-                    state.updateValue((currentValue) => currentValue + 1);
+                    state.update((currentValue) => currentValue + 1);
                   }
                 : undefined
             ),
@@ -244,7 +244,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
     await user.click(btn);
 
-    state.setValue(1);
+    state.set(1);
 
     await user.click(btn);
     await user.click(btn);
@@ -253,7 +253,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
 
     expect(spyFn).toHaveBeenCalledTimes(3);
-    expect(state.getValue()).toBe(4);
+    expect(state.get()).toBe(4);
   });
 
   it("allows to assign and remove event listeners dynamically passing the same callback", async () => {
@@ -263,7 +263,7 @@ describe("assign-attributes", () => {
     function App() {
       const handler = () => {
         spyFn();
-        state.updateValue((currentValue) => currentValue + 1);
+        state.update((currentValue) => currentValue + 1);
       };
       return createElement("div", {
         children: [
@@ -287,7 +287,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
     await user.click(btn);
 
-    state.setValue(1);
+    state.set(1);
 
     await user.click(btn);
     await user.click(btn);
@@ -296,7 +296,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
 
     expect(spyFn).toHaveBeenCalledTimes(3);
-    expect(state.getValue()).toBe(4);
+    expect(state.get()).toBe(4);
   });
 
   test("adds listeners with multiple words in them correctly", async () => {
@@ -334,7 +334,7 @@ describe("assign-attributes", () => {
     function App() {
       const handler = () => {
         spyFn();
-        state.updateValue((currentValue) => currentValue + 1);
+        state.update((currentValue) => currentValue + 1);
       };
       return createElement("div", {
         children: [
@@ -358,7 +358,7 @@ describe("assign-attributes", () => {
     await user.dblClick(btn);
     await user.dblClick(btn);
 
-    state.setValue(1);
+    state.set(1);
 
     await user.dblClick(btn);
     await user.dblClick(btn);
@@ -367,6 +367,6 @@ describe("assign-attributes", () => {
     await user.dblClick(btn);
 
     expect(spyFn).toHaveBeenCalledTimes(3);
-    expect(state.getValue()).toBe(4);
+    expect(state.get()).toBe(4);
   });
 });

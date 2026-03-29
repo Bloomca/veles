@@ -67,7 +67,7 @@ type RenderSelectedSignature<T> = {
 function createStateFromCore<T>(
   core: StateCore<T>,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"],
+    set: ReturnType<typeof createState<T>>["set"],
   ) => Function,
 ): State<T> {
   // all subscription types we track
@@ -82,7 +82,7 @@ function createStateFromCore<T>(
       value: nextValue,
       createState,
       trackers,
-      getValue: () => core.get() as T,
+      get: () => core.get() as T,
     });
   });
 
@@ -122,7 +122,7 @@ function createStateFromCore<T>(
 
       addUseValueMountHandler({
         usedValue: currentValue,
-        getValue: () => core.get() as T,
+        get: () => core.get() as T,
         trackers,
         trackingSelectorElement,
       });
@@ -156,7 +156,7 @@ function createStateFromCore<T>(
 
     addUseValueMountHandler({
       usedValue: currentValue,
-      getValue: () => core.get() as T,
+      get: () => core.get() as T,
       trackers,
       trackingSelectorElement,
     });
@@ -473,20 +473,20 @@ function createStateFromCore<T>(
       core.dispose();
     },
     // useful for stuff like callbacks
-    getValue: () => {
+    get: () => {
       return core.get() as T;
     },
-    getPreviousValue: () => {
+    getPrevious: () => {
       const previousValue = core.getPrevious();
 
       return previousValue === emptyValue
         ? undefined
         : (previousValue as undefined | T);
     },
-    setValue: (newValue: T): void => {
+    set: (newValue: T): void => {
       core.set(newValue);
     },
-    updateValue: (newValueCB: (currentValue: T) => T): void => {
+    update: (newValueCB: (currentValue: T) => T): void => {
       const currentValue = core.get() as T;
       core.set(newValueCB(currentValue));
     },
@@ -495,7 +495,7 @@ function createStateFromCore<T>(
   (result as any)[STATE_CORE_PROPERTY] = core;
 
   if (subscribeCallback) {
-    const unsubscribe = subscribeCallback(result.setValue);
+    const unsubscribe = subscribeCallback(result.set);
 
     if (unsubscribe) {
       onUnmount(unsubscribe);
@@ -517,7 +517,7 @@ function createStateFromCore<T>(
 function createState<T>(
   initialValue: T,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"],
+    set: ReturnType<typeof createState<T>>["set"],
   ) => Function,
 ): State<T> {
   const core = new StateCore<T>(initialValue);

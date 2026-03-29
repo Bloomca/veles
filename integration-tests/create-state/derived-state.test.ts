@@ -28,19 +28,19 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.updateValue((currentValue) => currentValue + 1);
+              valueState1.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.updateValue((currentValue) => currentValue + 1);
+              valueState2.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.updateValue((currentValue) => currentValue + 1);
+              valueState3.update((currentValue) => currentValue + 1);
             },
           }),
           combinedValueState.renderSelected(
@@ -95,19 +95,19 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.updateValue((currentValue) => currentValue + 1);
+              valueState1.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.updateValue((currentValue) => currentValue + 1);
+              valueState2.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.updateValue((currentValue) => currentValue + 1);
+              valueState3.update((currentValue) => currentValue + 1);
             },
           }),
           changedState.render((value) =>
@@ -166,11 +166,11 @@ describe("derived state", () => {
     expect(firstSpy).toHaveBeenCalledTimes(1);
     expect(secondSpy).toHaveBeenCalledTimes(1);
 
-    state.setValue({ firstValue: 2, secondValue: 5 });
+    state.set({ firstValue: 2, secondValue: 5 });
     expect(firstSpy).toHaveBeenCalledTimes(2);
     expect(secondSpy).toHaveBeenCalledTimes(2);
 
-    state.setValue({ firstValue: 2, secondValue: 5 });
+    state.set({ firstValue: 2, secondValue: 5 });
     expect(firstSpy).toHaveBeenCalledTimes(2);
     expect(secondSpy).toHaveBeenCalledTimes(3);
   });
@@ -187,7 +187,7 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              numberState.updateValue((currentValue) => currentValue + 1);
+              numberState.update((currentValue) => currentValue + 1);
             },
           }),
           evenNumberState.render((value) =>
@@ -231,7 +231,7 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              numberState.updateValue((currentValue) => currentValue + 1);
+              numberState.update((currentValue) => currentValue + 1);
             },
           }),
           totalState.render((value) =>

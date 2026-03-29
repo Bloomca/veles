@@ -171,7 +171,7 @@ describe("createElement", () => {
           createElement("h1", { children: ["parent component"] }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(true),
+            onClick: () => showState.set(true),
           }),
           createElement(StateComponent, { showState }),
         ],

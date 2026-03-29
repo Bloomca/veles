@@ -28,7 +28,7 @@ describe("state.attribute", () => {
             "data-testvalue": valueState.attribute((value) => String(value)),
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
         ],
@@ -72,7 +72,7 @@ describe("state.attribute", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((currentValue) => !currentValue),
+            onClick: () => showState.update((currentValue) => !currentValue),
           }),
           showState.render((shouldShow) => (shouldShow ? content : null)),
         ],
@@ -85,7 +85,7 @@ describe("state.attribute", () => {
     });
 
     expect(spyFn).toHaveBeenCalledTimes(1);
-    valueState.setValue("newValue1");
+    valueState.set("newValue1");
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
@@ -93,7 +93,7 @@ describe("state.attribute", () => {
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "newValue1"
     );
-    valueState.setValue("newValue2");
+    valueState.set("newValue2");
     expect(spyFn).toHaveBeenCalledTimes(3);
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "newValue2"
@@ -101,10 +101,10 @@ describe("state.attribute", () => {
 
     // remove the element again to see that subscriptions are correctly removed
     await user.click(screen.getByTestId("button"));
-    valueState.setValue("newValue3");
+    valueState.set("newValue3");
     expect(spyFn).toHaveBeenCalledTimes(3);
 
-    valueState.setValue("initialValue");
+    valueState.set("initialValue");
     await user.click(screen.getByTestId("button"));
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "initialValue"

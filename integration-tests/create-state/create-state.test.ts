@@ -36,7 +36,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           valueState.render((value) =>
@@ -70,7 +70,7 @@ describe("createState", () => {
           createElement("input", {
             "data-testid": "nameInput",
             onInput: (e) => {
-              nameState.setValue(e.target.value);
+              nameState.set(e.target.value);
             },
           }),
           nameState.render((value) =>
@@ -101,7 +101,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           createElement(ReadingStateComponent, {
@@ -156,7 +156,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -165,7 +165,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
@@ -215,7 +215,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -224,7 +224,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
@@ -233,7 +233,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "fakeValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
               }));
             },
@@ -285,7 +285,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
@@ -321,7 +321,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
@@ -357,7 +357,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue("new title");
+              titleState.set("new title");
             },
           }),
           createElement("div", {
@@ -389,7 +389,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue({ title: "new title" });
+              titleState.set({ title: "new title" });
             },
           }),
           createElement("div", {
@@ -422,7 +422,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue({ title: newValue });
+              titleState.set({ title: newValue });
             },
           }),
           createElement("div", {
@@ -486,7 +486,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue({ title: newValue });
+              titleState.set({ title: newValue });
             },
           }),
           createElement("div", {
@@ -550,7 +550,7 @@ describe("createState", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
           showState.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
@@ -575,7 +575,7 @@ describe("createState", () => {
           createElement("h1", { children: "nested component" }),
           createElement("button", {
             "data-testid": "nestedButton",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
           showState.render((shouldShow) => (shouldShow ? x : null)),
         ],
@@ -587,18 +587,18 @@ describe("createState", () => {
       component: createElement(App),
     });
 
-    valueState.setValue(1);
+    valueState.set(1);
     // it only was called one time, but it does not track because it is not mounted
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
 
-    valueState.setValue(2);
+    valueState.set(2);
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
     expect(spyFn).toHaveBeenCalledTimes(2);
-    valueState.setValue(3);
+    valueState.set(3);
     expect(spyFn).toHaveBeenCalledTimes(2);
 
     await user.click(screen.getByTestId("nestedButton"));
@@ -606,7 +606,7 @@ describe("createState", () => {
     expect(await screen.findByText("value is 3")).toBeVisible();
 
     await user.click(screen.getByTestId("nestedButton"));
-    valueState.setValue(4);
+    valueState.set(4);
     await user.click(screen.getByTestId("nestedButton"));
     expect(spyFn).toHaveBeenCalledTimes(4);
     expect(await screen.findByText("value is 4")).toBeVisible();

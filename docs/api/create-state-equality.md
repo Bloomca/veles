@@ -11,8 +11,8 @@ By default, Veles uses referential equality (`===`) to decide whether something 
 
 That applies to:
 
-- `setValue`
-- `updateValue`
+- `set`
+- `update`
 - derived state updates
 - selector-based subscriptions
 - selector-based rendering

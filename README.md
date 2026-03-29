@@ -35,7 +35,7 @@ function NameComponent() {
         type="text"
         name="name"
         value={nameState.attribute()}
-        onInput={(e) => nameState.setValue(e.target.value)}
+        onInput={(e) => nameState.set(e.target.value)}
       />
       <p>{nameState.render()}</p>
     </div>

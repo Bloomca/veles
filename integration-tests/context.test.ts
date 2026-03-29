@@ -93,7 +93,7 @@ describe("Context", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
           showState.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
@@ -175,7 +175,7 @@ describe("Context", () => {
     expect(listElement.childNodes[0].textContent).toBe("first item 3");
     expect(listElement.childNodes[1].textContent).toBe("second item 6");
 
-    itemsState.setValue([item1, item2, item3]);
+    itemsState.set([item1, item2, item3]);
     expect(listElement.childNodes.length).toBe(3);
     expect(listElement.childNodes[0].textContent).toBe("first item 3");
     expect(listElement.childNodes[1].textContent).toBe("second item 6");

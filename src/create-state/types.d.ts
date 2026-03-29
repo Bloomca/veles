@@ -103,16 +103,16 @@ export type State<ValueType> = {
     ]
   >;
   dispose(): void;
-  getValue(): ValueType;
-  getPreviousValue(): undefined | ValueType;
-  setValue(newValue: ValueType): void;
-  updateValue(newValueCB: (currentValue: ValueType) => ValueType): void;
+  get(): ValueType;
+  getPrevious(): undefined | ValueType;
+  set(newValue: ValueType): void;
+  update(newValueCB: (currentValue: ValueType) => ValueType): void;
 };
 
 export function createState<T>(
   initialValue: T,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"]
+    set: ReturnType<typeof createState<T>>["set"]
   ) => Function
 ): State<T>;
 
