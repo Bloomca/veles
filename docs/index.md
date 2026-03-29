@@ -70,7 +70,7 @@ function App() {
       <div>
         <input
           type="text"
-          value={taskState.useAttribute()}
+          value={taskState.attribute()}
           onInput={(e) => taskState.setValue(e.target.value)}
         />
         <button

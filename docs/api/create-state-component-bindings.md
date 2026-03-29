@@ -89,17 +89,17 @@ titleState.renderSelected(
 );
 ```
 
-## `state.useAttribute`
+## `state.attribute`
 
-- `state.useAttribute()`
-- `state.useAttribute(value => attributeValue)`
+- `state.attribute()`
+- `state.attribute(value => attributeValue)`
 
-`useAttribute` is used for reactive DOM attributes. When the value changes, only that specific DOM Node's attribute will be changed.
+`attribute` is used for reactive DOM attributes. When the value changes, only that specific DOM Node's attribute will be changed.
 
 ```jsx
 const disabledState = createState(false);
 
-return <button disabled={disabledState.useAttribute()} />;
+return <button disabled={disabledState.attribute()} />;
 ```
 
 You can also transform the value first.
@@ -107,7 +107,7 @@ You can also transform the value first.
 ```jsx
 const widthState = createState(100);
 
-return <div style={widthState.useAttribute((value) => `width: ${value}px`)} />;
+return <div style={widthState.attribute((value) => `width: ${value}px`)} />;
 ```
 
 ## `state.useValueIterator`

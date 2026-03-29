@@ -8,7 +8,7 @@ import {
   onUnmount,
 } from "../../src";
 
-describe("state.useAttribute", () => {
+describe("state.attribute", () => {
   let cleanup: Function | undefined;
 
   afterEach(() => {
@@ -16,7 +16,7 @@ describe("state.useAttribute", () => {
     cleanup = undefined;
   });
 
-  test("useAttribute does not re-mount the component", async () => {
+  test("attribute does not re-mount the component", async () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
     function StateComponent() {
@@ -25,7 +25,7 @@ describe("state.useAttribute", () => {
       return createElement("div", {
         children: [
           createElement("button", {
-            "data-testvalue": valueState.useAttribute((value) => String(value)),
+            "data-testvalue": valueState.attribute((value) => String(value)),
             "data-testid": "button",
             onClick: () => {
               valueState.updateValue((currentValue) => currentValue + 1);
@@ -51,7 +51,7 @@ describe("state.useAttribute", () => {
     expect(spyFn).not.toHaveBeenCalled();
   });
 
-  test("does not track updates in useAttribute until mounted", async () => {
+  test("does not track updates in attribute until mounted", async () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
 
@@ -60,7 +60,7 @@ describe("state.useAttribute", () => {
       const showState = createState(false);
       const content = createElement("div", {
         "data-testid": "attributeTest",
-        "data-value": valueState.useAttribute((value) => {
+        "data-value": valueState.attribute((value) => {
           spyFn();
           return value;
         }),

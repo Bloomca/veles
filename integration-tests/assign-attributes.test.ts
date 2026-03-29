@@ -33,7 +33,7 @@ describe("assign-attributes", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: nameState.useAttribute((name) => name),
+            value: nameState.attribute((name) => name),
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
@@ -92,7 +92,7 @@ describe("assign-attributes", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: nameState.useAttribute(),
+            value: nameState.attribute(),
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
@@ -176,7 +176,7 @@ describe("assign-attributes", () => {
     expect((btn as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it("correctly updates boolean properties with useAttribute", async () => {
+  it("correctly updates boolean properties with attribute", async () => {
     const user = userEvent.setup();
     function App() {
       const disabledState = createState(false);
@@ -188,7 +188,7 @@ describe("assign-attributes", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            disabled: disabledState.useAttribute(),
+            disabled: disabledState.attribute(),
           }),
         ],
       });
@@ -221,7 +221,7 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: state.useAttribute((value) =>
+            onClick: state.attribute((value) =>
               value !== 0 && value < 4
                 ? () => {
                     spyFn();
@@ -269,7 +269,7 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: state.useAttribute((value) =>
+            onClick: state.attribute((value) =>
               value !== 0 && value < 4 ? handler : undefined
             ),
           }),
@@ -340,7 +340,7 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onDblClick: state.useAttribute((value) =>
+            onDblClick: state.attribute((value) =>
               value !== 0 && value < 4 ? handler : undefined
             ),
           }),

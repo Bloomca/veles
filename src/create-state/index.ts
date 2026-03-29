@@ -410,7 +410,7 @@ function createStateFromCore<T>(
         createStateFromCore(combinedCore as any),
       );
     },
-    useAttribute: (cb?: (value: T) => any) => {
+    attribute: (cb?: (value: T) => any) => {
       const originalValue = core.get() as T;
       let wasMounted = false;
       const attributeValue = cb ? cb(originalValue) : originalValue;

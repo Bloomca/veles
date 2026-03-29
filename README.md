@@ -34,7 +34,7 @@ function NameComponent() {
       <input
         type="text"
         name="name"
-        value={nameState.useAttribute()}
+        value={nameState.attribute()}
         onInput={(e) => nameState.setValue(e.target.value)}
       />
       <p>{nameState.render()}</p>

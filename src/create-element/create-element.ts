@@ -42,7 +42,7 @@ function createElement(
     // these handlers are attached directly to the DOM element
     // specifically, the top level node which is rendered after
     // using `render` function and also listeners from
-    // `useAttribute`
+    // `attribute`
     const unmountHandlers: Function[] = [];
     velesNode.html = newElement;
     velesNode.velesNode = true;

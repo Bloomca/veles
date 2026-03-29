@@ -198,7 +198,7 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: userState.useAttribute((user) => user.name),
+            value: userState.attribute((user) => user.name),
             onInput: (e) =>
               userState.updateValue((currentUser) => ({
                 ...currentUser,
@@ -210,7 +210,7 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "emailInput",
             name: "email",
-            value: userState.useAttribute((user) => user.email),
+            value: userState.attribute((user) => user.email),
             onInput: (e) =>
               userState.updateValue((currentUser) => ({
                 ...currentUser,
@@ -264,7 +264,7 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: userState.useAttribute((user) => user.name),
+            value: userState.attribute((user) => user.name),
             onInput: (e) =>
               userState.updateValue((currentUser) => ({
                 ...currentUser,
@@ -276,7 +276,7 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "emailInput",
             name: "email",
-            value: userState.useAttribute((user) => user.email),
+            value: userState.attribute((user) => user.email),
             onInput: (e) =>
               userState.updateValue((currentUser) => ({
                 ...currentUser,
