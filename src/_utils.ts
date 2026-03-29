@@ -219,6 +219,19 @@ function insertNode({
   }
 }
 
+function getMountedNodeExecutedVersion(
+  node: VelesComponentObject | VelesElement,
+  errorMessage?: string
+): ExecutedVelesComponent | ExecutedVelesElement {
+  if (!node.executedVersion) {
+    throw new Error(
+      errorMessage || "Expected node to have executedVersion by this point"
+    );
+  }
+
+  return node.executedVersion;
+}
+
 function callMountHandlers(
   component:
     | ExecutedVelesComponent
@@ -286,4 +299,5 @@ export {
   callUnmountHandlers,
   unique,
   renderTree,
+  getMountedNodeExecutedVersion,
 };

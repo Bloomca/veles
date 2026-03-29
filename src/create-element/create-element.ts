@@ -1,7 +1,10 @@
 import { parseChildren } from "./parse-children";
 import { assignAttributes } from "./assign-attributes";
 import { parseComponent } from "./parse-component";
-import { getExecutedComponentVelesNode } from "../_utils";
+import {
+  getExecutedComponentVelesNode,
+  getMountedNodeExecutedVersion,
+} from "../_utils";
 
 import type {
   VelesComponentObject,
@@ -99,12 +102,11 @@ function createElement(
           } else if ("velesStringElement" in childComponent) {
             portal.append(childComponent.html);
           } else {
-            if (!childComponent.executedVersion) {
-              return;
-            }
-
             const componentNode = getExecutedComponentVelesNode(
-              childComponent.executedVersion
+              getMountedNodeExecutedVersion(
+                childComponent,
+                "Portal child component is not mounted"
+              )
             );
             appendComponentToPortal(componentNode, portal);
           }
@@ -119,12 +121,11 @@ function createElement(
             } else if ("velesStringElement" in childComponent) {
               childComponent.html.remove();
             } else {
-              if (!childComponent.executedVersion) {
-                return;
-              }
-
               const componentNode = getExecutedComponentVelesNode(
-                childComponent.executedVersion
+                getMountedNodeExecutedVersion(
+                  childComponent,
+                  "Portal child component is not mounted"
+                )
               );
               cleanupComponentFromPortal(componentNode);
             }
