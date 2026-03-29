@@ -47,7 +47,7 @@ describe("Context", () => {
     });
 
     expect(screen.getByTestId("contextContent").textContent).toBe(
-      "context value is 5"
+      "context value is 5",
     );
   });
 
@@ -79,7 +79,7 @@ describe("Context", () => {
     });
 
     expect(screen.getByTestId("contextContent").textContent).toBe(
-      "context value is 5"
+      "context value is 5",
     );
   });
 
@@ -96,7 +96,7 @@ describe("Context", () => {
             onClick: () => show$.update((value) => !value),
           }),
           show$.render((shouldShow) =>
-            shouldShow ? createElement(NestedComponent) : null
+            shouldShow ? createElement(NestedComponent) : null,
           ),
         ],
       });
@@ -138,9 +138,8 @@ describe("Context", () => {
         children: [
           createElement("div", {
             "data-testid": "container",
-            children: items$.renderEach<Item>(
-              { key: "id" },
-              ({ elementState }) => createElement(Item, { elementState })
+            children: items$.renderEach({ key: "id" }, ({ elementState }) =>
+              createElement(Item, { elementState }),
             ),
           }),
         ],
@@ -156,7 +155,7 @@ describe("Context", () => {
           " ",
           elementState.renderSelected(
             (element) => element.value,
-            (value) => String(value * exampleValue)
+            (value) => String(value * exampleValue),
           ),
         ],
       });
@@ -229,10 +228,10 @@ describe("Context", () => {
     });
 
     expect(screen.getByTestId("contextContent").textContent).toBe(
-      "context value is 5"
+      "context value is 5",
     );
     expect(screen.getByTestId("doubleContextContent").textContent).toBe(
-      "context value is 6"
+      "context value is 6",
     );
   });
 });
