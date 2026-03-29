@@ -167,7 +167,7 @@ function createStateFromCore<T>(
   const result: State<T> = {
     // supposed to be used at the component level
     track: (cb, options = {}) => {
-      result.trackSelected<T>(undefined, cb, options);
+      result.trackSelected((value) => value, cb, options);
     },
     trackSelected<F>(
       selector: ((value: T) => F) | undefined,
@@ -286,7 +286,7 @@ function createStateFromCore<T>(
             element !== null &&
             options.key in element
           ) {
-            calculatedKey = element[options.key];
+            calculatedKey = (element as Record<string, string>)[options.key];
           } else if (typeof options.key === "function") {
             calculatedKey = options.key({ element, index });
           } else {
@@ -337,7 +337,8 @@ function createStateFromCore<T>(
       trackingParams.wrapperComponent = wrapperComponent;
 
       if (options.selector) {
-        trackingParams.selector = options.selector;
+        trackingParams.selector =
+          options.selector as unknown as (value: unknown) => any[];
       }
 
       return wrapperComponent;

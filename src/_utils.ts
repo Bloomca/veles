@@ -86,17 +86,21 @@ function renderTree(
         if ("velesComponentObject" in component.insertAfter) {
           const lastNode = insertNode({
             velesElement: newNode,
-            adjacentNode: component.insertAfter.html,
+            adjacentNode: component.insertAfter.html ?? null,
             parentVelesElement,
           });
-          component.html = lastNode;
+          if (lastNode) {
+            component.html = lastNode;
+          }
         } else {
           const lastNode = insertNode({
             velesElement: newNode,
             adjacentNode: component.insertAfter,
             parentVelesElement,
           });
-          component.html = lastNode;
+          if (lastNode) {
+            component.html = lastNode;
+          }
         }
       } else {
         const lastNode = insertNode({
@@ -105,7 +109,9 @@ function renderTree(
           adjacentNode: null,
           parentVelesElement,
         });
-        component.html = lastNode;
+        if (lastNode) {
+          component.html = lastNode;
+        }
       }
 
       newNode.parentVelesElement = parentVelesElement;
@@ -137,6 +143,8 @@ function renderTree(
     }
     return executedNode;
   }
+
+  throw new Error("Unknown component type in renderTree");
 }
 
 function insertNode({

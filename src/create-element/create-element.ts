@@ -99,6 +99,10 @@ function createElement(
           } else if ("velesStringElement" in childComponent) {
             portal.append(childComponent.html);
           } else {
+            if (!childComponent.executedVersion) {
+              return;
+            }
+
             const componentNode = getExecutedComponentVelesNode(
               childComponent.executedVersion
             );
@@ -115,6 +119,10 @@ function createElement(
             } else if ("velesStringElement" in childComponent) {
               childComponent.html.remove();
             } else {
+              if (!childComponent.executedVersion) {
+                return;
+              }
+
               const componentNode = getExecutedComponentVelesNode(
                 childComponent.executedVersion
               );

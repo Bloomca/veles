@@ -181,7 +181,9 @@ function updateUseValueIteratorValue<T>({
     let offset: number = 0;
     let currentElement: HTMLElement | Text | null = null;
     newRenderedElements.forEach((newRenderedElement, index) => {
-      newChildRenderedComponents.push(newRenderedElement[0].executedVersion);
+      if (newRenderedElement[0].executedVersion) {
+        newChildRenderedComponents.push(newRenderedElement[0].executedVersion);
+      }
       newChildComponents.push(newRenderedElement[0]);
       // if we needed to adjust offset until we reach the original position of the item
       // we need to return it back once we reach the position after it
@@ -193,6 +195,10 @@ function updateUseValueIteratorValue<T>({
 
       const existingElement = elementsByKey[calculatedKey];
       if (existingElement) {
+        if (!existingElement.node.executedVersion) {
+          return;
+        }
+
         const existingElementNode = getExecutedComponentVelesNode(
           existingElement.node.executedVersion
         );
@@ -249,6 +255,10 @@ function updateUseValueIteratorValue<T>({
         }
       } else {
         // we need to insert new element
+        if (!newNode.executedVersion) {
+          return;
+        }
+
         const newNodeVelesElement = getExecutedComponentVelesNode(
           newNode.executedVersion
         );
@@ -277,7 +287,9 @@ function updateUseValueIteratorValue<T>({
         currentElement = newNodeVelesElement.html;
         newElementsCount = newElementsCount + 1;
 
-        callMountHandlers(newNode.executedVersion);
+        if (newNode.executedVersion) {
+          callMountHandlers(newNode.executedVersion);
+        }
       }
     });
 
@@ -294,6 +306,10 @@ function updateUseValueIteratorValue<T>({
         if (renderedExistingElements[calculatedKey] === true) {
           return;
         } else {
+          if (!oldNode.executedVersion) {
+            return;
+          }
+
           const oldRenderedVelesNode = getExecutedComponentVelesNode(
             oldNode.executedVersion
           );
