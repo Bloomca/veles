@@ -10,9 +10,8 @@ function assignAttributes({
   velesNode: VelesElement;
 }) {
   Object.entries(props).forEach(([key, value]) => {
-    const isFunction = typeof value === "function";
-    if (isFunction && value.velesAttribute === true) {
-      const attributeValue = value(htmlElement, key, velesNode);
+    if (value && typeof value === "object" && value.velesAttribute === true) {
+      const attributeValue = value.getValue(htmlElement, key, velesNode);
       assignAttribute({ key, value: attributeValue, htmlElement });
     } else {
       assignAttribute({ key, value, htmlElement });

@@ -6,15 +6,24 @@ import { getExecutedComponentVelesNode } from "../_utils";
 import type {
   VelesComponentObject,
   VelesElement,
-  VelesElementProps,
+  VelesBaseProps,
   ComponentFunction,
   ExecutedVelesElement,
   ExecutedVelesStringElement,
 } from "../types";
+import type { JSX } from "../jsx";
 
+function createElement<Tag extends keyof JSX.IntrinsicElements>(
+  element: Tag,
+  props?: VelesBaseProps & JSX.IntrinsicElements[Tag]
+): VelesElement;
+function createElement<Props extends object>(
+  element: ComponentFunction<Props>,
+  props?: Props
+): VelesComponentObject;
 function createElement(
-  element: string | ComponentFunction,
-  props: VelesElementProps = {}
+  element: string | ComponentFunction<any>,
+  props: Record<string, any> = {}
 ): VelesElement | VelesComponentObject {
   if (typeof element === "string") {
     const {
