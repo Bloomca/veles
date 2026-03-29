@@ -286,6 +286,100 @@ describe("state.renderEach", () => {
     expect(children[4].textContent).toBe("4.second item");
   });
 
+  test("renderEach supports empty list and renders newly added element", async () => {
+    const user = userEvent.setup();
+    type Item = { id: number; text: string };
+    const item1: Item = { id: 1, text: "first item" };
+
+    function App() {
+      const itemsState = createState<Item[]>([]);
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "button",
+            onClick: () => itemsState.set([item1]),
+          }),
+          createElement("ul", {
+            "data-testid": "list",
+            children: itemsState.renderEach<Item>(
+              { key: "id" },
+              ({ elementState }) =>
+                createElement("li", {
+                  children: elementState.renderSelected((element) => element.text),
+                })
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const list = screen.getByTestId("list");
+    expect(list.childNodes.length).toBe(0);
+
+    await user.click(screen.getByTestId("button"));
+
+    expect(list.childNodes.length).toBe(1);
+    expect(list.childNodes[0].textContent).toBe("first item");
+  });
+
+  test("renderEach supports removing last element and adding a new one", async () => {
+    const user = userEvent.setup();
+    type Item = { id: number; text: string };
+    const item1: Item = { id: 1, text: "first item" };
+    const item2: Item = { id: 2, text: "second item" };
+
+    function App() {
+      const itemsState = createState<Item[]>([item1]);
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "removeButton",
+            onClick: () => itemsState.set([]),
+          }),
+          createElement("button", {
+            "data-testid": "addButton",
+            onClick: () => itemsState.set([item2]),
+          }),
+          createElement("ul", {
+            "data-testid": "list",
+            children: itemsState.renderEach<Item>(
+              { key: "id" },
+              ({ elementState }) =>
+                createElement("li", {
+                  children: elementState.renderSelected((element) => element.text),
+                })
+            ),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const list = screen.getByTestId("list");
+    expect(list.childNodes.length).toBe(1);
+    expect(list.childNodes[0].textContent).toBe("first item");
+
+    await user.click(screen.getByTestId("removeButton"));
+
+    expect(list.childNodes.length).toBe(0);
+
+    await user.click(screen.getByTestId("addButton"));
+
+    expect(list.childNodes.length).toBe(1);
+    expect(list.childNodes[0].textContent).toBe("second item");
+  });
+
   test("renderEach does not update until mounted", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
