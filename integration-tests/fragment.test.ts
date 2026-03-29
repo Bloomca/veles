@@ -154,16 +154,16 @@ describe("<Fragment>", () => {
   test("support returning a Fragment from a component rendered conditionally", async () => {
     const user = userEvent.setup();
     function App() {
-      const showState = createState(false);
+      const show$ = createState(false);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.set(true),
+            onClick: () => show$.set(true),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.render((shouldShow) =>
+            children: show$.render((shouldShow) =>
               shouldShow ? createElement(FragmentComponent) : null
             ),
           }),
@@ -199,16 +199,16 @@ describe("<Fragment>", () => {
   test("support returning a Fragment from render and then switching to a regular node conditionally", async () => {
     const user = userEvent.setup();
     function App() {
-      const showState = createState(true);
+      const show$ = createState(true);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.set(false),
+            onClick: () => show$.set(false),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.render((shouldShow) =>
+            children: show$.render((shouldShow) =>
               shouldShow
                 ? createElement(FragmentComponent)
                 : createElement(RegularComponent)
@@ -255,16 +255,16 @@ describe("<Fragment>", () => {
   test("support returning a Fragment from render and then switching to another Fragment conditionally", async () => {
     const user = userEvent.setup();
     function App() {
-      const showState = createState(true);
+      const show$ = createState(true);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.set(false),
+            onClick: () => show$.set(false),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.render((shouldShow) =>
+            children: show$.render((shouldShow) =>
               shouldShow
                 ? createElement(FragmentComponent)
                 : createElement(FragmentComponent2)

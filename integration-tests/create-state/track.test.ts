@@ -24,8 +24,8 @@ describe("track-value", () => {
     const spyFn = vi.fn();
     const onUnmountCheck = vi.fn();
     function StateComponent() {
-      const valueState = createState(0);
-      valueState.track((value) => spyFn(value));
+      const value$ = createState(0);
+      value$.track((value) => spyFn(value));
 
       onUnmount(() => onUnmountCheck);
 
@@ -34,10 +34,10 @@ describe("track-value", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
-          valueState.render((value) =>
+          value$.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -67,18 +67,18 @@ describe("track-value", () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
     function StateComponent() {
-      const valueState = createState(0);
-      valueState.track((value) => spyFn(value), { skipFirstCall: true });
+      const value$ = createState(0);
+      value$.track((value) => spyFn(value), { skipFirstCall: true });
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
-          valueState.render((value) =>
+          value$.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -106,9 +106,9 @@ describe("track-value", () => {
     const cleanupSpy = vi.fn();
 
     function StateComponent() {
-      const valueState = createState(0);
+      const value$ = createState(0);
 
-      valueState.track(() => {
+      value$.track(() => {
         callbackSpy();
         return cleanupSpy;
       });
@@ -136,18 +136,18 @@ describe("track-value", () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
     function StateComponent() {
-      const valueState = createState(0);
-      valueState.track((value) => spyFn(value), { callOnMount: true });
+      const value$ = createState(0);
+      value$.track((value) => spyFn(value), { callOnMount: true });
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.update((currentValue) => currentValue + 1);
+              value$.update((currentValue) => currentValue + 1);
             },
           }),
-          valueState.render((value) =>
+          value$.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -181,13 +181,13 @@ describe("track-value", () => {
     const emailSpy = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
-      const userState = createState({ name: "", email: "" });
+      const user$ = createState({ name: "", email: "" });
 
-      userState.trackSelected((user) => user.name, nameSpy, {
+      user$.trackSelected((user) => user.name, nameSpy, {
         skipFirstCall: true,
       });
 
-      userState.trackSelected((user) => user.email, emailSpy, {
+      user$.trackSelected((user) => user.email, emailSpy, {
         skipFirstCall: true,
       });
 
@@ -198,9 +198,9 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: userState.attribute((user) => user.name),
+            value: user$.attribute((user) => user.name),
             onInput: (e) =>
-              userState.update((currentUser) => ({
+              user$.update((currentUser) => ({
                 ...currentUser,
                 name: (e.target as HTMLInputElement).value,
               })),
@@ -210,9 +210,9 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "emailInput",
             name: "email",
-            value: userState.attribute((user) => user.email),
+            value: user$.attribute((user) => user.email),
             onInput: (e) =>
-              userState.update((currentUser) => ({
+              user$.update((currentUser) => ({
                 ...currentUser,
                 email: (e.target as HTMLInputElement).value,
               })),
@@ -244,14 +244,14 @@ describe("track-value", () => {
     const emailSpy = vi.fn();
     function StateComponent() {
       const inputRef = createRef<HTMLInputElement>();
-      const userState = createState({ name: "", email: "" });
+      const user$ = createState({ name: "", email: "" });
 
-      userState.track(nameSpy, {
+      user$.track(nameSpy, {
         skipFirstCall: true,
         comparator: (prevValue, nextValue) => prevValue.name === nextValue.name,
       });
 
-      userState.track(emailSpy, {
+      user$.track(emailSpy, {
         skipFirstCall: true,
         comparator: (prevValue, nextValue) =>
           prevValue.email === nextValue.email,
@@ -264,9 +264,9 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: userState.attribute((user) => user.name),
+            value: user$.attribute((user) => user.name),
             onInput: (e) =>
-              userState.update((currentUser) => ({
+              user$.update((currentUser) => ({
                 ...currentUser,
                 name: (e.target as HTMLInputElement).value,
               })),
@@ -276,9 +276,9 @@ describe("track-value", () => {
             type: "text",
             "data-testid": "emailInput",
             name: "email",
-            value: userState.attribute((user) => user.email),
+            value: user$.attribute((user) => user.email),
             onInput: (e) =>
-              userState.update((currentUser) => ({
+              user$.update((currentUser) => ({
                 ...currentUser,
                 email: (e.target as HTMLInputElement).value,
               })),

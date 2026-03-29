@@ -136,7 +136,7 @@ describe("portals", () => {
   });
 
   test("removing one of the Portals does not affect other Portals content", async () => {
-    const showFirstPortalState = createState(true);
+    const showFirstPortal$ = createState(true);
     cleanup = attachComponent({
       htmlElement: appContainer,
       component: createElement("div", {
@@ -148,7 +148,7 @@ describe("portals", () => {
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
-          showFirstPortalState.render((shouldShow) =>
+          showFirstPortal$.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -178,7 +178,7 @@ describe("portals", () => {
       "first portal titlefirst portal containersecond portal titlesecond portal container"
     );
 
-    showFirstPortalState.set(false);
+    showFirstPortal$.set(false);
 
     expect(screen.getByTestId("portal").textContent).toBe(
       "second portal titlesecond portal container"
@@ -188,7 +188,7 @@ describe("portals", () => {
   });
 
   test("adding one of the Portals does not affect other Portals content", async () => {
-    const showFirstPortalState = createState(false);
+    const showFirstPortal$ = createState(false);
     cleanup = attachComponent({
       htmlElement: appContainer,
       component: createElement("div", {
@@ -200,7 +200,7 @@ describe("portals", () => {
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
-          showFirstPortalState.render((shouldShow) =>
+          showFirstPortal$.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -230,7 +230,7 @@ describe("portals", () => {
       "second portal titlesecond portal container"
     );
 
-    showFirstPortalState.set(true);
+    showFirstPortal$.set(true);
 
     /**
      * This is a know quirk, it will add the content to the end. Technically we have enough info to respect
@@ -330,16 +330,16 @@ describe("portals", () => {
     });
 
     function Application() {
-      const showPortalState = createState(true);
+      const showPortal$ = createState(true);
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
           createElement("button", {
             children: "toggle menu",
             onClick: () =>
-              showPortalState.update((currentValue) => !currentValue),
+              showPortal$.update((currentValue) => !currentValue),
           }),
-          showPortalState.render((shouldShow) =>
+          showPortal$.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -382,7 +382,7 @@ describe("portals", () => {
     });
 
     function Application() {
-      const showContentState = createState(false);
+      const showContent$ = createState(false);
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
@@ -393,9 +393,9 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.update((currentValue) => !currentValue),
+                  showContent$.update((currentValue) => !currentValue),
               }),
-              showContentState.render((shouldShow) =>
+              showContent$.render((shouldShow) =>
                 shouldShow
                   ? createElement("div", { children: "portal content" })
                   : null
@@ -434,7 +434,7 @@ describe("portals", () => {
     });
 
     function Application() {
-      const showContentState = createState(false);
+      const showContent$ = createState(false);
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
@@ -445,9 +445,9 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.update((currentValue) => !currentValue),
+                  showContent$.update((currentValue) => !currentValue),
               }),
-              showContentState.render((shouldShow) =>
+              showContent$.render((shouldShow) =>
                 shouldShow ? "portal content" : null
               ),
             ],
@@ -484,7 +484,7 @@ describe("portals", () => {
     });
 
     function Application() {
-      const showContentState = createState(false);
+      const showContent$ = createState(false);
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
@@ -495,9 +495,9 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.update((currentValue) => !currentValue),
+                  showContent$.update((currentValue) => !currentValue),
               }),
-              showContentState.render((shouldShow) =>
+              showContent$.render((shouldShow) =>
                 shouldShow ? createElement(PortalContent) : null
               ),
             ],
@@ -573,7 +573,7 @@ describe("portals", () => {
   });
 
   test("it supports conditional Fragments in Portal content", () => {
-    const fragmentShowState = createState(true);
+    const fragmentShow$ = createState(true);
     cleanup = attachComponent({
       htmlElement: appContainer,
       component: createElement("div", {
@@ -589,7 +589,7 @@ describe("portals", () => {
             portalNode: portalContainer,
             children: [
               createElement("h2", { children: "portal title" }),
-              fragmentShowState.render((shouldShow) =>
+              fragmentShow$.render((shouldShow) =>
                 shouldShow
                   ? createElement(Fragment, {
                       children: [
@@ -620,12 +620,12 @@ describe("portals", () => {
       `portal titleportal fragment titlefragment string1fragment componentportal container`
     );
 
-    fragmentShowState.set(false);
+    fragmentShow$.set(false);
     expect(screen.getByTestId("portal").textContent).toBe(
       `portal titleportal container`
     );
 
-    fragmentShowState.set(true);
+    fragmentShow$.set(true);
     expect(screen.getByTestId("portal").textContent).toBe(
       `portal titleportal fragment titlefragment string1fragment componentportal container`
     );

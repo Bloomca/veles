@@ -28,16 +28,16 @@ Types are installed automatically with the same package.
 import { createState } from "veles";
 
 function NameComponent() {
-  const nameState = createState("");
+  const name$ = createState("");
   return (
     <div>
       <input
         type="text"
         name="name"
-        value={nameState.attribute()}
-        onInput={(e) => nameState.set(e.target.value)}
+        value={name$.attribute()}
+        onInput={(e) => name$.set(e.target.value)}
       />
-      <p>{nameState.render()}</p>
+      <p>{name$.render()}</p>
     </div>
   );
 }

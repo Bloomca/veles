@@ -64,15 +64,15 @@ describe("lifecycle hooks", () => {
   test("triggers onUnmount hook on every nested component which is removed from the tree", async () => {
     const user = userEvent.setup();
     function App() {
-      const showChildrenState = createState(true);
+      const showChildren$ = createState(true);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showChildrenState.set(false),
+            onClick: () => showChildren$.set(false),
           }),
-          showChildrenState.render((shouldShow) =>
+          showChildren$.render((shouldShow) =>
             shouldShow ? createElement(FirstNestedComponent) : null
           ),
         ],
@@ -146,16 +146,16 @@ describe("lifecycle hooks", () => {
 
   test("onMount hooks are executed when new components are mounted based on state", async () => {
     function App() {
-      const showState = createState(false);
+      const show$ = createState(false);
       return createElement("div", {
         "data-testid": "appComponent",
         children: [
           "app component",
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.update(() => true),
+            onClick: () => show$.update(() => true),
           }),
-          showState.render((shouldShow) =>
+          show$.render((shouldShow) =>
             shouldShow ? createElement(Wrapper) : null
           ),
         ],
@@ -250,7 +250,7 @@ describe("lifecycle hooks", () => {
 
   test("onMount is called correctly for iterator values", async () => {
     function App() {
-      const tasksState = createState([
+      const tasks$ = createState([
         { id: 1, title: "first task" },
         { id: 2, title: "second task" },
       ]);
@@ -261,13 +261,13 @@ describe("lifecycle hooks", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              tasksState.update((currentTasks) =>
+              tasks$.update((currentTasks) =>
                 currentTasks.concat({ id: 3, title: "third task" })
               );
             },
           }),
-          tasksState.renderEach({ key: "id" }, ({ elementState }) =>
-            createElement(Task, { taskState: elementState })
+          tasks$.renderEach({ key: "id" }, ({ elementState }) =>
+            createElement(Task, { task$: elementState })
           ),
         ],
       });
@@ -275,15 +275,15 @@ describe("lifecycle hooks", () => {
 
     const taskMountSpy = vi.fn();
     function Task({
-      taskState,
+      task$,
     }: {
-      taskState: State<{ id: number; title: string }>;
+      task$: State<{ id: number; title: string }>;
     }) {
       onMount(taskMountSpy);
       return createElement("div", {
         children: [
           "task",
-          taskState.renderSelected(
+          task$.renderSelected(
             (task) => task.title,
             (title) => title
           ),
@@ -315,14 +315,14 @@ describe("lifecycle hooks", () => {
 
   test("onMount returned function is automatically registered as onUnmount", async () => {
     function App() {
-      const shouldShowState = createState(true);
+      const shouldShow$ = createState(true);
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => shouldShowState.set(false),
+            onClick: () => shouldShow$.set(false),
           }),
-          shouldShowState.render((shouldShow) =>
+          shouldShow$.render((shouldShow) =>
             shouldShow ? createElement(ConditionalComponent) : null
           ),
         ],
@@ -368,15 +368,15 @@ describe("lifecycle hooks", () => {
       onUnmount(() => {
         unmountSpy("unmounting app");
       });
-      const showState = createState(true);
+      const show$ = createState(true);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.set(false),
+            onClick: () => show$.set(false),
           }),
-          showState.render((shouldShow) =>
+          show$.render((shouldShow) =>
             shouldShow
               ? createElement(NestedComponent)
               : createElement("div", { children: "other" })

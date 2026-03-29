@@ -20,18 +20,18 @@ has_children: true
 import { createState } from "veles";
 
 function Counter() {
-  const counterState = createState(0);
+  const counter$ = createState(0);
 
   return (
     <div>
       <button
         onClick={() =>
-          counterState.update((currentValue) => currentValue + 1)
+          counter$.update((currentValue) => currentValue + 1)
         }
       >
         +
       </button>
-      <p>{counterState.render((value) => `counter value is ${value}`)}</p>
+      <p>{counter$.render((value) => `counter value is ${value}`)}</p>
     </div>
   );
 }
@@ -54,7 +54,7 @@ function Counter() {
 You can connect external sources to a state by passing a second argument to `createState`. This is mostly useful to create self-contained listeners, as they will be automatically cleaned up when the component unmounts.
 
 ```jsx
-const widthState = createState(window.innerWidth, (set) => {
+const width$ = createState(window.innerWidth, (set) => {
   const listener = () => set(window.innerWidth);
   window.addEventListener("resize", listener);
 
@@ -69,7 +69,7 @@ const widthState = createState(window.innerWidth, (set) => {
 `createState.empty` is a public empty marker value. It can be used to create states that do not have a real value yet.
 
 ```jsx
-const resultState = createState(createState.empty);
+const result$ = createState(createState.empty);
 ```
 
 ## `state.dispose`
@@ -82,12 +82,12 @@ Disposes the current state and disconnects it from parent/child derived states. 
 
 ```jsx
 function FullName() {
-  const nameState = createState("Seva");
-  const lastNameState = createState("Zaikov");
-  const fullNameState = nameState
-    .combine(lastNameState)
+  const name$ = createState("Seva");
+  const lastName$ = createState("Zaikov");
+  const fullName$ = name$
+    .combine(lastName$)
     .map(([name, lastName]) => `${name} ${lastName}`);
 
-  return fullNameState.render((value) => <p>{value}</p>);
+  return fullName$.render((value) => <p>{value}</p>);
 }
 ```

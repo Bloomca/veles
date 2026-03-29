@@ -20,8 +20,8 @@ When using Veles' state primitive, you can interact with it purely imperatively 
 Simply sets the next value. Please note that by default the state compares the values using `===` operator, and if the value is unchanged, nothing gets triggered. More on this in the [Equality and update control](./create-state-equality.html).
 
 ```jsx
-const titleState = createState("hello");
-titleState.set("world");
+const title$ = createState("hello");
+title$.set("world");
 ```
 
 ## `state.update`
@@ -31,8 +31,8 @@ titleState.set("world");
 Updates the value based on the latest current value. This is useful when the next value depends on the previous one, but is also functionally equivalent on reading the latest value and immediately calling `.set(prevValue + 1)`.
 
 ```jsx
-const counterState = createState(0);
-counterState.update((currentValue) => currentValue + 1);
+const counter$ = createState(0);
+counter$.update((currentValue) => currentValue + 1);
 ```
 
 ## `state.get`
@@ -44,10 +44,10 @@ Reads the current value synchronously.
 This is usually useful in event handlers and imperative code. Avoid using it for rendering, because it does not subscribe to updates and your components will end up not reactive.
 
 ```jsx
-const formState = createState({ title: "", done: false });
+const form$ = createState({ title: "", done: false });
 
 function submit() {
-  const value = formState.get();
+  const value = form$.get();
   saveTask(value);
 }
 ```
@@ -59,7 +59,7 @@ function submit() {
 Returns the previous value, if there was one.
 
 ```jsx
-const countState = createState(0);
-countState.set(1);
-countState.getPrevious(); // 0
+const count$ = createState(0);
+count$.set(1);
+count$.getPrevious(); // 0
 ```

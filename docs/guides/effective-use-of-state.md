@@ -11,7 +11,7 @@ Veles allows you to subscribe to individual updates on very granular level, down
 
 ```jsx
 <div>
-  {taskState.render((task) => (
+  {task$.render((task) => (
     <div>
       <h2>{task.name}</h2>
       <p>{task.description}</p>
@@ -25,8 +25,8 @@ In this example when something in the `task` changes, this component will be unm
 ```jsx
 <div>
   <div>
-    <h2>{taskState.renderSelected((task) => task.name)}</h2>
-    <p>{taskState.renderSelected((task) => task.description)}</p>
+    <h2>{task$.renderSelected((task) => task.name)}</h2>
+    <p>{task$.renderSelected((task) => task.description)}</p>
   </div>
 </div>
 ```
@@ -39,19 +39,19 @@ When you decide what to render based on some condition, remember that `renderSel
 
 ```jsx
 <div>
-  {taskState.renderSelected(
+  {task$.renderSelected(
     (task) => task.labels.length > 5,
     (showLabels) =>
       showLabels ? (
-        <ItemWithLabels taskState={taskState} />
+        <ItemWithLabels task$={task$} />
       ) : (
-        <Item taskState={taskState} />
+        <Item task$={task$} />
       )
   )}
 </div>
 ```
 
-You can see that I pass `taskState` to both components, and they can subscribe to individual changes inside. Only when our condition changes, we'll render a different component.
+You can see that I pass `task$` to both components, and they can subscribe to individual changes inside. Only when our condition changes, we'll render a different component.
 
 ## Working with multiple states
 
@@ -61,10 +61,10 @@ Let's say you have several states and you need to select some data based on both
 // these are aliases for combineState and selectState
 import { combine, select } from "veles/utils";
 
-function projectTasks({ projectState, tasksState }) {
-  const projectIdState = select(projectState, (project) => project.id);
-  const projectTasksState = select(
-    combine(projectIdState, tasksState),
+function projectTasks({ project$, tasks$ }) {
+  const projectId$ = select(project$, (project) => project.id);
+  const projectTasks$ = select(
+    combine(projectId$, tasks$),
     ([projectId, tasks]) => tasks.filter((task) => task.projectId === projectId)
   );
 }
