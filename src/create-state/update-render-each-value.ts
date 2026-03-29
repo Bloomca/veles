@@ -3,6 +3,7 @@ import {
   renderTree,
   callUnmountHandlers,
   getExecutedComponentVelesNode,
+  getMountedNodeExecutedVersion,
 } from "../_utils";
 import { addPublicContext, popPublicContext } from "../context";
 
@@ -41,13 +42,11 @@ function updateUseValueIteratorValue<T>({
     return;
   }
 
-  if (!wrapperComponent.executedVersion) {
-    console.error("it seems the wrapper component was not mounted");
-    return;
-  }
-
   const wrapperVelesElementNode = getExecutedComponentVelesNode(
-    wrapperComponent.executedVersion
+    getMountedNodeExecutedVersion(
+      wrapperComponent,
+      "Iterator wrapper is expected to be mounted"
+    )
   );
   const parentVelesElement = wrapperVelesElementNode.parentVelesElement;
 
@@ -181,7 +180,12 @@ function updateUseValueIteratorValue<T>({
     let offset: number = 0;
     let currentElement: HTMLElement | Text | null = null;
     newRenderedElements.forEach((newRenderedElement, index) => {
-      newChildRenderedComponents.push(newRenderedElement[0].executedVersion);
+      newChildRenderedComponents.push(
+        getMountedNodeExecutedVersion(
+          newRenderedElement[0],
+          "Iterator child is expected to be mounted"
+        )
+      );
       newChildComponents.push(newRenderedElement[0]);
       // if we needed to adjust offset until we reach the original position of the item
       // we need to return it back once we reach the position after it
@@ -194,7 +198,10 @@ function updateUseValueIteratorValue<T>({
       const existingElement = elementsByKey[calculatedKey];
       if (existingElement) {
         const existingElementNode = getExecutedComponentVelesNode(
-          existingElement.node.executedVersion
+          getMountedNodeExecutedVersion(
+            existingElement.node,
+            "Existing iterator node is expected to be mounted"
+          )
         );
         // the element is in the same relative position
         if (existingElement.indexValue + offset === index) {
@@ -249,8 +256,13 @@ function updateUseValueIteratorValue<T>({
         }
       } else {
         // we need to insert new element
+        const newNodeExecutedVersion = getMountedNodeExecutedVersion(
+          newNode,
+          "New iterator node is expected to be mounted"
+        );
+
         const newNodeVelesElement = getExecutedComponentVelesNode(
-          newNode.executedVersion
+          newNodeExecutedVersion
         );
         newNodeVelesElement.parentVelesElement = parentVelesElement;
 
@@ -277,7 +289,7 @@ function updateUseValueIteratorValue<T>({
         currentElement = newNodeVelesElement.html;
         newElementsCount = newElementsCount + 1;
 
-        callMountHandlers(newNode.executedVersion);
+        callMountHandlers(newNodeExecutedVersion);
       }
     });
 
@@ -294,17 +306,22 @@ function updateUseValueIteratorValue<T>({
         if (renderedExistingElements[calculatedKey] === true) {
           return;
         } else {
+          const oldNodeExecutedVersion = getMountedNodeExecutedVersion(
+            oldNode,
+            "Removed iterator node is expected to be mounted"
+          );
+
           const oldRenderedVelesNode = getExecutedComponentVelesNode(
-            oldNode.executedVersion
+            oldNodeExecutedVersion
           );
 
           oldRenderedVelesNode.html.remove();
-          callUnmountHandlers(oldNode.executedVersion);
+          callUnmountHandlers(oldNodeExecutedVersion);
 
           if ("executedVelesNode" in wrapperVelesElementNode) {
             wrapperVelesElementNode.childComponents =
               wrapperVelesElementNode.childComponents.filter(
-                (childComponent) => childComponent !== oldNode.executedVersion
+                (childComponent) => childComponent !== oldNodeExecutedVersion
               );
           } else {
             throw new Error("Wrapper iterator element is a string");

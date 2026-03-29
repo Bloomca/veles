@@ -3,7 +3,6 @@ import { createTextElement } from "./create-text-element";
 
 import type {
   VelesComponent,
-  VelesElementProps,
   ComponentAPI,
   ComponentFunction,
   VelesComponentObject,
@@ -14,8 +13,8 @@ function parseComponent({
   element,
   props,
 }: {
-  element: ComponentFunction;
-  props: VelesElementProps;
+  element: ComponentFunction<any>;
+  props: Record<string, any>;
 }): VelesComponentObject {
   const mountCbs: Function[] = [];
   const unmountCbs: Function[] = [];
@@ -44,8 +43,8 @@ function executeComponent({
   element,
   props,
 }: {
-  element: ComponentFunction;
-  props: VelesElementProps;
+  element: ComponentFunction<any>;
+  props: Record<string, any>;
 }) {
   let componentUnmountCbs: Function[] = [];
   let componentMountCbs: Function[] = [];

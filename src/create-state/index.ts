@@ -167,7 +167,7 @@ function createStateFromCore<T>(
   const result: State<T> = {
     // supposed to be used at the component level
     track: (cb, options = {}) => {
-      result.trackSelected<T>(undefined, cb, options);
+      result.trackSelected((value) => value, cb, options);
     },
     trackSelected<F>(
       selector: ((value: T) => F) | undefined,
@@ -286,7 +286,7 @@ function createStateFromCore<T>(
             element !== null &&
             options.key in element
           ) {
-            calculatedKey = element[options.key];
+            calculatedKey = (element as Record<string, string>)[options.key];
           } else if (typeof options.key === "function") {
             calculatedKey = options.key({ element, index });
           } else {
@@ -337,7 +337,8 @@ function createStateFromCore<T>(
       trackingParams.wrapperComponent = wrapperComponent;
 
       if (options.selector) {
-        trackingParams.selector = options.selector;
+        trackingParams.selector =
+          options.selector as unknown as (value: unknown) => any[];
       }
 
       return wrapperComponent;
@@ -415,57 +416,59 @@ function createStateFromCore<T>(
       let wasMounted = false;
       const attributeValue = cb ? cb(originalValue) : originalValue;
 
-      const attributeHelper = (
-        htmlElement: HTMLElement,
-        attributeName: string,
-        node: VelesElement,
-      ) => {
-        // save it to the attribute array
-        // read that array on `_triggerUpdates`
-        // and change inline
-        // we need to save the HTML element and the name of the attribute
-        const trackingElement = {
-          cb,
-          htmlElement,
-          attributeName,
-          attributeValue,
-        };
+      const attributeHelper = {
+        velesAttribute: true as const,
+        getValue(
+          htmlElement: HTMLElement,
+          attributeName: string,
+          node: VelesElement,
+        ) {
+          // save it to the attribute array
+          // read that array on `_triggerUpdates`
+          // and change inline
+          // we need to save the HTML element and the name of the attribute
+          const trackingElement = {
+            cb,
+            htmlElement,
+            attributeName,
+            attributeValue,
+          };
 
-        node._privateMethods._addMountHandler(() => {
-          trackers.trackingAttributes.push(trackingElement);
+          node._privateMethods._addMountHandler(() => {
+            trackers.trackingAttributes.push(trackingElement);
 
-          if (!wasMounted && core.get() === originalValue) {
-            /**
-             * We avoid recalculating in one case:
-             * 1. the component was never mounted
-             * 2. the value didn't change
-             *
-             * Every other case will need to store their own value,
-             * and while it is possible, for now we are not doing it
-             */
-          } else {
-            // since the `element` will be modified in place, we don't need to
-            // replace it in the array or anything
-            updateUseAttributeValue({
-              element: trackingElement,
-              value: core.get(),
+            if (!wasMounted && core.get() === originalValue) {
+              /**
+               * We avoid recalculating in one case:
+               * 1. the component was never mounted
+               * 2. the value didn't change
+               *
+               * Every other case will need to store their own value,
+               * and while it is possible, for now we are not doing it
+               */
+            } else {
+              // since the `element` will be modified in place, we don't need to
+              // replace it in the array or anything
+              updateUseAttributeValue({
+                element: trackingElement,
+                value: core.get(),
+              });
+            }
+
+            if (!wasMounted) {
+              wasMounted = true;
+            }
+
+            node._privateMethods._addUnmountHandler(() => {
+              trackers.trackingAttributes = trackers.trackingAttributes.filter(
+                (trackingAttribute) => trackingAttribute !== trackingElement,
+              );
             });
-          }
-
-          if (!wasMounted) {
-            wasMounted = true;
-          }
-
-          node._privateMethods._addUnmountHandler(() => {
-            trackers.trackingAttributes = trackers.trackingAttributes.filter(
-              (trackingAttribute) => trackingAttribute !== trackingElement,
-            );
           });
-        });
 
-        return attributeValue;
+          return attributeValue;
+        },
       };
-      attributeHelper.velesAttribute = true;
 
       return attributeHelper;
     },

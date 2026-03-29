@@ -86,17 +86,21 @@ function renderTree(
         if ("velesComponentObject" in component.insertAfter) {
           const lastNode = insertNode({
             velesElement: newNode,
-            adjacentNode: component.insertAfter.html,
+            adjacentNode: component.insertAfter.html ?? null,
             parentVelesElement,
           });
-          component.html = lastNode;
+          if (lastNode) {
+            component.html = lastNode;
+          }
         } else {
           const lastNode = insertNode({
             velesElement: newNode,
             adjacentNode: component.insertAfter,
             parentVelesElement,
           });
-          component.html = lastNode;
+          if (lastNode) {
+            component.html = lastNode;
+          }
         }
       } else {
         const lastNode = insertNode({
@@ -105,7 +109,9 @@ function renderTree(
           adjacentNode: null,
           parentVelesElement,
         });
-        component.html = lastNode;
+        if (lastNode) {
+          component.html = lastNode;
+        }
       }
 
       newNode.parentVelesElement = parentVelesElement;
@@ -137,6 +143,8 @@ function renderTree(
     }
     return executedNode;
   }
+
+  throw new Error("Unknown component type in renderTree");
 }
 
 function insertNode({
@@ -211,6 +219,19 @@ function insertNode({
   }
 }
 
+function getMountedNodeExecutedVersion(
+  node: VelesComponentObject | VelesElement,
+  errorMessage?: string
+): ExecutedVelesComponent | ExecutedVelesElement {
+  if (!node.executedVersion) {
+    throw new Error(
+      errorMessage || "Expected node to have executedVersion by this point"
+    );
+  }
+
+  return node.executedVersion;
+}
+
 function callMountHandlers(
   component:
     | ExecutedVelesComponent
@@ -278,4 +299,5 @@ export {
   callUnmountHandlers,
   unique,
   renderTree,
+  getMountedNodeExecutedVersion,
 };

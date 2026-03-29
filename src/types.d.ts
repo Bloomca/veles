@@ -129,9 +129,10 @@ type velesChild =
   | VelesElement
   | VelesComponentObject
   | VelesStringElement;
-export type VelesChildren = velesChild | velesChild[] | undefined | null;
+type VelesMaybeChild = velesChild | undefined | null;
+export type VelesChildren = VelesMaybeChild | VelesMaybeChild[];
 
-export type VelesElementProps = {
+export type VelesBaseProps = {
   children?: VelesChildren;
   ref?: {
     velesRef: true;
@@ -139,13 +140,13 @@ export type VelesElementProps = {
   };
 
   portal?: HTMLElement;
+  phantom?: boolean;
 
-  // event handlers + any html properties
-  // the value can be either a string value
-  // or a function in case we support reactivity
-  // TODO: we can improve these types
-  [htmlAttribute: string]: any;
-} & JSX.HTMLAttributes;
+  // Custom data-* attributes used widely in tests/apps.
+  [dataAttribute: `data-${string}`]: unknown;
+};
+
+export type VelesElementProps = VelesBaseProps & JSX.HTMLAttributes;
 
 export type ComponentAPI = {
   // You can return a function from the mount callback, and it will be
@@ -154,19 +155,23 @@ export type ComponentAPI = {
   onUnmount: (cb: Function) => void;
 };
 
-export type ComponentFunction = (
-  props: VelesElementProps,
+export type ComponentFunction<Props extends object = VelesElementProps> = (
+  props: Props,
   componentAPI: ComponentAPI
 ) => VelesElement | VelesComponentObject | VelesStringElement | string | null;
 
 export type AttributeHelper<T> = {
-  (htmlElement: HTMLElement, attributeName: string, node: VelesElement): T;
-  velesAttribute: boolean;
+  velesAttribute: true;
+  getValue: (
+    htmlElement: HTMLElement,
+    attributeName: string,
+    node: VelesElement
+  ) => T;
 };
 
 export type VelesComponentObject = {
   velesComponentObject: true;
-  element: ComponentFunction;
+  element: ComponentFunction<any>;
   props: VelesElementProps;
   insertAfter?: VelesComponentObject | HTMLElement | Text | null;
   html?: HTMLElement | Text;

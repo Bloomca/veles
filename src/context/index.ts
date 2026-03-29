@@ -37,11 +37,10 @@ function createContext<T>() {
       const currentContext = publicContextStack[publicContextStack.length - 1];
 
       if (!currentContext) {
-        // we are outside the context somehow
-        console.error("no Context currently available");
-      } else {
-        return currentContext[contextId];
+        throw new Error("no Context currently available");
       }
+
+      return currentContext[contextId] as T;
     },
   };
 }

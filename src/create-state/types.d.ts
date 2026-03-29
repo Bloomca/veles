@@ -74,7 +74,7 @@ export type State<ValueType> = {
       elementState: State<Element>;
       indexState: State<number>;
     }) => VelesElement | VelesComponentObject
-  ): VelesComponentObject | VelesElement | null;
+  ): VelesComponentObject | VelesElement;
   renderEach<
     SelectorValueType extends ReadonlyArray<any>,
     Element extends ArrayElement<SelectorValueType> =
@@ -93,7 +93,7 @@ export type State<ValueType> = {
       elementState: State<Element>;
       indexState: State<number>;
     }) => VelesElement | VelesComponentObject
-  ): VelesComponentObject | VelesElement | null;
+  ): VelesComponentObject | VelesElement;
   map<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
     options?: {

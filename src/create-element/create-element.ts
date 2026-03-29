@@ -1,20 +1,32 @@
 import { parseChildren } from "./parse-children";
 import { assignAttributes } from "./assign-attributes";
 import { parseComponent } from "./parse-component";
-import { getExecutedComponentVelesNode } from "../_utils";
+import {
+  getExecutedComponentVelesNode,
+  getMountedNodeExecutedVersion,
+} from "../_utils";
 
 import type {
   VelesComponentObject,
   VelesElement,
-  VelesElementProps,
+  VelesBaseProps,
   ComponentFunction,
   ExecutedVelesElement,
   ExecutedVelesStringElement,
 } from "../types";
+import type { JSX } from "../jsx";
 
+function createElement<Tag extends keyof JSX.IntrinsicElements>(
+  element: Tag,
+  props?: VelesBaseProps & JSX.IntrinsicElements[Tag]
+): VelesElement;
+function createElement<Props extends object>(
+  element: ComponentFunction<Props>,
+  props?: Props
+): VelesComponentObject;
 function createElement(
-  element: string | ComponentFunction,
-  props: VelesElementProps = {}
+  element: string | ComponentFunction<any>,
+  props: Record<string, any> = {}
 ): VelesElement | VelesComponentObject {
   if (typeof element === "string") {
     const {
@@ -91,7 +103,10 @@ function createElement(
             portal.append(childComponent.html);
           } else {
             const componentNode = getExecutedComponentVelesNode(
-              childComponent.executedVersion
+              getMountedNodeExecutedVersion(
+                childComponent,
+                "Portal child component is not mounted"
+              )
             );
             appendComponentToPortal(componentNode, portal);
           }
@@ -107,7 +122,10 @@ function createElement(
               childComponent.html.remove();
             } else {
               const componentNode = getExecutedComponentVelesNode(
-                childComponent.executedVersion
+                getMountedNodeExecutedVersion(
+                  childComponent,
+                  "Portal child component is not mounted"
+                )
               );
               cleanupComponentFromPortal(componentNode);
             }
