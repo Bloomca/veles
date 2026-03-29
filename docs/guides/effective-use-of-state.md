@@ -55,18 +55,14 @@ You can see that I pass `task$` to both components, and they can subscribe to in
 
 ## Working with multiple states
 
-Let's say you have several states and you need to select some data based on both of them. To work with them efficiently, use `combineState` and `selectState`:
+Let's say you have several states and you need to select some data based on both of them. To work with them efficiently, use `.combine` and `.map`:
 
 ```jsx
-// these are aliases for combineState and selectState
-import { combine, select } from "veles/utils";
-
 function projectTasks({ project$, tasks$ }) {
-  const projectId$ = select(project$, (project) => project.id);
-  const projectTasks$ = select(
-    combine(projectId$, tasks$),
-    ([projectId, tasks]) => tasks.filter((task) => task.projectId === projectId)
-  );
+  const projectId$ = project$.map(project => project.id);
+  const projectTasks$ = projectId$
+    .combine(tasks$)
+    .map([projectId, tasks]) => tasks.filter((task) => task.projectId === projectId)
 }
 ```
 
