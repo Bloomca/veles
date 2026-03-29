@@ -12,31 +12,31 @@ When using Veles' state primitive, you can interact with it purely imperatively 
 - to have a simple mental modal when reading latest values in a callback (like an event handler)
 - by allowing to set values imperatively, it makes integrating other sources very simple
 
-## `state.setValue`
+## `state.set`
 
-- `state.setValue(newValue)`
+- `state.set(newValue)`
 
 Simply sets the next value. Please note that by default the state compares the values using `===` operator, and if the value is unchanged, nothing gets triggered. More on this in the [Equality and update control](./create-state-equality.html).
 
 ```jsx
 const titleState = createState("hello");
-titleState.setValue("world");
+titleState.set("world");
 ```
 
-## `state.updateValue`
+## `state.update`
 
-- `state.updateValue((currentValue) => newValue)`
+- `state.update((currentValue) => newValue)`
 
-Updates the value based on the latest current value. This is useful when the next value depends on the previous one, but is also functionally equivalent on reading the latest value and immediately calling `.setValue(prevValue + 1)`.
+Updates the value based on the latest current value. This is useful when the next value depends on the previous one, but is also functionally equivalent on reading the latest value and immediately calling `.set(prevValue + 1)`.
 
 ```jsx
 const counterState = createState(0);
-counterState.updateValue((currentValue) => currentValue + 1);
+counterState.update((currentValue) => currentValue + 1);
 ```
 
-## `state.getValue`
+## `state.get`
 
-- `state.getValue()`
+- `state.get()`
 
 Reads the current value synchronously.
 
@@ -46,19 +46,19 @@ This is usually useful in event handlers and imperative code. Avoid using it for
 const formState = createState({ title: "", done: false });
 
 function submit() {
-  const value = formState.getValue();
+  const value = formState.get();
   saveTask(value);
 }
 ```
 
-## `state.getPreviousValue`
+## `state.getPrevious`
 
-- `state.getPreviousValue()`
+- `state.getPrevious()`
 
 Returns the previous value, if there was one.
 
 ```jsx
 const countState = createState(0);
-countState.setValue(1);
-countState.getPreviousValue(); // 0
+countState.set(1);
+countState.getPrevious(); // 0
 ```

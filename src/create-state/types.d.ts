@@ -11,7 +11,7 @@ type StateEquality<ValueType> = (value1: ValueType, value2: ValueType) => boolea
 type StateLike<ValueType> = State<ValueType>;
 
 export type State<ValueType> = {
-  trackValue(
+  track(
     cb: (value: ValueType) => void | Function,
     options?: {
       callOnMount?: boolean;
@@ -19,7 +19,7 @@ export type State<ValueType> = {
       comparator?: (value1: ValueType, value2: ValueType) => boolean;
     }
   ): void;
-  trackValueSelector<SelectorValueType>(
+  trackSelected<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
     cb: (value: SelectorValueType) => void | Function,
     options?: {
@@ -31,13 +31,13 @@ export type State<ValueType> = {
       ) => boolean;
     }
   ): void;
-  useValue(
+  render(
     cb?: (
       value: ValueType
     ) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (value1: ValueType, value2: ValueType) => boolean
   ): VelesElement | VelesComponentObject | VelesStringElement;
-  useValueSelector: {
+  renderSelected: {
     (
       selector: undefined,
       cb?: (
@@ -56,8 +56,8 @@ export type State<ValueType> = {
       ) => boolean
     ): VelesElement | VelesComponentObject | VelesStringElement;
   };
-  useAttribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
-  useValueIterator<Element>(
+  attribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
+  renderEach<Element>(
     options: {
       key: string | ((options: { element: Element; index: number }) => string);
       selector?: (value: ValueType) => Element[];
@@ -103,16 +103,16 @@ export type State<ValueType> = {
     ]
   >;
   dispose(): void;
-  getValue(): ValueType;
-  getPreviousValue(): undefined | ValueType;
-  setValue(newValue: ValueType): void;
-  updateValue(newValueCB: (currentValue: ValueType) => ValueType): void;
+  get(): ValueType;
+  getPrevious(): undefined | ValueType;
+  set(newValue: ValueType): void;
+  update(newValueCB: (currentValue: ValueType) => ValueType): void;
 };
 
 export function createState<T>(
   initialValue: T,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"]
+    set: ReturnType<typeof createState<T>>["set"]
   ) => Function
 ): State<T>;
 

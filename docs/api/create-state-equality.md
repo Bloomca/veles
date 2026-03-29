@@ -11,8 +11,8 @@ By default, Veles uses referential equality (`===`) to decide whether something 
 
 That applies to:
 
-- `setValue`
-- `updateValue`
+- `set`
+- `update`
 - derived state updates
 - selector-based subscriptions
 - selector-based rendering
@@ -57,10 +57,10 @@ const summaryState = numberState.scan(
 
 ## Comparator in subscriptions
 
-`trackValue` and `trackValueSelector` accept `comparator` options.
+`track` and `trackSelected` accept `comparator` options.
 
 ```jsx
-state.trackValueSelector(
+state.trackSelected(
   (value) => value.user,
   (user) => {
     console.log(user);
@@ -73,10 +73,10 @@ state.trackValueSelector(
 
 ## Comparator in rendering
 
-`useValue` and `useValueSelector` also accept comparators.
+`render` and `renderSelected` also accept comparators.
 
 ```jsx
-state.useValueSelector(
+state.renderSelected(
   (value) => value.user,
   (user) => <UserCard user={user} />,
   (a, b) => a.id === b.id,

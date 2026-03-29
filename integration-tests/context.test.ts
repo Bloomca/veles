@@ -93,9 +93,9 @@ describe("Context", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
           ),
         ],
@@ -123,7 +123,7 @@ describe("Context", () => {
     expect(screen.getByTestId("container").textContent).toBe("value is 7");
   });
 
-  it("newly added elements in useValueIterator have access to Context", async () => {
+  it("newly added elements in renderEach have access to Context", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string; value: number };
     const item1: Item = { id: 1, text: "first item", value: 1 };
@@ -138,7 +138,7 @@ describe("Context", () => {
         children: [
           createElement("div", {
             "data-testid": "container",
-            children: itemsState.useValueIterator<Item>(
+            children: itemsState.renderEach<Item>(
               { key: "id" },
               ({ elementState }) => createElement(Item, { elementState })
             ),
@@ -152,9 +152,9 @@ describe("Context", () => {
 
       return createElement("div", {
         children: [
-          elementState.useValueSelector((element) => element.text),
+          elementState.renderSelected((element) => element.text),
           " ",
-          elementState.useValueSelector(
+          elementState.renderSelected(
             (element) => element.value,
             (value) => String(value * exampleValue)
           ),
@@ -175,7 +175,7 @@ describe("Context", () => {
     expect(listElement.childNodes[0].textContent).toBe("first item 3");
     expect(listElement.childNodes[1].textContent).toBe("second item 6");
 
-    itemsState.setValue([item1, item2, item3]);
+    itemsState.set([item1, item2, item3]);
     expect(listElement.childNodes.length).toBe(3);
     expect(listElement.childNodes[0].textContent).toBe("first item 3");
     expect(listElement.childNodes[1].textContent).toBe("second item 6");

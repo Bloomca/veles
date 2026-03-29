@@ -7,7 +7,7 @@ import {
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
-import { addUseValueMountHandler } from "./update-usevalue-selector-value";
+import { addUseValueMountHandler } from "./update-render-selected-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
 import { getCurrentContext } from "../context";
 import { StateCore, createCoreEquality, emptyValue } from "./state-core";
@@ -47,7 +47,7 @@ function autoDisposeStateOnUnmount<T>(state: State<T>) {
   return state;
 }
 
-type UseValueSelectorSignature<T> = {
+type RenderSelectedSignature<T> = {
   (
     selector: undefined,
     cb?: (
@@ -67,7 +67,7 @@ type UseValueSelectorSignature<T> = {
 function createStateFromCore<T>(
   core: StateCore<T>,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"],
+    set: ReturnType<typeof createState<T>>["set"],
   ) => Function,
 ): State<T> {
   // all subscription types we track
@@ -82,11 +82,11 @@ function createStateFromCore<T>(
       value: nextValue,
       createState,
       trackers,
-      getValue: () => core.get() as T,
+      get: () => core.get() as T,
     });
   });
 
-  const useValueSelector: UseValueSelectorSignature<T> = ((
+  const renderSelected: RenderSelectedSignature<T> = ((
     selector: ((value: T) => unknown) | undefined,
     cb?: (
       value: unknown,
@@ -122,7 +122,7 @@ function createStateFromCore<T>(
 
       addUseValueMountHandler({
         usedValue: currentValue,
-        getValue: () => core.get() as T,
+        get: () => core.get() as T,
         trackers,
         trackingSelectorElement,
       });
@@ -156,20 +156,20 @@ function createStateFromCore<T>(
 
     addUseValueMountHandler({
       usedValue: currentValue,
-      getValue: () => core.get() as T,
+      get: () => core.get() as T,
       trackers,
       trackingSelectorElement,
     });
 
     return node;
-  }) as UseValueSelectorSignature<T>;
+  }) as RenderSelectedSignature<T>;
 
   const result: State<T> = {
     // supposed to be used at the component level
-    trackValue: (cb, options = {}) => {
-      result.trackValueSelector<T>(undefined, cb, options);
+    track: (cb, options = {}) => {
+      result.trackSelected<T>(undefined, cb, options);
     },
-    trackValueSelector<F>(
+    trackSelected<F>(
       selector: ((value: T) => F) | undefined,
       cb: (value: F) => void | Function,
       options: {
@@ -228,17 +228,17 @@ function createStateFromCore<T>(
         }
       });
     },
-    useValue: (cb, comparator) => {
-      return result.useValueSelector(undefined, cb, comparator);
+    render: (cb, comparator) => {
+      return result.renderSelected(undefined, cb, comparator);
     },
-    useValueSelector,
+    renderSelected,
     /**
      * This function is used to iterate over the values and return tracked DOM nodes.
      * When using it, the callback receives elementState and indexState props object
      * to track changes; this way individual changes will not trigger any component
      * re-renders.
      */
-    useValueIterator<Element>(
+    renderEach<Element>(
       options: {
         key: string | ((options: { element: any; index: number }) => string);
         selector?: (value: T) => Element[];
@@ -272,7 +272,7 @@ function createStateFromCore<T>(
           : stateValue;
 
         if (!Array.isArray(elements)) {
-          console.error("useValueIterator received non-array value");
+          console.error("renderEach received non-array value");
           return null;
         }
 
@@ -406,9 +406,11 @@ function createStateFromCore<T>(
       const stateCores = states.map((state) => getStateCore(state));
       const combinedCore = core.combine(...stateCores);
 
-      return autoDisposeStateOnUnmount(createStateFromCore(combinedCore as any));
+      return autoDisposeStateOnUnmount(
+        createStateFromCore(combinedCore as any),
+      );
     },
-    useAttribute: (cb?: (value: T) => any) => {
+    attribute: (cb?: (value: T) => any) => {
       const originalValue = core.get() as T;
       let wasMounted = false;
       const attributeValue = cb ? cb(originalValue) : originalValue;
@@ -471,20 +473,20 @@ function createStateFromCore<T>(
       core.dispose();
     },
     // useful for stuff like callbacks
-    getValue: () => {
+    get: () => {
       return core.get() as T;
     },
-    getPreviousValue: () => {
+    getPrevious: () => {
       const previousValue = core.getPrevious();
 
       return previousValue === emptyValue
         ? undefined
         : (previousValue as undefined | T);
     },
-    setValue: (newValue: T): void => {
+    set: (newValue: T): void => {
       core.set(newValue);
     },
-    updateValue: (newValueCB: (currentValue: T) => T): void => {
+    update: (newValueCB: (currentValue: T) => T): void => {
       const currentValue = core.get() as T;
       core.set(newValueCB(currentValue));
     },
@@ -493,7 +495,7 @@ function createStateFromCore<T>(
   (result as any)[STATE_CORE_PROPERTY] = core;
 
   if (subscribeCallback) {
-    const unsubscribe = subscribeCallback(result.setValue);
+    const unsubscribe = subscribeCallback(result.set);
 
     if (unsubscribe) {
       onUnmount(unsubscribe);
@@ -515,7 +517,7 @@ function createStateFromCore<T>(
 function createState<T>(
   initialValue: T,
   subscribeCallback?: (
-    setValue: ReturnType<typeof createState<T>>["setValue"],
+    set: ReturnType<typeof createState<T>>["set"],
   ) => Function,
 ): State<T> {
   const core = new StateCore<T>(initialValue);

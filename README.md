@@ -34,10 +34,10 @@ function NameComponent() {
       <input
         type="text"
         name="name"
-        value={nameState.useAttribute()}
-        onInput={(e) => nameState.setValue(e.target.value)}
+        value={nameState.attribute()}
+        onInput={(e) => nameState.set(e.target.value)}
       />
-      <p>{nameState.useValue()}</p>
+      <p>{nameState.render()}</p>
     </div>
   );
 }

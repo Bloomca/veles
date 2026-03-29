@@ -21,29 +21,29 @@ describe("derived state", () => {
       const valueState3 = createState(0);
       const combinedValueState = valueState1.combine(valueState2, valueState3);
 
-      combinedValueState.trackValue(spy);
+      combinedValueState.track(spy);
 
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.updateValue((currentValue) => currentValue + 1);
+              valueState1.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.updateValue((currentValue) => currentValue + 1);
+              valueState2.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.updateValue((currentValue) => currentValue + 1);
+              valueState3.update((currentValue) => currentValue + 1);
             },
           }),
-          combinedValueState.useValueSelector(
+          combinedValueState.renderSelected(
             (values) => values.reduce((acc, num) => acc + num, 0),
             (value) =>
               createElement("div", { children: [`current value is ${value}`] }),
@@ -95,22 +95,22 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button1",
             onClick: () => {
-              valueState1.updateValue((currentValue) => currentValue + 1);
+              valueState1.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button2",
             onClick: () => {
-              valueState2.updateValue((currentValue) => currentValue + 1);
+              valueState2.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("button", {
             "data-testid": "button3",
             onClick: () => {
-              valueState3.updateValue((currentValue) => currentValue + 1);
+              valueState3.update((currentValue) => currentValue + 1);
             },
           }),
-          changedState.useValue((value) =>
+          changedState.render((value) =>
             createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
@@ -152,8 +152,8 @@ describe("derived state", () => {
           a.firstValue === b.firstValue && a.secondValue === b.secondValue,
       });
       const selectedStateNoComparator = state.map((value) => value);
-      selectedState.trackValue(firstSpy);
-      selectedStateNoComparator.trackValue(secondSpy);
+      selectedState.track(firstSpy);
+      selectedStateNoComparator.track(secondSpy);
 
       return null;
     }
@@ -166,11 +166,11 @@ describe("derived state", () => {
     expect(firstSpy).toHaveBeenCalledTimes(1);
     expect(secondSpy).toHaveBeenCalledTimes(1);
 
-    state.setValue({ firstValue: 2, secondValue: 5 });
+    state.set({ firstValue: 2, secondValue: 5 });
     expect(firstSpy).toHaveBeenCalledTimes(2);
     expect(secondSpy).toHaveBeenCalledTimes(2);
 
-    state.setValue({ firstValue: 2, secondValue: 5 });
+    state.set({ firstValue: 2, secondValue: 5 });
     expect(firstSpy).toHaveBeenCalledTimes(2);
     expect(secondSpy).toHaveBeenCalledTimes(3);
   });
@@ -187,10 +187,10 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              numberState.updateValue((currentValue) => currentValue + 1);
+              numberState.update((currentValue) => currentValue + 1);
             },
           }),
-          evenNumberState.useValue((value) =>
+          evenNumberState.render((value) =>
             createElement("div", {
               children: [
                 `current even value is ${((value as any) === createState.empty) ? "empty" : value}`,
@@ -231,10 +231,10 @@ describe("derived state", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              numberState.updateValue((currentValue) => currentValue + 1);
+              numberState.update((currentValue) => currentValue + 1);
             },
           }),
-          totalState.useValue((value) =>
+          totalState.render((value) =>
             createElement("div", {
               children: [`current total value is ${value}`],
             }),

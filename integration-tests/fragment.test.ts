@@ -63,7 +63,7 @@ describe("<Fragment>", () => {
           createElement(Fragment, {
             children: [
               createElement("div", { children: "First Fragment child" }),
-              state.useValue((currentValue) =>
+              state.render((currentValue) =>
                 createElement("div", {
                   "data-testid": "fragment-dynamic-element",
                   children: `Second Fragment value: ${currentValue}`,
@@ -74,7 +74,7 @@ describe("<Fragment>", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => state.updateValue((currentValue) => currentValue + 1),
+            onClick: () => state.update((currentValue) => currentValue + 1),
           }),
           createElement("div", { children: "last child" }),
           createElement("hr"),
@@ -159,11 +159,11 @@ describe("<Fragment>", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(true),
+            onClick: () => showState.set(true),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.useValue((shouldShow) =>
+            children: showState.render((shouldShow) =>
               shouldShow ? createElement(FragmentComponent) : null
             ),
           }),
@@ -196,7 +196,7 @@ describe("<Fragment>", () => {
     expect(children[2].textContent).toBe("third element");
   });
 
-  test("support returning a Fragment from useValue and then switching to a regular node conditionally", async () => {
+  test("support returning a Fragment from render and then switching to a regular node conditionally", async () => {
     const user = userEvent.setup();
     function App() {
       const showState = createState(true);
@@ -204,11 +204,11 @@ describe("<Fragment>", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(false),
+            onClick: () => showState.set(false),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.useValue((shouldShow) =>
+            children: showState.render((shouldShow) =>
               shouldShow
                 ? createElement(FragmentComponent)
                 : createElement(RegularComponent)
@@ -252,7 +252,7 @@ describe("<Fragment>", () => {
     expect(children[0].textContent).toBe("Regular element");
   });
 
-  test("support returning a Fragment from useValue and then switching to another Fragment conditionally", async () => {
+  test("support returning a Fragment from render and then switching to another Fragment conditionally", async () => {
     const user = userEvent.setup();
     function App() {
       const showState = createState(true);
@@ -260,11 +260,11 @@ describe("<Fragment>", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(false),
+            onClick: () => showState.set(false),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.useValue((shouldShow) =>
+            children: showState.render((shouldShow) =>
               shouldShow
                 ? createElement(FragmentComponent)
                 : createElement(FragmentComponent2)

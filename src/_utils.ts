@@ -76,7 +76,7 @@ function renderTree(
       /**
        * Inserting nodes is handled by the portal parent element.
        * We still need to assign `parentVelesElement`, so that
-       * `useValue` updates correctly
+       * `render` updates correctly
        */
       if (parentVelesElement) {
         newNode.parentVelesElement = parentVelesElement;

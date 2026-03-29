@@ -42,7 +42,7 @@ describe("attachComponent", () => {
     const childSubscriptionSpy = vi.fn();
     function Child() {
       onUnmount(childUnmountSpy);
-      state.trackValue(childSubscriptionSpy, { skipFirstCall: true });
+      state.track(childSubscriptionSpy, { skipFirstCall: true });
       return createElement("div", {
         children: "test",
       });
@@ -55,14 +55,14 @@ describe("attachComponent", () => {
       }),
     });
 
-    state.setValue(1);
+    state.set(1);
     expect(childSubscriptionSpy).toHaveBeenCalledTimes(2);
 
     removeVelesTree();
     expect(appUnmountSpy).toHaveBeenCalledTimes(1);
     expect(childUnmountSpy).toHaveBeenCalledTimes(2);
 
-    state.setValue(2);
+    state.set(2);
     // subscriptions were removed, so no more calls
     expect(childSubscriptionSpy).toHaveBeenCalledTimes(2);
   });

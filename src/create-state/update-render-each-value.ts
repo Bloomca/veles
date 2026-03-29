@@ -100,9 +100,9 @@ function updateUseValueIteratorValue<T>({
       }
 
       // first, we check if there is a node by this key
-      // if there is, we do `getValue()` and compare whether the
+      // if there is, we do `get()` and compare whether the
       // item is the same.
-      // if it is not, we need to do `elementState.setValue()`
+      // if it is not, we need to do `elementState.set()`
       // with the new value
       // if the value is the same, nothing to do.
       //
@@ -122,13 +122,13 @@ function updateUseValueIteratorValue<T>({
 
       if (existingElement) {
         renderedExistingElements[calculatedKey] = true;
-        const currentValue = existingElement.elementState.getValue();
+        const currentValue = existingElement.elementState.get();
         if (currentValue !== element) {
-          existingElement.elementState.setValue(element);
+          existingElement.elementState.set(element);
         }
-        const currentIndex = existingElement.indexState.getValue();
+        const currentIndex = existingElement.indexState.get();
         if (currentIndex !== index) {
-          existingElement.indexState.setValue(index);
+          existingElement.indexState.set(index);
         }
 
         newRenderedElements.push([
@@ -166,7 +166,7 @@ function updateUseValueIteratorValue<T>({
     });
 
     // to replace old wrapper's children to make sure they are removed correctly
-    // on `useValue` unmount
+    // on `render` unmount
     const newChildRenderedComponents: (
       | ExecutedVelesComponent
       | ExecutedVelesElement

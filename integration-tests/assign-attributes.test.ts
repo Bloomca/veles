@@ -24,7 +24,7 @@ describe("assign-attributes", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.updateValue(() => "");
+              nameState.update(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -33,13 +33,13 @@ describe("assign-attributes", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: nameState.useAttribute((name) => name),
+            value: nameState.attribute((name) => name),
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
-              nameState.setValue((e.target as HTMLInputElement).value),
+              nameState.set((e.target as HTMLInputElement).value),
           }),
-          nameState.useValue((value) =>
+          nameState.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
             })
@@ -83,7 +83,7 @@ describe("assign-attributes", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              nameState.updateValue(() => "");
+              nameState.update(() => "");
               inputRef.current?.focus();
             },
           }),
@@ -92,13 +92,13 @@ describe("assign-attributes", () => {
             type: "text",
             "data-testid": "nameInput",
             name: "name",
-            value: nameState.useAttribute(),
+            value: nameState.attribute(),
             onFocus: focusFn,
             onBlur: blurFn,
             onInput: (e) =>
-              nameState.setValue((e.target as HTMLInputElement).value),
+              nameState.set((e.target as HTMLInputElement).value),
           }),
-          nameState.useValue((value) =>
+          nameState.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
             })
@@ -176,7 +176,7 @@ describe("assign-attributes", () => {
     expect((btn as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it("correctly updates boolean properties with useAttribute", async () => {
+  it("correctly updates boolean properties with attribute", async () => {
     const user = userEvent.setup();
     function App() {
       const disabledState = createState(false);
@@ -184,11 +184,11 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "toggleButton",
-            onClick: () => disabledState.updateValue((value) => !value),
+            onClick: () => disabledState.update((value) => !value),
           }),
           createElement("button", {
             "data-testid": "button",
-            disabled: disabledState.useAttribute(),
+            disabled: disabledState.attribute(),
           }),
         ],
       });
@@ -221,11 +221,11 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: state.useAttribute((value) =>
+            onClick: state.attribute((value) =>
               value !== 0 && value < 4
                 ? () => {
                     spyFn();
-                    state.updateValue((currentValue) => currentValue + 1);
+                    state.update((currentValue) => currentValue + 1);
                   }
                 : undefined
             ),
@@ -244,7 +244,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
     await user.click(btn);
 
-    state.setValue(1);
+    state.set(1);
 
     await user.click(btn);
     await user.click(btn);
@@ -253,7 +253,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
 
     expect(spyFn).toHaveBeenCalledTimes(3);
-    expect(state.getValue()).toBe(4);
+    expect(state.get()).toBe(4);
   });
 
   it("allows to assign and remove event listeners dynamically passing the same callback", async () => {
@@ -263,13 +263,13 @@ describe("assign-attributes", () => {
     function App() {
       const handler = () => {
         spyFn();
-        state.updateValue((currentValue) => currentValue + 1);
+        state.update((currentValue) => currentValue + 1);
       };
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: state.useAttribute((value) =>
+            onClick: state.attribute((value) =>
               value !== 0 && value < 4 ? handler : undefined
             ),
           }),
@@ -287,7 +287,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
     await user.click(btn);
 
-    state.setValue(1);
+    state.set(1);
 
     await user.click(btn);
     await user.click(btn);
@@ -296,7 +296,7 @@ describe("assign-attributes", () => {
     await user.click(btn);
 
     expect(spyFn).toHaveBeenCalledTimes(3);
-    expect(state.getValue()).toBe(4);
+    expect(state.get()).toBe(4);
   });
 
   test("adds listeners with multiple words in them correctly", async () => {
@@ -334,13 +334,13 @@ describe("assign-attributes", () => {
     function App() {
       const handler = () => {
         spyFn();
-        state.updateValue((currentValue) => currentValue + 1);
+        state.update((currentValue) => currentValue + 1);
       };
       return createElement("div", {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onDblClick: state.useAttribute((value) =>
+            onDblClick: state.attribute((value) =>
               value !== 0 && value < 4 ? handler : undefined
             ),
           }),
@@ -358,7 +358,7 @@ describe("assign-attributes", () => {
     await user.dblClick(btn);
     await user.dblClick(btn);
 
-    state.setValue(1);
+    state.set(1);
 
     await user.dblClick(btn);
     await user.dblClick(btn);
@@ -367,6 +367,6 @@ describe("assign-attributes", () => {
     await user.dblClick(btn);
 
     expect(spyFn).toHaveBeenCalledTimes(3);
-    expect(state.getValue()).toBe(4);
+    expect(state.get()).toBe(4);
   });
 });

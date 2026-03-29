@@ -11,7 +11,7 @@ Veles allows you to subscribe to individual updates on very granular level, down
 
 ```jsx
 <div>
-  {taskState.useValue((task) => (
+  {taskState.render((task) => (
     <div>
       <h2>{task.name}</h2>
       <p>{task.description}</p>
@@ -25,8 +25,8 @@ In this example when something in the `task` changes, this component will be unm
 ```jsx
 <div>
   <div>
-    <h2>{taskState.useValueSelector((task) => task.name)}</h2>
-    <p>{taskState.useValueSelector((task) => task.description)}</p>
+    <h2>{taskState.renderSelected((task) => task.name)}</h2>
+    <p>{taskState.renderSelected((task) => task.description)}</p>
   </div>
 </div>
 ```
@@ -35,11 +35,11 @@ While it looks like a small thing, remember that it could be a much bigger compo
 
 ## Efficient conditional checks
 
-When you decide what to render based on some condition, remember that `useValueSelector` will not re-execute it if the returned value did not change. This means that you should always strive for returning primitive values (`boolean`, `number`, `string`, `undefined` and `null`). If you need to access some state properties inside the component, create another subscription there. This is how an efficient code would look like:
+When you decide what to render based on some condition, remember that `renderSelected` will not re-execute it if the returned value did not change. This means that you should always strive for returning primitive values (`boolean`, `number`, `string`, `undefined` and `null`). If you need to access some state properties inside the component, create another subscription there. This is how an efficient code would look like:
 
 ```jsx
 <div>
-  {taskState.useValueSelector(
+  {taskState.renderSelected(
     (task) => task.labels.length > 5,
     (showLabels) =>
       showLabels ? (

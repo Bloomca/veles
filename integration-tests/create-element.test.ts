@@ -162,7 +162,7 @@ describe("createElement", () => {
     expect(screen.getByTestId("container").textContent).toBe("text 5");
   });
 
-  test("support returning useValue directly from a component", async () => {
+  test("support returning render directly from a component", async () => {
     const user = userEvent.setup();
     function App() {
       const showState = createState(false);
@@ -171,7 +171,7 @@ describe("createElement", () => {
           createElement("h1", { children: ["parent component"] }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(true),
+            onClick: () => showState.set(true),
           }),
           createElement(StateComponent, { showState }),
         ],
@@ -179,7 +179,7 @@ describe("createElement", () => {
     }
 
     function StateComponent({ showState }: { showState: State<boolean> }) {
-      return showState.useValue((shouldShowState) =>
+      return showState.render((shouldShowState) =>
         shouldShowState
           ? createElement("div", {
               "data-testid": "stateComponent",

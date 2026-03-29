@@ -9,10 +9,10 @@ parent: createState
 
 While the state allows to interact with it imperatively, inside components you probably want to utilize built-in methods to automatically track value changes.
 
-## `state.trackValue`
+## `state.track`
 
-- `state.trackValue(cb)`
-- `state.trackValue(cb, options?: { callOnMount, skipFirstCall, comparator })`
+- `state.track(cb)`
+- `state.track(cb, options?: { callOnMount, skipFirstCall, comparator })`
 
 Subscribes to all state updates, automatically unsubscribe when the component where it is called unmounts.
 
@@ -26,20 +26,20 @@ You can use:
 - `comparator` to control when updates should be considered equal
 
 ```jsx
-state.trackValue((value) => {
+state.track((value) => {
   console.log("new value", value);
 });
 ```
 
-## `state.trackValueSelector`
+## `state.trackSelected`
 
-- `state.trackValueSelector(selector, cb)`
-- `state.trackValueSelector(selector, cb, options?: { callOnMount, skipFirstCall, comparator })`
+- `state.trackSelected(selector, cb)`
+- `state.trackSelected(selector, cb, options?: { callOnMount, skipFirstCall, comparator })`
 
 Subscribes to a selected part of the state and only triggers when that selected value changes.
 
 ```jsx
-userState.trackValueSelector(
+userState.trackSelected(
   (user) => user.name,
   (name) => {
     console.log("new name", name);
@@ -47,59 +47,59 @@ userState.trackValueSelector(
 );
 ```
 
-## `state.useValue`
+## `state.render`
 
-- `state.useValue()`
-- `state.useValue(value => Veles.Node, comparator?)`
+- `state.render()`
+- `state.render(value => Veles.Node, comparator?)`
 
-`useValue` renders markup based on the current state value and updates it whenever the value changes.
+`render` renders markup based on the current state value and updates it whenever the value changes.
 
 ```jsx
 const titleState = createState("hello");
 
-return titleState.useValue((title) => <p>{title}</p>);
+return titleState.render((title) => <p>{title}</p>);
 ```
 
 If called without a callback, it renders the value directly.
 
 ```jsx
 const titleState = createState("hello");
-return titleState.useValue();
+return titleState.render();
 ```
 
-## `state.useValueSelector`
+## `state.renderSelected`
 
-- `state.useValueSelector(selector)`
-- `state.useValueSelector(selector, selectedValue => Veles.Node, comparator?)`
+- `state.renderSelected(selector)`
+- `state.renderSelected(selector, selectedValue => Veles.Node, comparator?)`
 
-Works like `useValue`, but first selects a smaller piece of the state. This will make updates more atomic.
+Works like `render`, but first selects a smaller piece of the state. This will make updates more atomic.
 
 ```jsx
 const taskState = createState({ title: "task", completed: false });
 
-return taskState.useValueSelector((task) => task.title, (title) => <p>{title}</p>);
+return taskState.renderSelected((task) => task.title, (title) => <p>{title}</p>);
 ```
 
 This can be used for conditionals.
 
 ```jsx
-titleState.useValueSelector(
+titleState.renderSelected(
   (title) => title.length > 100,
   (isTooLong) => (isTooLong ? <Warning /> : null),
 );
 ```
 
-## `state.useAttribute`
+## `state.attribute`
 
-- `state.useAttribute()`
-- `state.useAttribute(value => attributeValue)`
+- `state.attribute()`
+- `state.attribute(value => attributeValue)`
 
-`useAttribute` is used for reactive DOM attributes. When the value changes, only that specific DOM Node's attribute will be changed.
+`attribute` is used for reactive DOM attributes. When the value changes, only that specific DOM Node's attribute will be changed.
 
 ```jsx
 const disabledState = createState(false);
 
-return <button disabled={disabledState.useAttribute()} />;
+return <button disabled={disabledState.attribute()} />;
 ```
 
 You can also transform the value first.
@@ -107,15 +107,15 @@ You can also transform the value first.
 ```jsx
 const widthState = createState(100);
 
-return <div style={widthState.useAttribute((value) => `width: ${value}px`)} />;
+return <div style={widthState.attribute((value) => `width: ${value}px`)} />;
 ```
 
-## `state.useValueIterator`
+## `state.renderEach`
 
-- `state.useValueIterator({ key: "id" }, ({ elementState }) => ...)`
-- `state.useValueIterator({ key, selector }, ({ elementState, indexState }) => ...)`
+- `state.renderEach({ key: "id" }, ({ elementState }) => ...)`
+- `state.renderEach({ key, selector }, ({ elementState, indexState }) => ...)`
 
-`useValueIterator` is the optimized way to render arrays. It works by comparing old and new states and only making necessary DOM changes, e.g. inserting a new component into a specific position, or simply swapping 2 nodes without re-rendering anything. It wraps each individual value into the state object, which allows to avoid any unnecessary re-renders.
+`renderEach` is the optimized way to render arrays. It works by comparing old and new states and only making necessary DOM changes, e.g. inserting a new component into a specific position, or simply swapping 2 nodes without re-rendering anything. It wraps each individual value into the state object, which allows to avoid any unnecessary re-renders.
 
 ```jsx
 const tasksState = createState([
@@ -123,8 +123,8 @@ const tasksState = createState([
   { id: "2", title: "second" },
 ]);
 
-return tasksState.useValueIterator({ key: "id" }, ({ elementState }) => {
-  return <div>{elementState.useValueSelector((task) => task.title)}</div>;
+return tasksState.renderEach({ key: "id" }, ({ elementState }) => {
+  return <div>{elementState.renderSelected((task) => task.title)}</div>;
 });
 ```
 

@@ -29,11 +29,11 @@ function Counter() {
   const counterState = createState(0);
   return (
     <div>
-      <button onClick={() => counterState.updateValue((value) => value + 1)}>
+      <button onClick={() => counterState.update((value) => value + 1)}>
         +
       </button>
       <p>
-        {counterState.useValue(value => `current value is ${value}`)}
+        {counterState.render(value => `current value is ${value}`)}
       <p>
     </div>
   );
@@ -70,23 +70,23 @@ function App() {
       <div>
         <input
           type="text"
-          value={taskState.useAttribute()}
-          onInput={(e) => taskState.setValue(e.target.value)}
+          value={taskState.attribute()}
+          onInput={(e) => taskState.set(e.target.value)}
         />
         <button
           onClick={() => {
-            tasksState.updateValue((tasks) =>
-              tasks.concat({ id: idCounter++, title: taskState.getValue() })
+            tasksState.update((tasks) =>
+              tasks.concat({ id: idCounter++, title: taskState.get() })
             );
           }}
         >
           Add task
         </button>
       </div>
-      {tasksState.useValueSelector((tasks) =>
+      {tasksState.renderSelected((tasks) =>
         tasks.length > 0 ? (
           <ul>
-            {tasksState.useValueIterator({ key: "id" }, ({ elementState }) => (
+            {tasksState.renderEach({ key: "id" }, ({ elementState }) => (
               <Task taskState={elementState} />
             ))}
           </ul>
@@ -99,7 +99,7 @@ function App() {
 }
 
 function Task({ taskState }) {
-  return <li>{taskState.useValueSelector((task) => task.title)}</li>;
+  return <li>{taskState.renderSelected((task) => task.title)}</li>;
 }
 ```
 
@@ -107,6 +107,6 @@ As you can see, this is a more complicated example, but it shows almost all the 
 
 Second, when we create states, we can still read from them without subscribing. This is especially helpful for callbacks, e.g. creating a new task when we click on the button.
 
-Third, we create a conditional using `useValueSelector` and returning a `boolean` value from the selector function. When the returned value changes, the library will unmount all existing nodes and mount new ones. If the value is the same, the markup will not be re-evaluated and changed.
+Third, we create a conditional using `renderSelected` and returning a `boolean` value from the selector function. When the returned value changes, the library will unmount all existing nodes and mount new ones. If the value is the same, the markup will not be re-evaluated and changed.
 
-Last point, we iterate over all tasks using `useValueIterator`. This is an efficient way to make sure that when we add a new task, all existing tasks will not be re-rendered.
+Last point, we iterate over all tasks using `renderEach`. This is an efficient way to make sure that when we add a new task, all existing tasks will not be re-rendered.

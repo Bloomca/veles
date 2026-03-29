@@ -95,11 +95,11 @@ function App() {
         <h1>Application</h1>
         <NestedComponent />
         <button
-          onClick={() => showState.updateValue((currentValue) => !currentValue)}
+          onClick={() => showState.update((currentValue) => !currentValue)}
         >
           Toggle conditional component
         </button>
-        {showState.useValue((shouldShow) =>
+        {showState.render((shouldShow) =>
           shouldShow ? <ConditionalComponent /> : null
         )}
       </div>

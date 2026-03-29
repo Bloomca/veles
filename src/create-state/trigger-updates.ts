@@ -1,7 +1,7 @@
 import { unique } from "../_utils";
-import { updateUseValueSelector } from "./update-usevalue-selector-value";
+import { updateUseValueSelector } from "./update-render-selected-value";
 import { updateUseAttributeValue } from "./update-useattribute-value";
-import { updateUseValueIteratorValue } from "./update-usevalueiterator-value";
+import { updateUseValueIteratorValue } from "./update-render-each-value";
 
 import type { createState as createStateType, StateTrackers } from "./types";
 
@@ -9,12 +9,12 @@ function triggerUpdates<T>({
   value,
   createState,
   trackers,
-  getValue,
+  get,
 }: {
   value: T;
   createState: typeof createStateType;
   trackers: StateTrackers;
-  getValue: () => T;
+  get: () => T;
 }) {
   const newTrackingSelectorElements: StateTrackers["trackingSelectorElements"] =
     [];
@@ -24,12 +24,12 @@ function triggerUpdates<T>({
       selectorTrackingElement,
       newTrackingSelectorElements,
       trackers,
-      getValue,
-    })
+      get,
+    }),
   );
 
   trackers.trackingSelectorElements = unique(
-    trackers.trackingSelectorElements.concat(newTrackingSelectorElements)
+    trackers.trackingSelectorElements.concat(newTrackingSelectorElements),
   );
 
   // attributes

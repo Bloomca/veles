@@ -70,9 +70,9 @@ describe("lifecycle hooks", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showChildrenState.setValue(false),
+            onClick: () => showChildrenState.set(false),
           }),
-          showChildrenState.useValue((shouldShow) =>
+          showChildrenState.render((shouldShow) =>
             shouldShow ? createElement(FirstNestedComponent) : null
           ),
         ],
@@ -153,9 +153,9 @@ describe("lifecycle hooks", () => {
           "app component",
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue(() => true),
+            onClick: () => showState.update(() => true),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow ? createElement(Wrapper) : null
           ),
         ],
@@ -261,12 +261,12 @@ describe("lifecycle hooks", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              tasksState.updateValue((currentTasks) =>
+              tasksState.update((currentTasks) =>
                 currentTasks.concat({ id: 3, title: "third task" })
               );
             },
           }),
-          tasksState.useValueIterator({ key: "id" }, ({ elementState }) =>
+          tasksState.renderEach({ key: "id" }, ({ elementState }) =>
             createElement(Task, { taskState: elementState })
           ),
         ],
@@ -283,7 +283,7 @@ describe("lifecycle hooks", () => {
       return createElement("div", {
         children: [
           "task",
-          taskState.useValueSelector(
+          taskState.renderSelected(
             (task) => task.title,
             (title) => title
           ),
@@ -320,9 +320,9 @@ describe("lifecycle hooks", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => shouldShowState.setValue(false),
+            onClick: () => shouldShowState.set(false),
           }),
-          shouldShowState.useValue((shouldShow) =>
+          shouldShowState.render((shouldShow) =>
             shouldShow ? createElement(ConditionalComponent) : null
           ),
         ],
@@ -374,9 +374,9 @@ describe("lifecycle hooks", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.setValue(false),
+            onClick: () => showState.set(false),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow
               ? createElement(NestedComponent)
               : createElement("div", { children: "other" })

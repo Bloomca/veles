@@ -10,7 +10,7 @@ import {
 
 import type { State } from "../../src";
 
-describe("state.useValueIterator", () => {
+describe("state.renderEach", () => {
   let cleanup: Function | undefined;
 
   afterEach(() => {
@@ -18,7 +18,7 @@ describe("state.useValueIterator", () => {
     cleanup = undefined;
   });
 
-  test("useValueIterator does not re-mount values which did not change their keys", async () => {
+  test("renderEach does not re-mount values which did not change their keys", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
     const item1: Item = { id: 1, text: "first item" };
@@ -36,14 +36,14 @@ describe("state.useValueIterator", () => {
           createElement("button", {
             "data-testid": "updateArrayButton",
             onClick: () => {
-              state.updateValue(() => [item2, item1, item3, item5]);
+              state.update(() => [item2, item1, item3, item5]);
             },
             children: ["update array values"],
           }),
           createElement("button", {
             "data-testid": "updateFirstItem",
             onClick: () => {
-              state.updateValue((currentValues) =>
+              state.update((currentValues) =>
                 currentValues.map((value) => {
                   if (value.id === 1) {
                     return {
@@ -60,12 +60,12 @@ describe("state.useValueIterator", () => {
           createElement("ul", {
             "data-testid": "listComponent",
             children: [
-              state.useValueIterator<Item>({ key: "id" }, ({ elementState }) =>
+              state.renderEach<Item>({ key: "id" }, ({ elementState }) =>
                 createElement(() => {
                   onUnmount(unmountSpy);
                   return createElement("li", {
                     children: [
-                      elementState.useValueSelector(
+                      elementState.renderSelected(
                         (element) => element.text,
                         (text) => {
                           textSpy()
@@ -109,7 +109,7 @@ describe("state.useValueIterator", () => {
     expect(textSpy).toHaveBeenCalledTimes(7)
   });
 
-  test("useValueIterator does support selector option", async () => {
+  test("renderEach does support selector option", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
     const item1: Item = { id: 1, text: "first item" };
@@ -129,14 +129,14 @@ describe("state.useValueIterator", () => {
           createElement("button", {
             "data-testid": "updateArrayButton",
             onClick: () => {
-              state.updateValue(() => ({ value: [item2, item1, item3, item5] }));
+              state.update(() => ({ value: [item2, item1, item3, item5] }));
             },
             children: ["update array values"],
           }),
           createElement("button", {
             "data-testid": "updateFirstItem",
             onClick: () => {
-              state.updateValue((currentValues) => ({
+              state.update((currentValues) => ({
                 value: currentValues.value.map((value) => {
                   if (value.id === 1) {
                     return {
@@ -153,14 +153,14 @@ describe("state.useValueIterator", () => {
           createElement("ul", {
             "data-testid": "listComponent",
             children: [
-              state.useValueIterator(
+              state.renderEach(
                 { key: "id", selector: (state) => state.value },
                 ({ elementState }) =>
                   createElement(() => {
                     onUnmount(unmountSpy);
                     return createElement("li", {
                       children: [
-                        elementState.useValueSelector(
+                        elementState.renderSelected(
                           (element) => element.text,
                           (text) => {
                             textSpy()
@@ -223,25 +223,25 @@ describe("state.useValueIterator", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => itemsState.setValue(items),
+            onClick: () => itemsState.set(items),
           }),
           createElement("div", {
             "data-testid": "container",
             children: [
-              itemsState.useValueIterator<Item>(
+              itemsState.renderEach<Item>(
                 { key: "id" },
                 ({ elementState, indexState }) =>
                   createElement("div", {
                     children: [
                       createElement("div", {
-                        children: indexState.useValue(value => {
+                        children: indexState.render(value => {
                           indexSpy()
                           return String(value)
                         }),
                       }),
                       ".",
                       createElement("div", {
-                        children: elementState.useValueSelector(
+                        children: elementState.renderSelected(
                           (item) => item.text,
                           value => {
                             textSpy()
@@ -286,7 +286,7 @@ describe("state.useValueIterator", () => {
     expect(children[4].textContent).toBe("4.second item");
   });
 
-  test("useValueIterator does not update until mounted", async () => {
+  test("renderEach does not update until mounted", async () => {
     const user = userEvent.setup();
     type Item = { id: number; text: string };
     const item1: Item = { id: 1, text: "first item" };
@@ -298,7 +298,7 @@ describe("state.useValueIterator", () => {
     const itemsState = createState([item1, item2, item3]);
     function App() {
       const showState = createState(false);
-      const itemsMarkup = itemsState.useValueIterator<Item>(
+      const itemsMarkup = itemsState.renderEach<Item>(
         { key: "id" },
         ({ elementState, indexState }) =>
           createElement(Item, {
@@ -311,11 +311,11 @@ describe("state.useValueIterator", () => {
           createElement("h1", { children: "Application" }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
           createElement("div", {
             "data-testid": "container",
-            children: showState.useValue((shouldShow) =>
+            children: showState.render((shouldShow) =>
               shouldShow ? itemsMarkup : null
             ),
           }),
@@ -335,14 +335,14 @@ describe("state.useValueIterator", () => {
       return createElement("div", {
         children: [
           createElement("h3", {
-            children: elementState.useValueSelector((element) => {
+            children: elementState.renderSelected((element) => {
               textSpy();
               return element.text;
             }),
           }),
           " ",
           createElement("p", {
-            children: indexState.useValue((value) => {
+            children: indexState.render((value) => {
               indexSpy();
               return `number: ${value}`;
             }),
@@ -365,7 +365,7 @@ describe("state.useValueIterator", () => {
     const container = screen.getByTestId("container");
     const children = container.childNodes;
 
-    itemsState.setValue([item4, item2, item3, item1]);
+    itemsState.set([item4, item2, item3, item1]);
 
     // empty Text node
     expect(children.length).toBe(1);
@@ -384,7 +384,7 @@ describe("state.useValueIterator", () => {
     expect(children[2].textContent).toBe("third item number: 2");
     expect(children[3].textContent).toBe("first item number: 3");
 
-    itemsState.setValue([item4, item5, item3, item1, item2]);
+    itemsState.set([item4, item5, item3, item1, item2]);
     expect(textSpy).toHaveBeenCalledTimes(5);
     expect(indexSpy).toHaveBeenCalledTimes(6);
 
@@ -400,7 +400,7 @@ describe("state.useValueIterator", () => {
     // empty Text node
     expect(children.length).toBe(1);
 
-    itemsState.setValue([
+    itemsState.set([
       item4,
       item5,
       item3,
@@ -430,7 +430,7 @@ describe("state.useValueIterator", () => {
     // empty Text node
     expect(children.length).toBe(1);
 
-    itemsState.setValue([item3, item6]);
+    itemsState.set([item3, item6]);
 
     await user.click(screen.getByTestId("button"));
     expect(textSpy).toHaveBeenCalledTimes(15);

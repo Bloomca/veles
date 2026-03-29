@@ -148,7 +148,7 @@ describe("portals", () => {
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
-          showFirstPortalState.useValue((shouldShow) =>
+          showFirstPortalState.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -178,7 +178,7 @@ describe("portals", () => {
       "first portal titlefirst portal containersecond portal titlesecond portal container"
     );
 
-    showFirstPortalState.setValue(false);
+    showFirstPortalState.set(false);
 
     expect(screen.getByTestId("portal").textContent).toBe(
       "second portal titlesecond portal container"
@@ -200,7 +200,7 @@ describe("portals", () => {
       return createElement("div", {
         children: [
           createElement("h1", { children: ["app title"] }),
-          showFirstPortalState.useValue((shouldShow) =>
+          showFirstPortalState.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -230,7 +230,7 @@ describe("portals", () => {
       "second portal titlesecond portal container"
     );
 
-    showFirstPortalState.setValue(true);
+    showFirstPortalState.set(true);
 
     /**
      * This is a know quirk, it will add the content to the end. Technically we have enough info to respect
@@ -337,9 +337,9 @@ describe("portals", () => {
           createElement("button", {
             children: "toggle menu",
             onClick: () =>
-              showPortalState.updateValue((currentValue) => !currentValue),
+              showPortalState.update((currentValue) => !currentValue),
           }),
-          showPortalState.useValue((shouldShow) =>
+          showPortalState.render((shouldShow) =>
             shouldShow
               ? createElement(Portal, {
                   portalNode: portalContainer,
@@ -393,9 +393,9 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.updateValue((currentValue) => !currentValue),
+                  showContentState.update((currentValue) => !currentValue),
               }),
-              showContentState.useValue((shouldShow) =>
+              showContentState.render((shouldShow) =>
                 shouldShow
                   ? createElement("div", { children: "portal content" })
                   : null
@@ -445,9 +445,9 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.updateValue((currentValue) => !currentValue),
+                  showContentState.update((currentValue) => !currentValue),
               }),
-              showContentState.useValue((shouldShow) =>
+              showContentState.render((shouldShow) =>
                 shouldShow ? "portal content" : null
               ),
             ],
@@ -495,9 +495,9 @@ describe("portals", () => {
               createElement("button", {
                 children: "toggle content",
                 onClick: () =>
-                  showContentState.updateValue((currentValue) => !currentValue),
+                  showContentState.update((currentValue) => !currentValue),
               }),
-              showContentState.useValue((shouldShow) =>
+              showContentState.render((shouldShow) =>
                 shouldShow ? createElement(PortalContent) : null
               ),
             ],
@@ -589,7 +589,7 @@ describe("portals", () => {
             portalNode: portalContainer,
             children: [
               createElement("h2", { children: "portal title" }),
-              fragmentShowState.useValue((shouldShow) =>
+              fragmentShowState.render((shouldShow) =>
                 shouldShow
                   ? createElement(Fragment, {
                       children: [
@@ -620,12 +620,12 @@ describe("portals", () => {
       `portal titleportal fragment titlefragment string1fragment componentportal container`
     );
 
-    fragmentShowState.setValue(false);
+    fragmentShowState.set(false);
     expect(screen.getByTestId("portal").textContent).toBe(
       `portal titleportal container`
     );
 
-    fragmentShowState.setValue(true);
+    fragmentShowState.set(true);
     expect(screen.getByTestId("portal").textContent).toBe(
       `portal titleportal fragment titlefragment string1fragment componentportal container`
     );

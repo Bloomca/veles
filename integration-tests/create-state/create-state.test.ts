@@ -36,10 +36,10 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
-          valueState.useValue((value) =>
+          valueState.render((value) =>
             createElement("div", { children: [`current value is ${value}`] })
           ),
         ],
@@ -70,10 +70,10 @@ describe("createState", () => {
           createElement("input", {
             "data-testid": "nameInput",
             onInput: (e) => {
-              nameState.setValue(e.target.value);
+              nameState.set(e.target.value);
             },
           }),
-          nameState.useValue((value) =>
+          nameState.render((value) =>
             createElement("div", { children: [`current name is ${value}`] })
           ),
         ],
@@ -101,7 +101,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           createElement(ReadingStateComponent, {
@@ -118,7 +118,7 @@ describe("createState", () => {
     }) {
       return createElement("div", {
         children: [
-          valueState.useValue((value) =>
+          valueState.render((value) =>
             createElement("div", {
               children: [`child value is ${value}`],
             })
@@ -142,9 +142,9 @@ describe("createState", () => {
     expect(await screen.findByText("child value is 2")).toBeVisible();
   });
 
-  // test to make sure that `useValueSelector` is correctly called only when
+  // test to make sure that `renderSelected` is correctly called only when
   // the selector function returns a different result
-  test("support selector functions correctly with useValueSelector", async () => {
+  test("support selector functions correctly with renderSelected", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState({
@@ -156,7 +156,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -165,13 +165,13 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
             },
           }),
-          valueState.useValueSelector(
+          valueState.renderSelected(
             (value) => value.secondValue,
             (value) => createElement(SecondValueComponent, { value })
           ),
@@ -203,7 +203,7 @@ describe("createState", () => {
     expect(unmountSpy).toHaveBeenCalledTimes(2);
   });
 
-  test("supports custom comparator in useValue", async () => {
+  test("supports custom comparator in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState({
@@ -215,7 +215,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "firstValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 firstValue: currentValue.firstValue + 1,
               }));
@@ -224,7 +224,7 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "secondValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
                 secondValue: currentValue.secondValue + 1,
               }));
@@ -233,12 +233,12 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "fakeValueButton",
             onClick: () => {
-              valueState.updateValue((currentValue) => ({
+              valueState.update((currentValue) => ({
                 ...currentValue,
               }));
             },
           }),
-          valueState.useValue(
+          valueState.render(
             (value) =>
               createElement(ValueComponent, {
                 value: value.firstValue + value.secondValue,
@@ -276,7 +276,7 @@ describe("createState", () => {
     expect(unmountSpy).toHaveBeenCalledTimes(3);
   });
 
-  test("supports strings as returned value in useValue", async () => {
+  test("supports strings as returned value in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState(0);
@@ -285,11 +285,11 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
-            children: valueState.useValue(
+            children: valueState.render(
               (value) => `current value is ${value}`
             ),
           }),
@@ -312,7 +312,7 @@ describe("createState", () => {
     expect(await screen.findByText("current value is 2")).toBeVisible();
   });
 
-  test("correctly supports null as a return value in useValue", async () => {
+  test("correctly supports null as a return value in render", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const valueState = createState(0);
@@ -321,11 +321,11 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
           createElement("div", {
-            children: valueState.useValue((value) =>
+            children: valueState.render((value) =>
               value === 0 ? null : `current value is ${value}`
             ),
           }),
@@ -348,7 +348,7 @@ describe("createState", () => {
     expect(await screen.findByText("current value is 2")).toBeVisible();
   });
 
-  test("supports no callback in useValue to return the value directly", async () => {
+  test("supports no callback in render to return the value directly", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const titleState = createState("title");
@@ -357,12 +357,12 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue("new title");
+              titleState.set("new title");
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValue(),
+            children: titleState.render(),
           }),
         ],
       });
@@ -380,7 +380,7 @@ describe("createState", () => {
     expect(screen.getByTestId("container").textContent).toBe("new title");
   });
 
-  test("supports no callback in useValueSelector to return the value directly", async () => {
+  test("supports no callback in renderSelected to return the value directly", async () => {
     const user = userEvent.setup();
     function StateComponent() {
       const titleState = createState({ title: "title" });
@@ -389,12 +389,12 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue({ title: "new title" });
+              titleState.set({ title: "new title" });
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValueSelector((data) => data.title),
+            children: titleState.renderSelected((data) => data.title),
           }),
         ],
       });
@@ -422,12 +422,12 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue({ title: newValue });
+              titleState.set({ title: newValue });
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValueSelector(
+            children: titleState.renderSelected(
               (data) => data.title.length > 3,
               (isLong) =>
                 isLong
@@ -448,7 +448,7 @@ describe("createState", () => {
         children: [
           createElement("div", {
             "data-testid": "text",
-            children: state.useValue(
+            children: state.render(
               (value) => `length is ${value.title.length}`
             ),
           }),
@@ -486,12 +486,12 @@ describe("createState", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              titleState.setValue({ title: newValue });
+              titleState.set({ title: newValue });
             },
           }),
           createElement("div", {
             "data-testid": "container",
-            children: titleState.useValueSelector(
+            children: titleState.renderSelected(
               (data) => data.title.length > 3,
               (isLong) =>
                 isLong
@@ -512,7 +512,7 @@ describe("createState", () => {
         children: [
           createElement("div", {
             "data-testid": "text",
-            children: state.useValue(
+            children: state.render(
               (value) => `length is ${value.title.length}`
             ),
           }),
@@ -550,9 +550,9 @@ describe("createState", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
-          showState.useValue((shouldShow) =>
+          showState.render((shouldShow) =>
             shouldShow ? createElement(NestedComponent) : null
           ),
         ],
@@ -563,7 +563,7 @@ describe("createState", () => {
     function NestedComponent() {
       const x = createElement("div", {
         children: [
-          valueState.useValue((value) => {
+          valueState.render((value) => {
             spyFn();
             return `value is ${value}`;
           }),
@@ -575,9 +575,9 @@ describe("createState", () => {
           createElement("h1", { children: "nested component" }),
           createElement("button", {
             "data-testid": "nestedButton",
-            onClick: () => showState.updateValue((value) => !value),
+            onClick: () => showState.update((value) => !value),
           }),
-          showState.useValue((shouldShow) => (shouldShow ? x : null)),
+          showState.render((shouldShow) => (shouldShow ? x : null)),
         ],
       });
     }
@@ -587,18 +587,18 @@ describe("createState", () => {
       component: createElement(App),
     });
 
-    valueState.setValue(1);
+    valueState.set(1);
     // it only was called one time, but it does not track because it is not mounted
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
 
-    valueState.setValue(2);
+    valueState.set(2);
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
     expect(spyFn).toHaveBeenCalledTimes(2);
-    valueState.setValue(3);
+    valueState.set(3);
     expect(spyFn).toHaveBeenCalledTimes(2);
 
     await user.click(screen.getByTestId("nestedButton"));
@@ -606,7 +606,7 @@ describe("createState", () => {
     expect(await screen.findByText("value is 3")).toBeVisible();
 
     await user.click(screen.getByTestId("nestedButton"));
-    valueState.setValue(4);
+    valueState.set(4);
     await user.click(screen.getByTestId("nestedButton"));
     expect(spyFn).toHaveBeenCalledTimes(4);
     expect(await screen.findByText("value is 4")).toBeVisible();

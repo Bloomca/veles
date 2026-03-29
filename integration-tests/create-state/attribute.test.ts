@@ -8,7 +8,7 @@ import {
   onUnmount,
 } from "../../src";
 
-describe("state.useAttribute", () => {
+describe("state.attribute", () => {
   let cleanup: Function | undefined;
 
   afterEach(() => {
@@ -16,7 +16,7 @@ describe("state.useAttribute", () => {
     cleanup = undefined;
   });
 
-  test("useAttribute does not re-mount the component", async () => {
+  test("attribute does not re-mount the component", async () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
     function StateComponent() {
@@ -25,10 +25,10 @@ describe("state.useAttribute", () => {
       return createElement("div", {
         children: [
           createElement("button", {
-            "data-testvalue": valueState.useAttribute((value) => String(value)),
+            "data-testvalue": valueState.attribute((value) => String(value)),
             "data-testid": "button",
             onClick: () => {
-              valueState.updateValue((currentValue) => currentValue + 1);
+              valueState.update((currentValue) => currentValue + 1);
             },
           }),
         ],
@@ -51,7 +51,7 @@ describe("state.useAttribute", () => {
     expect(spyFn).not.toHaveBeenCalled();
   });
 
-  test("does not track updates in useAttribute until mounted", async () => {
+  test("does not track updates in attribute until mounted", async () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
 
@@ -60,7 +60,7 @@ describe("state.useAttribute", () => {
       const showState = createState(false);
       const content = createElement("div", {
         "data-testid": "attributeTest",
-        "data-value": valueState.useAttribute((value) => {
+        "data-value": valueState.attribute((value) => {
           spyFn();
           return value;
         }),
@@ -72,9 +72,9 @@ describe("state.useAttribute", () => {
           }),
           createElement("button", {
             "data-testid": "button",
-            onClick: () => showState.updateValue((currentValue) => !currentValue),
+            onClick: () => showState.update((currentValue) => !currentValue),
           }),
-          showState.useValue((shouldShow) => (shouldShow ? content : null)),
+          showState.render((shouldShow) => (shouldShow ? content : null)),
         ],
       });
     }
@@ -85,7 +85,7 @@ describe("state.useAttribute", () => {
     });
 
     expect(spyFn).toHaveBeenCalledTimes(1);
-    valueState.setValue("newValue1");
+    valueState.set("newValue1");
     expect(spyFn).toHaveBeenCalledTimes(1);
 
     await user.click(screen.getByTestId("button"));
@@ -93,7 +93,7 @@ describe("state.useAttribute", () => {
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "newValue1"
     );
-    valueState.setValue("newValue2");
+    valueState.set("newValue2");
     expect(spyFn).toHaveBeenCalledTimes(3);
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "newValue2"
@@ -101,10 +101,10 @@ describe("state.useAttribute", () => {
 
     // remove the element again to see that subscriptions are correctly removed
     await user.click(screen.getByTestId("button"));
-    valueState.setValue("newValue3");
+    valueState.set("newValue3");
     expect(spyFn).toHaveBeenCalledTimes(3);
 
-    valueState.setValue("initialValue");
+    valueState.set("initialValue");
     await user.click(screen.getByTestId("button"));
     expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
       "initialValue"
