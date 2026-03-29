@@ -433,8 +433,8 @@ describe("state.renderEach", () => {
     itemsState.set([item3, item6]);
 
     await user.click(screen.getByTestId("button"));
-    expect(textSpy).toHaveBeenCalledTimes(15);
-    expect(indexSpy).toHaveBeenCalledTimes(16);
+    expect(textSpy).toHaveBeenCalledTimes(13);
+    expect(indexSpy).toHaveBeenCalledTimes(14);
     expect(children.length).toBe(2);
     expect(children[0].textContent).toBe("third item number: 0");
     expect(children[1].textContent).toBe("sixth item number: 1");

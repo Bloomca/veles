@@ -18,15 +18,27 @@ function triggerUpdates<T>({
 }) {
   const newTrackingSelectorElements: StateTrackers["trackingSelectorElements"] =
     [];
-  trackers.trackingSelectorElements.forEach((selectorTrackingElement) =>
+  // subscriptions can update dynamically while we execute callbacks, so we need
+  // to copy the original array first.
+  const existingTrackingSelectorElements = [
+    ...trackers.trackingSelectorElements,
+  ];
+
+  existingTrackingSelectorElements.forEach((selectorTrackingElement) => {
+    // parent updates can unmount nested selectors during the same update tick.
+    // those trackers are marked as inactive by unmount handlers.
+    if (selectorTrackingElement._isActive === false) {
+      return;
+    }
+
     updateUseValueSelector({
       value,
       selectorTrackingElement,
       newTrackingSelectorElements,
       trackers,
       get,
-    }),
-  );
+    });
+  });
 
   trackers.trackingSelectorElements = unique(
     trackers.trackingSelectorElements.concat(newTrackingSelectorElements),

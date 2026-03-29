@@ -129,6 +129,7 @@ export type TrackingSelectorElement = {
   comparator: (value1: any, value2: any) => boolean;
   node: VelesElement | VelesComponentObject | VelesStringElement;
   savedContext: ComponentContext;
+  _isActive?: boolean;
 };
 
 export type TrackingAttribute = {
