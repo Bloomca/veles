@@ -166,10 +166,10 @@ function createStateFromCore<T>(
 
   const result: State<T> = {
     // supposed to be used at the component level
-    trackValue: (cb, options = {}) => {
-      result.trackValueSelector<T>(undefined, cb, options);
+    track: (cb, options = {}) => {
+      result.trackSelected<T>(undefined, cb, options);
     },
-    trackValueSelector<F>(
+    trackSelected<F>(
       selector: ((value: T) => F) | undefined,
       cb: (value: F) => void | Function,
       options: {

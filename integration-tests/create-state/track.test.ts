@@ -25,7 +25,7 @@ describe("track-value", () => {
     const onUnmountCheck = vi.fn();
     function StateComponent() {
       const valueState = createState(0);
-      valueState.trackValue((value) => spyFn(value));
+      valueState.track((value) => spyFn(value));
 
       onUnmount(() => onUnmountCheck);
 
@@ -63,12 +63,12 @@ describe("track-value", () => {
     expect(onUnmountCheck).not.toHaveBeenCalled();
   });
 
-  it("supports custom subscriptions with state.trackValue with skipFirstCall option", async () => {
+  it("supports custom subscriptions with state.track with skipFirstCall option", async () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
     function StateComponent() {
       const valueState = createState(0);
-      valueState.trackValue((value) => spyFn(value), { skipFirstCall: true });
+      valueState.track((value) => spyFn(value), { skipFirstCall: true });
 
       return createElement("div", {
         children: [
@@ -101,14 +101,14 @@ describe("track-value", () => {
     expect(spyFn).toHaveBeenLastCalledWith(2);
   });
 
-  it("calls cleanup returned from trackValue callback on unmount", () => {
+  it("calls cleanup returned from track callback on unmount", () => {
     const callbackSpy = vi.fn();
     const cleanupSpy = vi.fn();
 
     function StateComponent() {
       const valueState = createState(0);
 
-      valueState.trackValue(() => {
+      valueState.track(() => {
         callbackSpy();
         return cleanupSpy;
       });
@@ -132,12 +132,12 @@ describe("track-value", () => {
     expect(cleanupSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("supports custom subscriptions with state.trackValue with callOnMount option", async () => {
+  it("supports custom subscriptions with state.track with callOnMount option", async () => {
     const user = userEvent.setup();
     const spyFn = vi.fn();
     function StateComponent() {
       const valueState = createState(0);
-      valueState.trackValue((value) => spyFn(value), { callOnMount: true });
+      valueState.track((value) => spyFn(value), { callOnMount: true });
 
       return createElement("div", {
         children: [
@@ -175,7 +175,7 @@ describe("track-value", () => {
     expect(spyFn).toHaveBeenLastCalledWith(2);
   });
 
-  it("runs trackValueSelector only when the selector value changes", async () => {
+  it("runs trackSelected only when the selector value changes", async () => {
     const user = userEvent.setup();
     const nameSpy = vi.fn();
     const emailSpy = vi.fn();
@@ -183,11 +183,11 @@ describe("track-value", () => {
       const inputRef = createRef<HTMLInputElement>();
       const userState = createState({ name: "", email: "" });
 
-      userState.trackValueSelector((user) => user.name, nameSpy, {
+      userState.trackSelected((user) => user.name, nameSpy, {
         skipFirstCall: true,
       });
 
-      userState.trackValueSelector((user) => user.email, emailSpy, {
+      userState.trackSelected((user) => user.email, emailSpy, {
         skipFirstCall: true,
       });
 
@@ -246,12 +246,12 @@ describe("track-value", () => {
       const inputRef = createRef<HTMLInputElement>();
       const userState = createState({ name: "", email: "" });
 
-      userState.trackValue(nameSpy, {
+      userState.track(nameSpy, {
         skipFirstCall: true,
         comparator: (prevValue, nextValue) => prevValue.name === nextValue.name,
       });
 
-      userState.trackValue(emailSpy, {
+      userState.track(emailSpy, {
         skipFirstCall: true,
         comparator: (prevValue, nextValue) =>
           prevValue.email === nextValue.email,

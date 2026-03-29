@@ -57,10 +57,10 @@ const summaryState = numberState.scan(
 
 ## Comparator in subscriptions
 
-`trackValue` and `trackValueSelector` accept `comparator` options.
+`track` and `trackSelected` accept `comparator` options.
 
 ```jsx
-state.trackValueSelector(
+state.trackSelected(
   (value) => value.user,
   (user) => {
     console.log(user);

@@ -9,10 +9,10 @@ parent: createState
 
 While the state allows to interact with it imperatively, inside components you probably want to utilize built-in methods to automatically track value changes.
 
-## `state.trackValue`
+## `state.track`
 
-- `state.trackValue(cb)`
-- `state.trackValue(cb, options?: { callOnMount, skipFirstCall, comparator })`
+- `state.track(cb)`
+- `state.track(cb, options?: { callOnMount, skipFirstCall, comparator })`
 
 Subscribes to all state updates, automatically unsubscribe when the component where it is called unmounts.
 
@@ -26,20 +26,20 @@ You can use:
 - `comparator` to control when updates should be considered equal
 
 ```jsx
-state.trackValue((value) => {
+state.track((value) => {
   console.log("new value", value);
 });
 ```
 
-## `state.trackValueSelector`
+## `state.trackSelected`
 
-- `state.trackValueSelector(selector, cb)`
-- `state.trackValueSelector(selector, cb, options?: { callOnMount, skipFirstCall, comparator })`
+- `state.trackSelected(selector, cb)`
+- `state.trackSelected(selector, cb, options?: { callOnMount, skipFirstCall, comparator })`
 
 Subscribes to a selected part of the state and only triggers when that selected value changes.
 
 ```jsx
-userState.trackValueSelector(
+userState.trackSelected(
   (user) => user.name,
   (name) => {
     console.log("new name", name);

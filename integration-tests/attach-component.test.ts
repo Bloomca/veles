@@ -42,7 +42,7 @@ describe("attachComponent", () => {
     const childSubscriptionSpy = vi.fn();
     function Child() {
       onUnmount(childUnmountSpy);
-      state.trackValue(childSubscriptionSpy, { skipFirstCall: true });
+      state.track(childSubscriptionSpy, { skipFirstCall: true });
       return createElement("div", {
         children: "test",
       });

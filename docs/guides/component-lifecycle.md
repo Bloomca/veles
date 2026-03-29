@@ -17,7 +17,7 @@ Because of that the components lifecycle is the following:
 
 1. The body of the component is executed exactly 1 time, right before the component is about to be mounted in DOM. You can perform any calculations and save results in a variable, and every subscription can access it. The most useful part of it is probably creating new state primitives and passing it around.
 2. Once the component is mounted, `onMount` handlers are called. All the markup will be available, all `createRef` assigned to DOM nodes will have correct values as well.
-3. Once the component is removed from DOM, `onUnmount` handlers are called. Once they are done, the component will be removed and subsequent renders of the same component (e.g. if it is rendered conditionally) will cause the same lifecycle steps to be executed again. All subscriptions from the state primitive (like `state.trackValue`, `state.render`, etc) will be cleaned up automatically.
+3. Once the component is removed from DOM, `onUnmount` handlers are called. Once they are done, the component will be removed and subsequent renders of the same component (e.g. if it is rendered conditionally) will cause the same lifecycle steps to be executed again. All subscriptions from the state primitive (like `state.track`, `state.render`, etc) will be cleaned up automatically.
 
 ## Props updates
 

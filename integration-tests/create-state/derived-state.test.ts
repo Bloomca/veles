@@ -21,7 +21,7 @@ describe("derived state", () => {
       const valueState3 = createState(0);
       const combinedValueState = valueState1.combine(valueState2, valueState3);
 
-      combinedValueState.trackValue(spy);
+      combinedValueState.track(spy);
 
       return createElement("div", {
         children: [
@@ -152,8 +152,8 @@ describe("derived state", () => {
           a.firstValue === b.firstValue && a.secondValue === b.secondValue,
       });
       const selectedStateNoComparator = state.map((value) => value);
-      selectedState.trackValue(firstSpy);
-      selectedStateNoComparator.trackValue(secondSpy);
+      selectedState.track(firstSpy);
+      selectedStateNoComparator.track(secondSpy);
 
       return null;
     }
