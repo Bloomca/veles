@@ -129,7 +129,8 @@ type velesChild =
   | VelesElement
   | VelesComponentObject
   | VelesStringElement;
-export type VelesChildren = velesChild | velesChild[] | undefined | null;
+type VelesMaybeChild = velesChild | undefined | null;
+export type VelesChildren = VelesMaybeChild | VelesMaybeChild[];
 
 export type VelesBaseProps = {
   children?: VelesChildren;
