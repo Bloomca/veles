@@ -138,22 +138,23 @@ describe("Context", () => {
         children: [
           createElement("div", {
             "data-testid": "container",
-            children: items$.renderEach({ key: "id" }, ({ elementState }) =>
-              createElement(Item, { elementState }),
+            children: items$.renderEach(
+              { key: "id" },
+              ({ elementState: element$ }) => createElement(Item, { element$ }),
             ),
           }),
         ],
       });
     }
 
-    function Item({ elementState }: { elementState: State<Item> }) {
+    function Item({ element$ }: { element$: State<Item> }) {
       const exampleValue = exampleContext.readContext();
 
       return createElement("div", {
         children: [
-          elementState.renderSelected((element) => element.text),
+          element$.renderSelected((element) => element.text),
           " ",
-          elementState.renderSelected(
+          element$.renderSelected(
             (element) => element.value,
             (value) => String(value * exampleValue),
           ),

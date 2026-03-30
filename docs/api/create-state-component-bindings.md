@@ -113,8 +113,8 @@ return <div style={width$.attribute((value) => `width: ${value}px`)} />;
 
 ## `state.renderEach`
 
-- `state.renderEach({ key: "id" }, ({ elementState }) => ...)`
-- `state.renderEach({ key, selector }, ({ elementState, indexState }) => ...)`
+- `state.renderEach({ key: "id" }, ({ elementState: element$ }) => ...)`
+- `state.renderEach({ key, selector }, ({ elementState: element$, indexState: index$ }) => ...)`
 
 `renderEach` is the optimized way to render arrays. It works by comparing old and new states and only making necessary DOM changes, e.g. inserting a new component into a specific position, or simply swapping 2 nodes without re-rendering anything. It wraps each individual value into the state object, which allows to avoid any unnecessary re-renders.
 
@@ -124,11 +124,11 @@ const tasks$ = createState([
   { id: "2", title: "second" },
 ]);
 
-return tasks$.renderEach({ key: "id" }, ({ elementState }) => {
-  return <div>{elementState.renderSelected((task) => task.title)}</div>;
+return tasks$.renderEach({ key: "id" }, ({ elementState: element$ }) => {
+  return <div>{element$.renderSelected((task) => task.title)}</div>;
 });
 ```
 
 The callback receives:
-- `elementState`: state for the current item
-- `indexState`: state for the current item index
+- `element$`: state for the current item
+- `index$`: state for the current item index
