@@ -86,8 +86,8 @@ function App() {
       {tasks$.renderSelected((tasks) =>
         tasks.length > 0 ? (
           <ul>
-            {tasks$.renderEach({ key: "id" }, ({ elementState }) => (
-              <Task task$={elementState} />
+            {tasks$.renderEach({ key: "id" }, ({ elementState: element$ }) => (
+              <Task task$={element$} />
             ))}
           </ul>
         ) : (

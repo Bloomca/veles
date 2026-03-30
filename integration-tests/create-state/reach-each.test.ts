@@ -60,12 +60,12 @@ describe("state.renderEach", () => {
           createElement("ul", {
             "data-testid": "listComponent",
             children: [
-              state.renderEach({ key: "id" }, ({ elementState }) =>
+              state.renderEach({ key: "id" }, ({ elementState: element$ }) =>
                 createElement(() => {
                   onUnmount(unmountSpy);
                   return createElement("li", {
                     children: [
-                      elementState.renderSelected(
+                      element$.renderSelected(
                         (element) => element.text,
                         (text) => {
                           textSpy();
@@ -155,12 +155,12 @@ describe("state.renderEach", () => {
             children: [
               state.renderEach(
                 { key: "id", selector: (state) => state.value },
-                ({ elementState }) =>
+                ({ elementState: element$ }) =>
                   createElement(() => {
                     onUnmount(unmountSpy);
                     return createElement("li", {
                       children: [
-                        elementState.renderSelected(
+                        element$.renderSelected(
                           (element) => element.text,
                           (text) => {
                             textSpy();
@@ -228,18 +228,20 @@ describe("state.renderEach", () => {
           createElement("div", {
             "data-testid": "container",
             children: [
-              items$.renderEach({ key: "id" }, ({ elementState, indexState }) =>
-                createElement("div", {
-                  children: [
-                    createElement("div", {
-                      children: indexState.render((value) => {
+              items$.renderEach(
+                { key: "id" },
+                ({ elementState: element$, indexState: index$ }) =>
+                  createElement("div", {
+                    children: [
+                      createElement("div", {
+                        children: index$.render((value) => {
                         indexSpy();
                         return String(value);
                       }),
                     }),
                     ".",
                     createElement("div", {
-                      children: elementState.renderSelected(
+                      children: element$.renderSelected(
                         (item) => item.text,
                         (value) => {
                           textSpy();
@@ -300,12 +302,14 @@ describe("state.renderEach", () => {
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: items$.renderEach({ key: "id" }, ({ elementState }) =>
-              createElement("li", {
-                children: elementState.renderSelected(
-                  (element) => element.text,
-                ),
-              }),
+            children: items$.renderEach(
+              { key: "id" },
+              ({ elementState: element$ }) =>
+                createElement("li", {
+                  children: element$.renderSelected(
+                    (element) => element.text,
+                  ),
+                }),
             ),
           }),
         ],
@@ -347,12 +351,14 @@ describe("state.renderEach", () => {
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: items$.renderEach({ key: "id" }, ({ elementState }) =>
-              createElement("li", {
-                children: elementState.renderSelected(
-                  (element) => element.text,
-                ),
-              }),
+            children: items$.renderEach(
+              { key: "id" },
+              ({ elementState: element$ }) =>
+                createElement("li", {
+                  children: element$.renderSelected(
+                    (element) => element.text,
+                  ),
+                }),
             ),
           }),
         ],
@@ -392,10 +398,10 @@ describe("state.renderEach", () => {
       const show$ = createState(false);
       const itemsMarkup = items$.renderEach(
         { key: "id" },
-        ({ elementState, indexState }) =>
+        ({ elementState: element$, indexState: index$ }) =>
           createElement(Item, {
-            elementState,
-            indexState,
+            element$,
+            index$,
           }),
       );
       return createElement("div", {
@@ -418,23 +424,23 @@ describe("state.renderEach", () => {
     const textSpy = vi.fn();
     const indexSpy = vi.fn();
     function Item({
-      elementState,
-      indexState,
+      element$,
+      index$,
     }: {
-      elementState: State<Item>;
-      indexState: State<number>;
+      element$: State<Item>;
+      index$: State<number>;
     }) {
       return createElement("div", {
         children: [
           createElement("h3", {
-            children: elementState.renderSelected((element) => {
+            children: element$.renderSelected((element) => {
               textSpy();
               return element.text;
             }),
           }),
           " ",
           createElement("p", {
-            children: indexState.render((value) => {
+            children: index$.render((value) => {
               indexSpy();
               return `number: ${value}`;
             }),

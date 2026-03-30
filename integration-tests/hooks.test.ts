@@ -266,8 +266,8 @@ describe("lifecycle hooks", () => {
               );
             },
           }),
-          tasks$.renderEach({ key: "id" }, ({ elementState }) =>
-            createElement(Task, { task$: elementState })
+          tasks$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+            createElement(Task, { task$: element$ })
           ),
         ],
       });
