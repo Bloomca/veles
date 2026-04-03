@@ -1,3 +1,5 @@
+import { assignDomAttribute } from "../attribute-utils";
+
 import type { VelesElement } from "../types";
 
 function assignAttributes({
@@ -35,14 +37,11 @@ function assignAttribute({
   ) {
     htmlElement.addEventListener(key.slice(2).toLocaleLowerCase(), value);
   } else {
-    if (typeof value === "boolean") {
-      // according to the spec, boolean values should just get either an empty string
-      // or duplicated key. I don't see a reason to duplicate the key.
-      // If the value is `false`, no need to set it, the correct behaviour is to remove it.
-      if (value) htmlElement.setAttribute(key, "");
-    } else {
-      htmlElement.setAttribute(key, value);
-    }
+    assignDomAttribute({
+      htmlElement,
+      attributeName: key,
+      value,
+    });
   }
 }
 

@@ -1,3 +1,5 @@
+import { assignDomAttribute } from "../attribute-utils";
+
 import type { TrackingAttribute } from "./types";
 
 function updateUseAttributeValue<T>({
@@ -10,17 +12,8 @@ function updateUseAttributeValue<T>({
   const { cb, htmlElement, attributeName, attributeValue } = element;
   const newAttributeValue = cb ? cb(value) : value;
 
-  // Boolean elements require either setting an empty string as a value,
-  // or duplicate the attribute name. A lack of the attribute means
-  // the value is `false`, so we need to treat it differently.
-  if (typeof newAttributeValue === "boolean") {
-    if (newAttributeValue) {
-      htmlElement.setAttribute(attributeName, "");
-    } else {
-      htmlElement.removeAttribute(attributeName);
-    }
-    // check whether we are dealing with event handlers
-  } else if (attributeName.startsWith("on")) {
+  // check whether we are dealing with event handlers
+  if (attributeName.startsWith("on")) {
     // if the value is the same, it is either not set
     // or we received the same event handler
     // either way, no need to do anything
@@ -43,7 +36,11 @@ function updateUseAttributeValue<T>({
     // and to remove a correct event handler
     element.attributeValue = newAttributeValue;
   } else {
-    htmlElement.setAttribute(attributeName, newAttributeValue);
+    assignDomAttribute({
+      htmlElement,
+      attributeName,
+      value: newAttributeValue,
+    });
   }
 }
 
