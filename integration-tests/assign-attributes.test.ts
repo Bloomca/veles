@@ -212,6 +212,90 @@ describe("assign-attributes", () => {
     expect((testBtn as HTMLButtonElement).disabled).toBe(false);
   });
 
+  it("assigns enumerated attributes from booleans correctly", () => {
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("div", {
+            "data-testid": "trueDraggable",
+            draggable: true,
+          }),
+          createElement("div", {
+            "data-testid": "falseDraggable",
+            draggable: false,
+          }),
+          createElement("div", {
+            "data-testid": "trueTranslate",
+            translate: true,
+          }),
+          createElement("div", {
+            "data-testid": "falseTranslate",
+            translate: false,
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const trueDraggable = screen.getByTestId("trueDraggable") as HTMLElement;
+    const falseDraggable = screen.getByTestId("falseDraggable") as HTMLElement;
+    const trueTranslate = screen.getByTestId("trueTranslate");
+    const falseTranslate = screen.getByTestId("falseTranslate");
+
+    expect(trueDraggable.getAttribute("draggable")).toBe("true");
+    expect(falseDraggable.getAttribute("draggable")).toBe("false");
+    expect(trueDraggable.draggable).toBe(true);
+    expect(falseDraggable.draggable).toBe(false);
+
+    expect(trueTranslate.getAttribute("translate")).toBe("yes");
+    expect(falseTranslate.getAttribute("translate")).toBe("no");
+  });
+
+  it("updates enumerated attributes reactively", async () => {
+    const user = userEvent.setup();
+
+    function App() {
+      const draggable$ = createState(false);
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "toggleButton",
+            onClick: () => draggable$.update((value) => !value),
+          }),
+          createElement("div", {
+            "data-testid": "target",
+            draggable: draggable$.attribute(),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const target = screen.getByTestId("target") as HTMLElement;
+    const toggle = screen.getByTestId("toggleButton");
+
+    expect(target.getAttribute("draggable")).toBe("false");
+    expect(target.draggable).toBe(false);
+
+    await user.click(toggle);
+
+    expect(target.getAttribute("draggable")).toBe("true");
+    expect(target.draggable).toBe(true);
+
+    await user.click(toggle);
+
+    expect(target.getAttribute("draggable")).toBe("false");
+    expect(target.draggable).toBe(false);
+  });
+
   it("allows to assign and remove event listeners dynamically", async () => {
     const user = userEvent.setup();
     const state = createState(0);
