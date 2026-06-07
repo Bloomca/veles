@@ -31,6 +31,11 @@ function assignDomAttribute({
   attributeName: string;
   value: any;
 }) {
+  if (typeof value === 'object' && attributeName === 'style') {
+    assignStyle(value, htmlElement)
+    return
+  }
+
   if (typeof value === "boolean") {
     const normalizedAttributeName = attributeName.toLowerCase();
     const enumeratedConfig = ENUMERATED_BOOLEAN_ATTRIBUTES[normalizedAttributeName];
@@ -55,7 +60,25 @@ function assignDomAttribute({
     return;
   }
 
+  // setAttribute stringifies the value, and we don't want to assign null or undefined
+  // as a string directly. Setting undefined/null means we don't need the attribute
+  if (value == null) {
+    htmlElement.removeAttribute(attributeName)
+    return
+  }
+
   htmlElement.setAttribute(attributeName, value);
+}
+
+function assignStyle(value: object, htmlElement: HTMLElement) {
+    // reset everything
+    htmlElement.style.cssText = ''
+
+    if (value == null) return
+
+    Object.entries(value).forEach(([property, propertyValue]) => {
+      htmlElement.style.setProperty(property, propertyValue)
+    })
 }
 
 export { assignDomAttribute };
