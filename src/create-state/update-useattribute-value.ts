@@ -40,7 +40,10 @@ function updateUseAttributeValue<T>({
       htmlElement,
       attributeName,
       value: newAttributeValue,
+      previousValue: attributeValue,
     });
+
+    element.attributeValue = newAttributeValue;
   }
 }
 
