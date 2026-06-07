@@ -9,7 +9,7 @@ parent: Guides
 
 JSX itself is a pretty standard React-like implementation. It does have a few quirks:
 
-- you need to use `class` instead of `className` (this will be aliased in the future)
+- for styling, use `class` instead of `className`; see the [Styling guide](styling.html) for class and `style` details
 - `onChange` event works according to the spec ([ref](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event)), and it won't be fired after every input update. So you probably want to use `onInput` for now (it will also be aliased in the future)
 
 ## JSX setup
