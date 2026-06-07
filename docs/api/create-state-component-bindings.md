@@ -108,8 +108,10 @@ You can also transform the value first.
 ```jsx
 const width$ = createState(100);
 
-return <div style={width$.attribute((value) => `width: ${value}px`)} />;
+return <div style={width$.attribute((value) => ({ width: `${value}px` }))} />;
 ```
+
+See the [style property section](../guides/styling.html#style-property) for more details on inline styles.
 
 ## `state.renderEach`
 
