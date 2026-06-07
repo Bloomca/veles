@@ -572,6 +572,64 @@ describe("portals", () => {
     checkCleanup();
   });
 
+  test("it supports conditional rendering inside a Fragment in Portal content", () => {
+    const showContent$ = createState(false);
+    cleanup = attachComponent({
+      htmlElement: appContainer,
+      component: createElement("div", {
+        children: createElement(Application),
+      }),
+    });
+
+    function Application() {
+      return createElement("div", {
+        children: [
+          createElement("h1", { children: ["app title"] }),
+          createElement(Portal, {
+            portalNode: portalContainer,
+            children: createElement(Fragment, {
+              children: [
+                createElement("h2", { children: "portal title" }),
+                showContent$.render((shouldShow) =>
+                  shouldShow
+                    ? createElement("div", { children: "portal content" })
+                    : null
+                ),
+                createElement("div", { children: "portal container" }),
+              ],
+            }),
+          }),
+          createElement("div", { children: "app content" }),
+        ],
+      });
+    }
+
+    try {
+      expect(screen.getByTestId("app").textContent).toBe(
+        "app titleapp content"
+      );
+      expect(screen.getByTestId("portal").textContent).toBe(
+        "portal titleportal container"
+      );
+
+      showContent$.set(true);
+      expect(screen.getByTestId("portal").textContent).toBe(
+        "portal titleportal contentportal container"
+      );
+
+      showContent$.set(false);
+      expect(screen.getByTestId("portal").textContent).toBe(
+        "portal titleportal container"
+      );
+
+      checkCleanup();
+    } finally {
+      cleanup?.();
+      cleanup = undefined;
+      portalContainer.innerHTML = "";
+    }
+  });
+
   test("it supports conditional Fragments in Portal content", () => {
     const fragmentShow$ = createState(true);
     cleanup = attachComponent({

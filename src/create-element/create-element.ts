@@ -165,7 +165,7 @@ function appendComponentToPortal(
         portal.append(fragmentChildComponent.html);
       }
     });
-    componentNode.phantom;
+    componentNode.portal = portal;
   } else {
     portal.append(componentNode.html);
   }
@@ -185,7 +185,6 @@ function cleanupComponentFromPortal(
         fragmentChildComponent.html.remove();
       }
     });
-    componentNode.phantom;
   } else {
     componentNode.html.remove();
   }
