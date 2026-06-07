@@ -24,7 +24,8 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsdown",
-    "ts-compile-check": "tsc -p tsconfig.json"
+    "ts-compile-check": "tsc -p tsconfig.json",
+    "lint": "oxlint"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,7 @@
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/user-event": "^14.5.2",
     "jsdom": "^24.0.0",
+    "oxlint": "^1.68.0",
     "tsdown": "^0.21.7",
     "typescript": "^6.0.2",
     "vitest": "^3.2.4"

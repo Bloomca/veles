@@ -62,7 +62,6 @@ describe("lifecycle hooks", () => {
   });
 
   test("triggers onUnmount hook on every nested component which is removed from the tree", async () => {
-    const user = userEvent.setup();
     function App() {
       const showChildren$ = createState(true);
 

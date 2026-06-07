@@ -193,7 +193,7 @@ function updateUseValueIteratorValue<T>({
         offset = offset + positioningOffset[index];
       }
 
-      const [newNode, calculatedKey, newState] = newRenderedElement;
+      const [newNode, calculatedKey, _newState] = newRenderedElement;
 
       const existingElement = elementsByKey[calculatedKey];
       if (existingElement) {

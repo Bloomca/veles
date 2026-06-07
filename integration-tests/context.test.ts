@@ -124,7 +124,6 @@ describe("Context", () => {
   });
 
   it("newly added elements in renderEach have access to Context", async () => {
-    const user = userEvent.setup();
     type Item = { id: number; text: string; value: number };
     const item1: Item = { id: 1, text: "first item", value: 1 };
     const item2: Item = { id: 2, text: "second item", value: 2 };
