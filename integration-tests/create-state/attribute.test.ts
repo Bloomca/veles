@@ -1,12 +1,7 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import {
-  attachComponent,
-  createElement,
-  createState,
-  onUnmount,
-} from "../../src";
+import { attachComponent, createElement, createState, onUnmount } from "../../src";
 
 describe("state.attribute", () => {
   let cleanup: Function | undefined;
@@ -90,14 +85,10 @@ describe("state.attribute", () => {
 
     await user.click(screen.getByTestId("button"));
     expect(spyFn).toHaveBeenCalledTimes(2);
-    expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
-      "newValue1"
-    );
+    expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe("newValue1");
     value$.set("newValue2");
     expect(spyFn).toHaveBeenCalledTimes(3);
-    expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
-      "newValue2"
-    );
+    expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe("newValue2");
 
     // remove the element again to see that subscriptions are correctly removed
     await user.click(screen.getByTestId("button"));
@@ -106,8 +97,6 @@ describe("state.attribute", () => {
 
     value$.set("initialValue");
     await user.click(screen.getByTestId("button"));
-    expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe(
-      "initialValue"
-    );
+    expect(screen.getByTestId("attributeTest").getAttribute("data-value")).toBe("initialValue");
   });
 });

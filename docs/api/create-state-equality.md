@@ -25,23 +25,17 @@ Derived methods accept an `equality` option.
 ### `state.map`
 
 ```jsx
-const parity$ = number$.map(
-  (value) => ({ parity: value % 2 }),
-  {
-    equality: (a, b) => a.parity === b.parity,
-  },
-);
+const parity$ = number$.map((value) => ({ parity: value % 2 }), {
+  equality: (a, b) => a.parity === b.parity,
+});
 ```
 
 ### `state.filter`
 
 ```jsx
-const activeTask$ = task$.filter(
-  (task) => task.active,
-  {
-    equality: (a, b) => a.id === b.id,
-  },
-);
+const activeTask$ = task$.filter((task) => task.active, {
+  equality: (a, b) => a.id === b.id,
+});
 ```
 
 ### `state.scan`
@@ -87,6 +81,7 @@ state.renderSelected(
 ## When to use custom equality
 
 Custom equality is useful when:
+
 - you create new objects often
 - only some fields matter for rendering
 - you want to avoid unnecessary derived updates

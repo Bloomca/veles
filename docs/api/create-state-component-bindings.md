@@ -18,10 +18,12 @@ While the state allows to interact with it imperatively, inside components you p
 Subscribes to all state updates, automatically unsubscribe when the component where it is called unmounts.
 
 By default:
+
 - the callback runs immediately with the current value
 - future calls run when the value changes by referential equality (`===`)
 
 You can use:
+
 - `callOnMount: true` to defer the first call until the component is mounted
 - `skipFirstCall: true` to skip the initial call
 - `comparator` to control when updates should be considered equal
@@ -78,7 +80,10 @@ Works like `render`, but first selects a smaller piece of the state. This will m
 ```jsx
 const task$ = createState({ title: "task", completed: false });
 
-return task$.renderSelected((task) => task.title, (title) => <p>{title}</p>);
+return task$.renderSelected(
+  (task) => task.title,
+  (title) => <p>{title}</p>,
+);
 ```
 
 This can be used for conditionals.
@@ -132,5 +137,6 @@ return tasks$.renderEach({ key: "id" }, ({ elementState: element$ }) => {
 ```
 
 The callback receives:
+
 - `element$`: state for the current item
 - `index$`: state for the current item index

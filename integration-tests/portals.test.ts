@@ -1,10 +1,4 @@
-import {
-  attachComponent,
-  createElement,
-  createState,
-  Portal,
-  Fragment,
-} from "../src";
+import { attachComponent, createElement, createState, Portal, Fragment } from "../src";
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
@@ -57,9 +51,7 @@ describe("portals", () => {
     }
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titleportal container"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titleportal container");
 
     checkCleanup();
   });
@@ -89,9 +81,7 @@ describe("portals", () => {
     }
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titleportal container"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titleportal container");
 
     checkCleanup();
   });
@@ -129,7 +119,7 @@ describe("portals", () => {
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
     expect(screen.getByTestId("portal").textContent).toBe(
-      "first portal titlefirst portal containersecond portal titlesecond portal container"
+      "first portal titlefirst portal containersecond portal titlesecond portal container",
     );
 
     checkCleanup();
@@ -159,7 +149,7 @@ describe("portals", () => {
                     }),
                   ],
                 })
-              : null
+              : null,
           ),
           createElement(Portal, {
             portalNode: portalContainer,
@@ -175,13 +165,13 @@ describe("portals", () => {
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
     expect(screen.getByTestId("portal").textContent).toBe(
-      "first portal titlefirst portal containersecond portal titlesecond portal container"
+      "first portal titlefirst portal containersecond portal titlesecond portal container",
     );
 
     showFirstPortal$.set(false);
 
     expect(screen.getByTestId("portal").textContent).toBe(
-      "second portal titlesecond portal container"
+      "second portal titlesecond portal container",
     );
 
     checkCleanup();
@@ -211,7 +201,7 @@ describe("portals", () => {
                     }),
                   ],
                 })
-              : null
+              : null,
           ),
           createElement(Portal, {
             portalNode: portalContainer,
@@ -227,7 +217,7 @@ describe("portals", () => {
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
     expect(screen.getByTestId("portal").textContent).toBe(
-      "second portal titlesecond portal container"
+      "second portal titlesecond portal container",
     );
 
     showFirstPortal$.set(true);
@@ -238,7 +228,7 @@ describe("portals", () => {
      * have its own container. Maybe it will bite us later.
      */
     expect(screen.getByTestId("portal").textContent).toBe(
-      "second portal titlesecond portal containerfirst portal titlefirst portal container"
+      "second portal titlesecond portal containerfirst portal titlefirst portal container",
     );
 
     checkCleanup();
@@ -273,9 +263,7 @@ describe("portals", () => {
     }
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titlecomponent portal content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titlecomponent portal content");
 
     checkCleanup();
   });
@@ -314,7 +302,7 @@ describe("portals", () => {
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
     expect(screen.getByTestId("portal").textContent).toBe(
-      "portal title1component portal contentstring content2"
+      "portal title1component portal contentstring content2",
     );
 
     checkCleanup();
@@ -336,8 +324,7 @@ describe("portals", () => {
           createElement("h1", { children: ["app title"] }),
           createElement("button", {
             children: "toggle menu",
-            onClick: () =>
-              showPortal$.update((currentValue) => !currentValue),
+            onClick: () => showPortal$.update((currentValue) => !currentValue),
           }),
           showPortal$.render((shouldShow) =>
             shouldShow
@@ -348,16 +335,14 @@ describe("portals", () => {
                     createElement("div", { children: "portal content" }),
                   ],
                 })
-              : null
+              : null,
           ),
           createElement("div", { children: "app content" }),
         ],
       });
     }
 
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titleportal content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titleportal content");
 
     // hide the menu
     await user.click(screen.getByRole("button", { name: "toggle menu" }));
@@ -365,9 +350,7 @@ describe("portals", () => {
 
     // show the menu again
     await user.click(screen.getByRole("button", { name: "toggle menu" }));
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titleportal content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titleportal content");
 
     checkCleanup();
   });
@@ -392,13 +375,10 @@ describe("portals", () => {
               createElement("h2", { children: "portal title" }),
               createElement("button", {
                 children: "toggle content",
-                onClick: () =>
-                  showContent$.update((currentValue) => !currentValue),
+                onClick: () => showContent$.update((currentValue) => !currentValue),
               }),
               showContent$.render((shouldShow) =>
-                shouldShow
-                  ? createElement("div", { children: "portal content" })
-                  : null
+                shouldShow ? createElement("div", { children: "portal content" }) : null,
               ),
             ],
           }),
@@ -407,19 +387,15 @@ describe("portals", () => {
       });
     }
 
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titletoggle content");
 
     await user.click(screen.getByRole("button", { name: "toggle content" }));
     expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle contentportal content"
+      "portal titletoggle contentportal content",
     );
 
     await user.click(screen.getByRole("button", { name: "toggle content" }));
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titletoggle content");
 
     checkCleanup();
   });
@@ -444,12 +420,9 @@ describe("portals", () => {
               createElement("h2", { children: "portal title" }),
               createElement("button", {
                 children: "toggle content",
-                onClick: () =>
-                  showContent$.update((currentValue) => !currentValue),
+                onClick: () => showContent$.update((currentValue) => !currentValue),
               }),
-              showContent$.render((shouldShow) =>
-                shouldShow ? "portal content" : null
-              ),
+              showContent$.render((shouldShow) => (shouldShow ? "portal content" : null)),
             ],
           }),
           createElement("div", { children: "app content" }),
@@ -457,19 +430,15 @@ describe("portals", () => {
       });
     }
 
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titletoggle content");
 
     await user.click(screen.getByRole("button", { name: "toggle content" }));
     expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle contentportal content"
+      "portal titletoggle contentportal content",
     );
 
     await user.click(screen.getByRole("button", { name: "toggle content" }));
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titletoggle content");
 
     checkCleanup();
   });
@@ -494,11 +463,10 @@ describe("portals", () => {
               createElement("h2", { children: "portal title" }),
               createElement("button", {
                 children: "toggle content",
-                onClick: () =>
-                  showContent$.update((currentValue) => !currentValue),
+                onClick: () => showContent$.update((currentValue) => !currentValue),
               }),
               showContent$.render((shouldShow) =>
-                shouldShow ? createElement(PortalContent) : null
+                shouldShow ? createElement(PortalContent) : null,
               ),
             ],
           }),
@@ -511,19 +479,15 @@ describe("portals", () => {
       return createElement("div", { children: "portal content" });
     }
 
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titletoggle content");
 
     await user.click(screen.getByRole("button", { name: "toggle content" }));
     expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle contentportal content"
+      "portal titletoggle contentportal content",
     );
 
     await user.click(screen.getByRole("button", { name: "toggle content" }));
-    expect(screen.getByTestId("portal").textContent).toBe(
-      "portal titletoggle content"
-    );
+    expect(screen.getByTestId("portal").textContent).toBe("portal titletoggle content");
 
     checkCleanup();
   });
@@ -566,7 +530,7 @@ describe("portals", () => {
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
     expect(screen.getByTestId("portal").textContent).toBe(
-      `portal titleportal fragment titlefragment string1fragment componentportal container`
+      `portal titleportal fragment titlefragment string1fragment componentportal container`,
     );
 
     checkCleanup();
@@ -591,9 +555,7 @@ describe("portals", () => {
               children: [
                 createElement("h2", { children: "portal title" }),
                 showContent$.render((shouldShow) =>
-                  shouldShow
-                    ? createElement("div", { children: "portal content" })
-                    : null
+                  shouldShow ? createElement("div", { children: "portal content" }) : null,
                 ),
                 createElement("div", { children: "portal container" }),
               ],
@@ -605,22 +567,16 @@ describe("portals", () => {
     }
 
     try {
-      expect(screen.getByTestId("app").textContent).toBe(
-        "app titleapp content"
-      );
-      expect(screen.getByTestId("portal").textContent).toBe(
-        "portal titleportal container"
-      );
+      expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
+      expect(screen.getByTestId("portal").textContent).toBe("portal titleportal container");
 
       showContent$.set(true);
       expect(screen.getByTestId("portal").textContent).toBe(
-        "portal titleportal contentportal container"
+        "portal titleportal contentportal container",
       );
 
       showContent$.set(false);
-      expect(screen.getByTestId("portal").textContent).toBe(
-        "portal titleportal container"
-      );
+      expect(screen.getByTestId("portal").textContent).toBe("portal titleportal container");
 
       checkCleanup();
     } finally {
@@ -659,7 +615,7 @@ describe("portals", () => {
                         createElement(FragmentComponent),
                       ],
                     })
-                  : null
+                  : null,
               ),
               createElement("div", { children: "portal container" }),
             ],
@@ -675,17 +631,15 @@ describe("portals", () => {
 
     expect(screen.getByTestId("app").textContent).toBe("app titleapp content");
     expect(screen.getByTestId("portal").textContent).toBe(
-      `portal titleportal fragment titlefragment string1fragment componentportal container`
+      `portal titleportal fragment titlefragment string1fragment componentportal container`,
     );
 
     fragmentShow$.set(false);
-    expect(screen.getByTestId("portal").textContent).toBe(
-      `portal titleportal container`
-    );
+    expect(screen.getByTestId("portal").textContent).toBe(`portal titleportal container`);
 
     fragmentShow$.set(true);
     expect(screen.getByTestId("portal").textContent).toBe(
-      `portal titleportal fragment titlefragment string1fragment componentportal container`
+      `portal titleportal fragment titlefragment string1fragment componentportal container`,
     );
 
     checkCleanup();

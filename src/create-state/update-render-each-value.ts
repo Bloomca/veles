@@ -13,11 +13,7 @@ import type {
   VelesComponentObject,
   VelesElement,
 } from "../types";
-import type {
-  TrackingIterator,
-  State,
-  createState as createStateType,
-} from "./types";
+import type { TrackingIterator, State, createState as createStateType } from "./types";
 
 function updateUseValueIteratorValue<T>({
   value,
@@ -28,25 +24,15 @@ function updateUseValueIteratorValue<T>({
   trackingIterator: TrackingIterator;
   createState: typeof createStateType;
 }) {
-  const {
-    cb,
-    key,
-    renderedElements,
-    elementsByKey,
-    wrapperComponent,
-    selector,
-    savedContext
-  } = trackingIterator;
+  const { cb, key, renderedElements, elementsByKey, wrapperComponent, selector, savedContext } =
+    trackingIterator;
   if (!wrapperComponent) {
     console.error("there is no wrapper component for the iterator");
     return;
   }
 
   const wrapperVelesElementNode = getExecutedComponentVelesNode(
-    getMountedNodeExecutedVersion(
-      wrapperComponent,
-      "Iterator wrapper is expected to be mounted"
-    )
+    getMountedNodeExecutedVersion(wrapperComponent, "Iterator wrapper is expected to be mounted"),
   );
   const parentVelesElement = wrapperVelesElementNode.parentVelesElement;
 
@@ -61,11 +47,7 @@ function updateUseValueIteratorValue<T>({
   // but I don't know how to have correct type inferring here
   // so we check manually
   if (Array.isArray(elements)) {
-    const newRenderedElements: [
-      VelesElement | VelesComponentObject,
-      string,
-      State<unknown>
-    ][] = [];
+    const newRenderedElements: [VelesElement | VelesComponentObject, string, State<unknown>][] = [];
     const newElementsByKey: {
       [key: string]: {
         elementState: State<unknown>;
@@ -79,7 +61,7 @@ function updateUseValueIteratorValue<T>({
       [calculatedKey: string]: boolean;
     } = {};
 
-    elements.forEach((element, index) => {      
+    elements.forEach((element, index) => {
       let calculatedKey: string = "";
       if (
         typeof key === "string" &&
@@ -144,15 +126,13 @@ function updateUseValueIteratorValue<T>({
       } else {
         const elementState = createState(element);
         const indexState = createState(index);
-        addPublicContext(savedContext)
+        addPublicContext(savedContext);
         const node = cb({ elementState, indexState });
         // this TypeScript conversion should always be correct, because `node` is
         // also either a component or an element
-        const renderedNode = renderTree(node) as
-          | ExecutedVelesComponent
-          | ExecutedVelesElement;
+        const renderedNode = renderTree(node) as ExecutedVelesComponent | ExecutedVelesElement;
         node.executedVersion = renderedNode;
-        popPublicContext()
+        popPublicContext();
 
         newRenderedElements.push([node, calculatedKey, elementState]);
         newElementsByKey[calculatedKey] = {
@@ -166,10 +146,7 @@ function updateUseValueIteratorValue<T>({
 
     // to replace old wrapper's children to make sure they are removed correctly
     // on `render` unmount
-    const newChildRenderedComponents: (
-      | ExecutedVelesComponent
-      | ExecutedVelesElement
-    )[] = [];
+    const newChildRenderedComponents: (ExecutedVelesComponent | ExecutedVelesElement)[] = [];
     const newChildComponents: (VelesComponentObject | VelesElement)[] = [];
 
     const positioningOffset: { [key: number]: number } = {};
@@ -183,8 +160,8 @@ function updateUseValueIteratorValue<T>({
       newChildRenderedComponents.push(
         getMountedNodeExecutedVersion(
           newRenderedElement[0],
-          "Iterator child is expected to be mounted"
-        )
+          "Iterator child is expected to be mounted",
+        ),
       );
       newChildComponents.push(newRenderedElement[0]);
       // if we needed to adjust offset until we reach the original position of the item
@@ -200,8 +177,8 @@ function updateUseValueIteratorValue<T>({
         const existingElementNode = getExecutedComponentVelesNode(
           getMountedNodeExecutedVersion(
             existingElement.node,
-            "Existing iterator node is expected to be mounted"
-          )
+            "Existing iterator node is expected to be mounted",
+          ),
         );
         // the element is in the same relative position
         if (existingElement.indexValue + offset === index) {
@@ -222,7 +199,7 @@ function updateUseValueIteratorValue<T>({
               const firstRenderedVelesNode = getExecutedComponentVelesNode(
                 firstRenderedElement.executedVersion as
                   | ExecutedVelesComponent
-                  | ExecutedVelesElement
+                  | ExecutedVelesElement,
               );
               firstRenderedVelesNode.html.before(existingElementNode.html);
             } else {
@@ -243,7 +220,7 @@ function updateUseValueIteratorValue<T>({
               const firstRenderedVelesNode = getExecutedComponentVelesNode(
                 firstRenderedElement.executedVersion as
                   | ExecutedVelesComponent
-                  | ExecutedVelesElement
+                  | ExecutedVelesElement,
               );
               firstRenderedVelesNode.html.before(existingElementNode.html);
             } else {
@@ -258,12 +235,10 @@ function updateUseValueIteratorValue<T>({
         // we need to insert new element
         const newNodeExecutedVersion = getMountedNodeExecutedVersion(
           newNode,
-          "New iterator node is expected to be mounted"
+          "New iterator node is expected to be mounted",
         );
 
-        const newNodeVelesElement = getExecutedComponentVelesNode(
-          newNodeExecutedVersion
-        );
+        const newNodeVelesElement = getExecutedComponentVelesNode(newNodeExecutedVersion);
         newNodeVelesElement.parentVelesElement = parentVelesElement;
 
         if (currentElement) {
@@ -273,9 +248,7 @@ function updateUseValueIteratorValue<T>({
           const firstRenderedElement = renderedElements[0]?.[0];
           if (firstRenderedElement?.executedVersion) {
             const firstRenderedVelesNode = getExecutedComponentVelesNode(
-              firstRenderedElement.executedVersion as
-                | ExecutedVelesComponent
-                | ExecutedVelesElement
+              firstRenderedElement.executedVersion as ExecutedVelesComponent | ExecutedVelesElement,
             );
             firstRenderedVelesNode.html.before(newNodeVelesElement.html);
           } else {
@@ -293,10 +266,7 @@ function updateUseValueIteratorValue<T>({
       }
     });
 
-    if (
-      renderedElements.length ===
-      newRenderedElements.length + newElementsCount
-    ) {
+    if (renderedElements.length === newRenderedElements.length + newElementsCount) {
       // it means no existing nodes were removed, so we don't need to do anything
     } else {
       // it means something was removed, and we need to remove it from
@@ -308,12 +278,10 @@ function updateUseValueIteratorValue<T>({
         } else {
           const oldNodeExecutedVersion = getMountedNodeExecutedVersion(
             oldNode,
-            "Removed iterator node is expected to be mounted"
+            "Removed iterator node is expected to be mounted",
           );
 
-          const oldRenderedVelesNode = getExecutedComponentVelesNode(
-            oldNodeExecutedVersion
-          );
+          const oldRenderedVelesNode = getExecutedComponentVelesNode(oldNodeExecutedVersion);
 
           oldRenderedVelesNode.html.remove();
           callUnmountHandlers(oldNodeExecutedVersion);
@@ -321,17 +289,16 @@ function updateUseValueIteratorValue<T>({
           if ("executedVelesNode" in wrapperVelesElementNode) {
             wrapperVelesElementNode.childComponents =
               wrapperVelesElementNode.childComponents.filter(
-                (childComponent) => childComponent !== oldNodeExecutedVersion
+                (childComponent) => childComponent !== oldNodeExecutedVersion,
               );
           } else {
             throw new Error("Wrapper iterator element is a string");
           }
 
           if ("velesNode" in wrapperComponent) {
-            wrapperComponent.childComponents =
-              wrapperComponent.childComponents.filter(
-                (childComponent) => childComponent !== oldNode
-              );
+            wrapperComponent.childComponents = wrapperComponent.childComponents.filter(
+              (childComponent) => childComponent !== oldNode,
+            );
           }
         }
       });

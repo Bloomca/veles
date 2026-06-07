@@ -49,7 +49,7 @@ describe("<Fragment>", () => {
         .trim()
         .split("\n")
         .map((line) => line.trim())
-        .join("")
+        .join(""),
     );
   });
 
@@ -67,7 +67,7 @@ describe("<Fragment>", () => {
                 createElement("div", {
                   "data-testid": "fragment-dynamic-element",
                   children: `Second Fragment value: ${currentValue}`,
-                })
+                }),
               ),
               createElement("p", { children: "Third Fragment child" }),
             ],
@@ -89,12 +89,12 @@ describe("<Fragment>", () => {
 
     await user.click(screen.getByTestId("button"));
     expect(screen.getByTestId("fragment-dynamic-element")).toHaveTextContent(
-      "Second Fragment value: 1"
+      "Second Fragment value: 1",
     );
 
     await user.click(screen.getByTestId("button"));
     expect(screen.getByTestId("fragment-dynamic-element")).toHaveTextContent(
-      "Second Fragment value: 2"
+      "Second Fragment value: 2",
     );
 
     // right now attaching wraps the app into another <div>
@@ -115,7 +115,7 @@ describe("<Fragment>", () => {
         .trim()
         .split("\n")
         .map((line) => line.trim())
-        .join("")
+        .join(""),
     );
   });
 
@@ -164,7 +164,7 @@ describe("<Fragment>", () => {
           createElement("div", {
             "data-testid": "container",
             children: show$.render((shouldShow) =>
-              shouldShow ? createElement(FragmentComponent) : null
+              shouldShow ? createElement(FragmentComponent) : null,
             ),
           }),
         ],
@@ -209,9 +209,7 @@ describe("<Fragment>", () => {
           createElement("div", {
             "data-testid": "container",
             children: show$.render((shouldShow) =>
-              shouldShow
-                ? createElement(FragmentComponent)
-                : createElement(RegularComponent)
+              shouldShow ? createElement(FragmentComponent) : createElement(RegularComponent),
             ),
           }),
         ],
@@ -265,9 +263,7 @@ describe("<Fragment>", () => {
           createElement("div", {
             "data-testid": "container",
             children: show$.render((shouldShow) =>
-              shouldShow
-                ? createElement(FragmentComponent)
-                : createElement(FragmentComponent2)
+              shouldShow ? createElement(FragmentComponent) : createElement(FragmentComponent2),
             ),
           }),
         ],

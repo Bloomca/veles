@@ -45,8 +45,7 @@ describe("derived state", () => {
           }),
           combinedValue$.renderSelected(
             (values) => values.reduce((acc, num) => acc + num, 0),
-            (value) =>
-              createElement("div", { children: [`current value is ${value}`] }),
+            (value) => createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
       });
@@ -148,8 +147,7 @@ describe("derived state", () => {
 
     function StateComponent() {
       const selected$ = state.map((value) => value, {
-        equality: (a, b) =>
-          a.firstValue === b.firstValue && a.secondValue === b.secondValue,
+        equality: (a, b) => a.firstValue === b.firstValue && a.secondValue === b.secondValue,
       });
       const selectedStateNoComparator = state.map((value) => value);
       selected$.track(firstSpy);
@@ -193,7 +191,7 @@ describe("derived state", () => {
           evenNumber$.render((value) =>
             createElement("div", {
               children: [
-                `current even value is ${((value as any) === createState.empty) ? "empty" : value}`,
+                `current even value is ${(value as any) === createState.empty ? "empty" : value}`,
               ],
             }),
           ),

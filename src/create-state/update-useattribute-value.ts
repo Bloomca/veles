@@ -2,13 +2,7 @@ import { assignDomAttribute } from "../attribute-utils";
 
 import type { TrackingAttribute } from "./types";
 
-function updateUseAttributeValue<T>({
-  element,
-  value,
-}: {
-  element: TrackingAttribute;
-  value: T;
-}) {
+function updateUseAttributeValue<T>({ element, value }: { element: TrackingAttribute; value: T }) {
   const { cb, htmlElement, attributeName, attributeValue } = element;
   const newAttributeValue = cb ? cb(value) : value;
 

@@ -36,13 +36,12 @@ describe("assign-attributes", () => {
             value: name$.attribute((name) => name),
             onFocus: focusFn,
             onBlur: blurFn,
-            onInput: (e) =>
-              name$.set((e.target as HTMLInputElement).value),
+            onInput: (e) => name$.set((e.target as HTMLInputElement).value),
           }),
           name$.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
-            })
+            }),
           ),
         ],
       });
@@ -95,13 +94,12 @@ describe("assign-attributes", () => {
             value: name$.attribute(),
             onFocus: focusFn,
             onBlur: blurFn,
-            onInput: (e) =>
-              name$.set((e.target as HTMLInputElement).value),
+            onInput: (e) => name$.set((e.target as HTMLInputElement).value),
           }),
           name$.render((value) =>
             createElement("div", {
               children: [`current name is ${value || "empty"}`],
-            })
+            }),
           ),
         ],
       });
@@ -311,7 +309,7 @@ describe("assign-attributes", () => {
                     spyFn();
                     state.update((currentValue) => currentValue + 1);
                   }
-                : undefined
+                : undefined,
             ),
           }),
         ],
@@ -353,9 +351,7 @@ describe("assign-attributes", () => {
         children: [
           createElement("button", {
             "data-testid": "button",
-            onClick: state.attribute((value) =>
-              value !== 0 && value < 4 ? handler : undefined
-            ),
+            onClick: state.attribute((value) => (value !== 0 && value < 4 ? handler : undefined)),
           }),
         ],
       });
@@ -425,7 +421,7 @@ describe("assign-attributes", () => {
           createElement("button", {
             "data-testid": "button",
             onDblClick: state.attribute((value) =>
-              value !== 0 && value < 4 ? handler : undefined
+              value !== 0 && value < 4 ? handler : undefined,
             ),
           }),
         ],

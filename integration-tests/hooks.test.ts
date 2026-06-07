@@ -32,10 +32,7 @@ describe("lifecycle hooks", () => {
     function FirstNestedComponent() {
       onMount(firstComponentMountSpy);
       return createElement("div", {
-        children: [
-          "first nested component",
-          createElement(SecondNestedComponent),
-        ],
+        children: ["first nested component", createElement(SecondNestedComponent)],
       });
     }
 
@@ -72,7 +69,7 @@ describe("lifecycle hooks", () => {
             onClick: () => showChildren$.set(false),
           }),
           showChildren$.render((shouldShow) =>
-            shouldShow ? createElement(FirstNestedComponent) : null
+            shouldShow ? createElement(FirstNestedComponent) : null,
           ),
         ],
       });
@@ -83,10 +80,7 @@ describe("lifecycle hooks", () => {
     function FirstNestedComponent() {
       onUnmount(firstComponentUnmountSpy);
       return createElement("div", {
-        children: [
-          "first nested component",
-          createElement(SecondNestedComponent),
-        ],
+        children: ["first nested component", createElement(SecondNestedComponent)],
       });
     }
 
@@ -114,9 +108,7 @@ describe("lifecycle hooks", () => {
   test("onMount hooks are executed when the markup is in DOM", async () => {
     let isElementFound = false;
     const appMountSpy = () => {
-      const appComponentElement = document.querySelector(
-        '[data-testid="appComponent"]'
-      );
+      const appComponentElement = document.querySelector('[data-testid="appComponent"]');
 
       if (appComponentElement) {
         isElementFound = true;
@@ -154,9 +146,7 @@ describe("lifecycle hooks", () => {
             "data-testid": "button",
             onClick: () => show$.update(() => true),
           }),
-          show$.render((shouldShow) =>
-            shouldShow ? createElement(Wrapper) : null
-          ),
+          show$.render((shouldShow) => (shouldShow ? createElement(Wrapper) : null)),
         ],
       });
     }
@@ -260,31 +250,25 @@ describe("lifecycle hooks", () => {
           createElement("button", {
             "data-testid": "button",
             onClick: () => {
-              tasks$.update((currentTasks) =>
-                currentTasks.concat({ id: 3, title: "third task" })
-              );
+              tasks$.update((currentTasks) => currentTasks.concat({ id: 3, title: "third task" }));
             },
           }),
           tasks$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
-            createElement(Task, { task$: element$ })
+            createElement(Task, { task$: element$ }),
           ),
         ],
       });
     }
 
     const taskMountSpy = vi.fn();
-    function Task({
-      task$,
-    }: {
-      task$: State<{ id: number; title: string }>;
-    }) {
+    function Task({ task$ }: { task$: State<{ id: number; title: string }> }) {
       onMount(taskMountSpy);
       return createElement("div", {
         children: [
           "task",
           task$.renderSelected(
             (task) => task.title,
-            (title) => title
+            (title) => title,
           ),
         ],
       });
@@ -322,7 +306,7 @@ describe("lifecycle hooks", () => {
             onClick: () => shouldShow$.set(false),
           }),
           shouldShow$.render((shouldShow) =>
-            shouldShow ? createElement(ConditionalComponent) : null
+            shouldShow ? createElement(ConditionalComponent) : null,
           ),
         ],
       });
@@ -378,7 +362,7 @@ describe("lifecycle hooks", () => {
           show$.render((shouldShow) =>
             shouldShow
               ? createElement(NestedComponent)
-              : createElement("div", { children: "other" })
+              : createElement("div", { children: "other" }),
           ),
         ],
       });

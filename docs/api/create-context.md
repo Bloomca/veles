@@ -94,14 +94,10 @@ function App() {
       <div>
         <h1>Application</h1>
         <NestedComponent />
-        <button
-          onClick={() => show$.update((currentValue) => !currentValue)}
-        >
+        <button onClick={() => show$.update((currentValue) => !currentValue)}>
           Toggle conditional component
         </button>
-        {show$.render((shouldShow) =>
-          shouldShow ? <ConditionalComponent /> : null
-        )}
+        {show$.render((shouldShow) => (shouldShow ? <ConditionalComponent /> : null))}
       </div>
     </exampleContext.Provider>
   );

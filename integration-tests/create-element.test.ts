@@ -1,12 +1,7 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import {
-  attachComponent,
-  createElement,
-  createState,
-  type State,
-} from "../src";
+import { attachComponent, createElement, createState, type State } from "../src";
 
 describe("createElement", () => {
   let cleanup: Function | undefined;
@@ -65,10 +60,7 @@ describe("createElement", () => {
   test("supports passing down props correctly", async () => {
     function SecondComponent({ value }: { value: string }) {
       return createElement("div", {
-        children: [
-          "Second component",
-          createElement("span", { children: value }),
-        ],
+        children: ["Second component", createElement("span", { children: value })],
       });
     }
 
@@ -185,7 +177,7 @@ describe("createElement", () => {
               "data-testid": "stateComponent",
               children: "state component",
             })
-          : null
+          : null,
       );
     }
     cleanup = attachComponent({

@@ -24,13 +24,7 @@ function Counter() {
 
   return (
     <div>
-      <button
-        onClick={() =>
-          counter$.update((currentValue) => currentValue + 1)
-        }
-      >
-        +
-      </button>
+      <button onClick={() => counter$.update((currentValue) => currentValue + 1)}>+</button>
       <p>{counter$.render((value) => `counter value is ${value}`)}</p>
     </div>
   );
@@ -84,9 +78,7 @@ Disposes the current state and disconnects it from parent/child derived states. 
 function FullName() {
   const name$ = createState("Seva");
   const lastName$ = createState("Zaikov");
-  const fullName$ = name$
-    .combine(lastName$)
-    .map(([name, lastName]) => `${name} ${lastName}`);
+  const fullName$ = name$.combine(lastName$).map(([name, lastName]) => `${name} ${lastName}`);
 
   return fullName$.render((value) => <p>{value}</p>);
 }

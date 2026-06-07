@@ -20,17 +20,14 @@ import { Portal, useState } from "veles";
 function Component() {
   const show$ = useState(false);
   return (
-    <div
-      onMouseOver={() => show$.setState(true)}
-      onMouseOut={() => show$.setState(false)}
-    >
+    <div onMouseOver={() => show$.setState(true)} onMouseOut={() => show$.setState(false)}>
       <h1>Title</h1>
       {show$.render((shouldShow) =>
         shouldShow ? (
           <Portal portalNode={document.getElementById("portal")}>
             <div>Component menu</div>
           </Portal>
-        ) : null
+        ) : null,
       )}
     </div>
   );

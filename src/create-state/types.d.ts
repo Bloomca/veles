@@ -18,7 +18,7 @@ export type State<ValueType> = {
       callOnMount?: boolean;
       skipFirstCall?: boolean;
       comparator?: (value1: ValueType, value2: ValueType) => boolean;
-    }
+    },
   ): void;
   trackSelected<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
@@ -26,96 +26,75 @@ export type State<ValueType> = {
     options?: {
       callOnMount?: boolean;
       skipFirstCall?: boolean;
-      comparator?: (
-        value1: SelectorValueType,
-        value2: SelectorValueType
-      ) => boolean;
-    }
+      comparator?: (value1: SelectorValueType, value2: SelectorValueType) => boolean;
+    },
   ): void;
   render(
-    cb?: (
-      value: ValueType
-    ) => VelesElement | VelesComponentObject | string | undefined | null,
-    comparator?: (value1: ValueType, value2: ValueType) => boolean
+    cb?: (value: ValueType) => VelesElement | VelesComponentObject | string | undefined | null,
+    comparator?: (value1: ValueType, value2: ValueType) => boolean,
   ): VelesElement | VelesComponentObject | VelesStringElement;
   renderSelected: {
     (
       selector: undefined,
-      cb?: (
-        value: ValueType
-      ) => VelesElement | VelesComponentObject | string | undefined | null,
-      comparator?: (value1: ValueType, value2: ValueType) => boolean
+      cb?: (value: ValueType) => VelesElement | VelesComponentObject | string | undefined | null,
+      comparator?: (value1: ValueType, value2: ValueType) => boolean,
     ): VelesElement | VelesComponentObject | VelesStringElement;
     <SelectorValueType>(
       selector: (value: ValueType) => SelectorValueType,
       cb?: (
-        value: SelectorValueType
+        value: SelectorValueType,
       ) => VelesElement | VelesComponentObject | string | undefined | null,
-      comparator?: (
-        value1: SelectorValueType,
-        value2: SelectorValueType
-      ) => boolean
+      comparator?: (value1: SelectorValueType, value2: SelectorValueType) => boolean,
     ): VelesElement | VelesComponentObject | VelesStringElement;
   };
   attribute(cb?: (value: ValueType) => any): AttributeHelper<any>;
   renderEach<Element extends ArrayElement<ValueType> = ArrayElement<ValueType>>(
     options: ValueType extends ReadonlyArray<any>
       ? {
-          key:
-            | string
-            | ((options: {
-                element: Element;
-                index: number;
-              }) => string);
+          key: string | ((options: { element: Element; index: number }) => string);
           selector?: undefined;
         }
       : never,
     cb: (props: {
       elementState: State<Element>;
       indexState: State<number>;
-    }) => VelesElement | VelesComponentObject
+    }) => VelesElement | VelesComponentObject,
   ): VelesComponentObject | VelesElement;
   renderEach<
     SelectorValueType extends ReadonlyArray<any>,
-    Element extends ArrayElement<SelectorValueType> =
-      ArrayElement<SelectorValueType>,
+    Element extends ArrayElement<SelectorValueType> = ArrayElement<SelectorValueType>,
   >(
     options: {
-      key:
-        | string
-        | ((options: {
-            element: Element;
-            index: number;
-          }) => string);
+      key: string | ((options: { element: Element; index: number }) => string);
       selector: (value: ValueType) => SelectorValueType;
     },
     cb: (props: {
       elementState: State<Element>;
       indexState: State<number>;
-    }) => VelesElement | VelesComponentObject
+    }) => VelesElement | VelesComponentObject,
   ): VelesComponentObject | VelesElement;
   map<SelectorValueType>(
     selector: (value: ValueType) => SelectorValueType,
     options?: {
       equality?: StateEquality<SelectorValueType>;
-    }
+    },
   ): State<SelectorValueType>;
   filter(
     predicate: (value: ValueType, prevValue?: ValueType | undefined) => boolean,
     options?: {
       equality?: StateEquality<ValueType>;
-    }
+    },
   ): State<ValueType>;
   scan<AccumulatorValueType>(
     reducer: (
       acc: AccumulatorValueType,
       value: ValueType,
-      prevValue?: ValueType | undefined
+      prevValue?: ValueType | undefined,
     ) => AccumulatorValueType,
     initialValue: AccumulatorValueType,
     options?: {
       equality?: StateEquality<AccumulatorValueType>;
-    }
+    },
   ): State<AccumulatorValueType>;
   combine<Sources extends [StateLike<any>, ...StateLike<any>[]]>(
     ...states: Sources
@@ -123,10 +102,8 @@ export type State<ValueType> = {
     [
       ValueType,
       ...{
-        [K in keyof Sources]: Sources[K] extends StateLike<infer U>
-          ? U
-          : never;
-      }
+        [K in keyof Sources]: Sources[K] extends StateLike<infer U> ? U : never;
+      },
     ]
   >;
   dispose(): void;
@@ -138,9 +115,7 @@ export type State<ValueType> = {
 
 export function createState<T>(
   initialValue: T,
-  subscribeCallback?: (
-    set: ReturnType<typeof createState<T>>["set"]
-  ) => Function
+  subscribeCallback?: (set: ReturnType<typeof createState<T>>["set"]) => Function,
 ): State<T>;
 
 export namespace createState {
@@ -148,9 +123,7 @@ export namespace createState {
 }
 
 export type TrackingSelectorElement = {
-  cb?: (
-    value: any
-  ) => VelesElement | VelesComponentObject | string | undefined | null;
+  cb?: (value: any) => VelesElement | VelesComponentObject | string | undefined | null;
   selector?: Function;
   selectedValue: any;
   comparator: (value1: any, value2: any) => boolean;
@@ -172,11 +145,7 @@ export type TrackingIterator = {
     indexState: State<number>;
   }) => VelesElement | VelesComponentObject;
   selector?: (value: unknown) => any[];
-  renderedElements: [
-    VelesElement | VelesComponentObject,
-    string,
-    State<unknown>
-  ][];
+  renderedElements: [VelesElement | VelesComponentObject, string, State<unknown>][];
   key: string | ((options: { element: unknown; index: number }) => string);
   elementsByKey: {
     [key: string]: {

@@ -1,12 +1,7 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import {
-  attachComponent,
-  createElement,
-  createState,
-  onUnmount,
-} from "../../src";
+import { attachComponent, createElement, createState, onUnmount } from "../../src";
 
 import type { State } from "../../src";
 
@@ -40,7 +35,7 @@ describe("createState", () => {
             },
           }),
           value$.render((value) =>
-            createElement("div", { children: [`current value is ${value}`] })
+            createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
       });
@@ -73,9 +68,7 @@ describe("createState", () => {
               name$.set(e.target.value);
             },
           }),
-          name$.render((value) =>
-            createElement("div", { children: [`current name is ${value}`] })
-          ),
+          name$.render((value) => createElement("div", { children: [`current name is ${value}`] })),
         ],
       });
     }
@@ -111,17 +104,13 @@ describe("createState", () => {
       });
     }
 
-    function ReadingStateComponent({
-      value$,
-    }: {
-      value$: State<number>;
-    }) {
+    function ReadingStateComponent({ value$ }: { value$: State<number> }) {
       return createElement("div", {
         children: [
           value$.render((value) =>
             createElement("div", {
               children: [`child value is ${value}`],
-            })
+            }),
           ),
         ],
       });
@@ -173,7 +162,7 @@ describe("createState", () => {
           }),
           value$.renderSelected(
             (value) => value.secondValue,
-            (value) => createElement(SecondValueComponent, { value })
+            (value) => createElement(SecondValueComponent, { value }),
           ),
         ],
       });
@@ -243,7 +232,7 @@ describe("createState", () => {
               createElement(ValueComponent, {
                 value: value.firstValue + value.secondValue,
               }),
-            shallow
+            shallow,
           ),
         ],
       });
@@ -289,9 +278,7 @@ describe("createState", () => {
             },
           }),
           createElement("div", {
-            children: value$.render(
-              (value) => `current value is ${value}`
-            ),
+            children: value$.render((value) => `current value is ${value}`),
           }),
         ],
       });
@@ -325,9 +312,7 @@ describe("createState", () => {
             },
           }),
           createElement("div", {
-            children: value$.render((value) =>
-              value === 0 ? null : `current value is ${value}`
-            ),
+            children: value$.render((value) => (value === 0 ? null : `current value is ${value}`)),
           }),
         ],
       });
@@ -429,28 +414,19 @@ describe("createState", () => {
             "data-testid": "container",
             children: title$.renderSelected(
               (data) => data.title.length > 3,
-              (isLong) =>
-                isLong
-                  ? createElement(ConditionalComponent, { state: title$ })
-                  : null
+              (isLong) => (isLong ? createElement(ConditionalComponent, { state: title$ }) : null),
             ),
           }),
         ],
       });
     }
 
-    function ConditionalComponent({
-      state,
-    }: {
-      state: State<{ title: string }>;
-    }) {
+    function ConditionalComponent({ state }: { state: State<{ title: string }> }) {
       return createElement("div", {
         children: [
           createElement("div", {
             "data-testid": "text",
-            children: state.render(
-              (value) => `length is ${value.title.length}`
-            ),
+            children: state.render((value) => `length is ${value.title.length}`),
           }),
         ],
       });
@@ -493,28 +469,19 @@ describe("createState", () => {
             "data-testid": "container",
             children: title$.renderSelected(
               (data) => data.title.length > 3,
-              (isLong) =>
-                isLong
-                  ? createElement(ConditionalComponent, { state: title$ })
-                  : null
+              (isLong) => (isLong ? createElement(ConditionalComponent, { state: title$ }) : null),
             ),
           }),
         ],
       });
     }
 
-    function ConditionalComponent({
-      state,
-    }: {
-      state: State<{ title: string }>;
-    }) {
+    function ConditionalComponent({ state }: { state: State<{ title: string }> }) {
       return createElement("div", {
         children: [
           createElement("div", {
             "data-testid": "text",
-            children: state.render(
-              (value) => `length is ${value.title.length}`
-            ),
+            children: state.render((value) => `length is ${value.title.length}`),
           }),
         ],
       });
@@ -564,11 +531,7 @@ describe("createState", () => {
       });
     }
 
-    function TopLevelConditional({
-      stream$,
-    }: {
-      stream$: State<{ value: number }>;
-    }) {
+    function TopLevelConditional({ stream$ }: { stream$: State<{ value: number }> }) {
       return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
@@ -580,15 +543,11 @@ describe("createState", () => {
                 "data-testid": "top-level-odd",
                 children: "top level odd",
               });
-        }
+        },
       );
     }
 
-    function FirstNestedConditional({
-      stream$,
-    }: {
-      stream$: State<{ value: number }>;
-    }) {
+    function FirstNestedConditional({ stream$ }: { stream$: State<{ value: number }> }) {
       return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
@@ -599,15 +558,11 @@ describe("createState", () => {
             : createElement("div", {
                 children: "first nested odd",
               });
-        }
+        },
       );
     }
 
-    function SecondNestedConditional({
-      stream$,
-    }: {
-      stream$: State<{ value: number }>;
-    }) {
+    function SecondNestedConditional({ stream$ }: { stream$: State<{ value: number }> }) {
       return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
@@ -621,7 +576,7 @@ describe("createState", () => {
             : createElement("div", {
                 children: "second nested odd",
               });
-        }
+        },
       );
     }
 
@@ -681,11 +636,7 @@ describe("createState", () => {
       });
     }
 
-    function TopLevelConditional({
-      stream$,
-    }: {
-      stream$: State<{ value: number }>;
-    }) {
+    function TopLevelConditional({ stream$ }: { stream$: State<{ value: number }> }) {
       return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
@@ -698,15 +649,11 @@ describe("createState", () => {
               createElement(FirstNestedConditional, { stream$ }),
             ],
           });
-        }
+        },
       );
     }
 
-    function FirstNestedConditional({
-      stream$,
-    }: {
-      stream$: State<{ value: number }>;
-    }) {
+    function FirstNestedConditional({ stream$ }: { stream$: State<{ value: number }> }) {
       return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
@@ -719,15 +666,11 @@ describe("createState", () => {
               createElement(SecondNestedConditional, { stream$ }),
             ],
           });
-        }
+        },
       );
     }
 
-    function SecondNestedConditional({
-      stream$,
-    }: {
-      stream$: State<{ value: number }>;
-    }) {
+    function SecondNestedConditional({ stream$ }: { stream$: State<{ value: number }> }) {
       return stream$.renderSelected(
         (value) => value.value % 2 === 0,
         (isEven) => {
@@ -737,7 +680,7 @@ describe("createState", () => {
             "data-testid": "leaf",
             children: `leaf is ${isEven ? "even" : "odd"}`,
           });
-        }
+        },
       );
     }
 
@@ -826,9 +769,7 @@ describe("createState", () => {
             "data-testid": "button",
             onClick: () => show$.update((value) => !value),
           }),
-          show$.render((shouldShow) =>
-            shouldShow ? createElement(NestedComponent) : null
-          ),
+          show$.render((shouldShow) => (shouldShow ? createElement(NestedComponent) : null)),
         ],
       });
     }

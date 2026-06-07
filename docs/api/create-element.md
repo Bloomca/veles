@@ -14,10 +14,7 @@ import { createElement } from "veles";
 
 function Component() {
   return createElement("div", {
-    children: [
-      createElement("h1", { children: "component" }),
-      createElement(NestedComponent),
-    ],
+    children: [createElement("h1", { children: "component" }), createElement(NestedComponent)],
   });
 }
 

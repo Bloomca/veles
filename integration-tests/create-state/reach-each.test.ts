@@ -1,12 +1,7 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import {
-  attachComponent,
-  createElement,
-  createState,
-  onUnmount,
-} from "../../src";
+import { attachComponent, createElement, createState, onUnmount } from "../../src";
 
 import type { State } from "../../src";
 
@@ -228,13 +223,11 @@ describe("state.renderEach", () => {
           createElement("div", {
             "data-testid": "container",
             children: [
-              items$.renderEach(
-                { key: "id" },
-                ({ elementState: element$, indexState: index$ }) =>
-                  createElement("div", {
-                    children: [
-                      createElement("div", {
-                        children: index$.render((value) => {
+              items$.renderEach({ key: "id" }, ({ elementState: element$, indexState: index$ }) =>
+                createElement("div", {
+                  children: [
+                    createElement("div", {
+                      children: index$.render((value) => {
                         indexSpy();
                         return String(value);
                       }),
@@ -302,14 +295,10 @@ describe("state.renderEach", () => {
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: items$.renderEach(
-              { key: "id" },
-              ({ elementState: element$ }) =>
-                createElement("li", {
-                  children: element$.renderSelected(
-                    (element) => element.text,
-                  ),
-                }),
+            children: items$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+              createElement("li", {
+                children: element$.renderSelected((element) => element.text),
+              }),
             ),
           }),
         ],
@@ -351,14 +340,10 @@ describe("state.renderEach", () => {
           }),
           createElement("ul", {
             "data-testid": "list",
-            children: items$.renderEach(
-              { key: "id" },
-              ({ elementState: element$ }) =>
-                createElement("li", {
-                  children: element$.renderSelected(
-                    (element) => element.text,
-                  ),
-                }),
+            children: items$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+              createElement("li", {
+                children: element$.renderSelected((element) => element.text),
+              }),
             ),
           }),
         ],
@@ -413,9 +398,7 @@ describe("state.renderEach", () => {
           }),
           createElement("div", {
             "data-testid": "container",
-            children: show$.render((shouldShow) =>
-              shouldShow ? itemsMarkup : null,
-            ),
+            children: show$.render((shouldShow) => (shouldShow ? itemsMarkup : null)),
           }),
         ],
       });
@@ -423,13 +406,7 @@ describe("state.renderEach", () => {
 
     const textSpy = vi.fn();
     const indexSpy = vi.fn();
-    function Item({
-      element$,
-      index$,
-    }: {
-      element$: State<Item>;
-      index$: State<number>;
-    }) {
+    function Item({ element$, index$ }: { element$: State<Item>; index$: State<number> }) {
       return createElement("div", {
         children: [
           createElement("h3", {
@@ -498,14 +475,7 @@ describe("state.renderEach", () => {
     // empty Text node
     expect(children.length).toBe(1);
 
-    items$.set([
-      item4,
-      item5,
-      item3,
-      { ...item1, text: "1st item" },
-      item2,
-      item6,
-    ]);
+    items$.set([item4, item5, item3, { ...item1, text: "1st item" }, item2, item6]);
 
     expect(textSpy).toHaveBeenCalledTimes(5);
     expect(indexSpy).toHaveBeenCalledTimes(6);

@@ -41,12 +41,7 @@ When you decide what to render based on some condition, remember that `renderSel
 <div>
   {task$.renderSelected(
     (task) => task.labels.length > 5,
-    (showLabels) =>
-      showLabels ? (
-        <ItemWithLabels task$={task$} />
-      ) : (
-        <Item task$={task$} />
-      )
+    (showLabels) => (showLabels ? <ItemWithLabels task$={task$} /> : <Item task$={task$} />),
   )}
 </div>
 ```

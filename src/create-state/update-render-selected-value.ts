@@ -7,10 +7,7 @@ import {
 import { createTextElement } from "../create-element/create-text-element";
 import { addPublicContext, popPublicContext } from "../context";
 
-import type {
-  ExecutedVelesElement,
-  ExecutedVelesStringElement,
-} from "../types";
+import type { ExecutedVelesElement, ExecutedVelesStringElement } from "../types";
 import type { TrackingSelectorElement, StateTrackers } from "./types";
 
 function updateUseValueSelector<T>({
@@ -26,8 +23,7 @@ function updateUseValueSelector<T>({
   trackers: StateTrackers;
   get: () => T;
 }) {
-  const { selectedValue, selector, cb, node, comparator, savedContext } =
-    selectorTrackingElement;
+  const { selectedValue, selector, cb, node, comparator, savedContext } = selectorTrackingElement;
   const newSelectedValue = selector ? selector(value) : value;
 
   if (comparator(selectedValue, newSelectedValue)) {
@@ -53,8 +49,8 @@ function updateUseValueSelector<T>({
   const returnednewNode = cb
     ? cb(newSelectedValue)
     : newSelectedValue == undefined
-    ? ""
-    : String(newSelectedValue);
+      ? ""
+      : String(newSelectedValue);
   const newNode =
     !returnednewNode || typeof returnednewNode === "string"
       ? createTextElement(returnednewNode as string)
@@ -77,9 +73,7 @@ function updateUseValueSelector<T>({
     return;
   }
 
-  const oldVelesElementNode = getExecutedComponentVelesNode(
-    node.executedVersion
-  );
+  const oldVelesElementNode = getExecutedComponentVelesNode(node.executedVersion);
   const newVelesElementNode = getExecutedComponentVelesNode(newRenderedNode);
 
   const parentVelesElement = node.parentVelesElement;
@@ -103,112 +97,89 @@ function updateUseValueSelector<T>({
     // we need to treat phantom nodes slightly differently
     // because it is not a single node removal/insert, but all
     // the children at once
-    if (
-      "executedVelesNode" in newVelesElementNode &&
-      newVelesElementNode.phantom
-    ) {
+    if ("executedVelesNode" in newVelesElementNode && newVelesElementNode.phantom) {
       const insertAllPhantomChildren = (
-        adjacentNode: ExecutedVelesElement | ExecutedVelesStringElement
+        adjacentNode: ExecutedVelesElement | ExecutedVelesStringElement,
       ) => {
         // we need to get ALL the children of it and attach it to this node
-        newVelesElementNode.childComponents.forEach(
-          (childComponentofPhantom) => {
-            if ("executedVelesNode" in childComponentofPhantom) {
-              adjacentNode.html.before(childComponentofPhantom.html);
-              childComponentofPhantom.parentVelesElement =
-                adjacentNode.parentVelesElement;
-            } else {
-              const velesElementNode = getExecutedComponentVelesNode(
-                childComponentofPhantom
-              );
+        newVelesElementNode.childComponents.forEach((childComponentofPhantom) => {
+          if ("executedVelesNode" in childComponentofPhantom) {
+            adjacentNode.html.before(childComponentofPhantom.html);
+            childComponentofPhantom.parentVelesElement = adjacentNode.parentVelesElement;
+          } else {
+            const velesElementNode = getExecutedComponentVelesNode(childComponentofPhantom);
 
-              if (!velesElementNode) {
-                console.error("can't find HTML tree in a component chain");
-              } else {
-                adjacentNode.html.before(velesElementNode.html);
-                velesElementNode.parentVelesElement =
-                  adjacentNode.parentVelesElement;
-              }
+            if (!velesElementNode) {
+              console.error("can't find HTML tree in a component chain");
+            } else {
+              adjacentNode.html.before(velesElementNode.html);
+              velesElementNode.parentVelesElement = adjacentNode.parentVelesElement;
             }
           }
-        );
+        });
       };
-      if (
-        "executedVelesNode" in oldVelesElementNode &&
-        oldVelesElementNode.phantom
-      ) {
+      if ("executedVelesNode" in oldVelesElementNode && oldVelesElementNode.phantom) {
         let isInserted = false;
-        oldVelesElementNode.childComponents.forEach(
-          (childComponentofPhantom) => {
-            if ("executedVelesNode" in childComponentofPhantom) {
+        oldVelesElementNode.childComponents.forEach((childComponentofPhantom) => {
+          if ("executedVelesNode" in childComponentofPhantom) {
+            if (!isInserted) {
+              insertAllPhantomChildren(childComponentofPhantom);
+              isInserted = true;
+            }
+            childComponentofPhantom.html.remove();
+          } else {
+            const velesElementNode = getExecutedComponentVelesNode(childComponentofPhantom);
+
+            if (!velesElementNode) {
+              console.error("can't find HTML tree in a component chain");
+            } else {
               if (!isInserted) {
-                insertAllPhantomChildren(childComponentofPhantom);
+                insertAllPhantomChildren(velesElementNode);
                 isInserted = true;
               }
-              childComponentofPhantom.html.remove();
-            } else {
-              const velesElementNode = getExecutedComponentVelesNode(
-                childComponentofPhantom
-              );
-
-              if (!velesElementNode) {
-                console.error("can't find HTML tree in a component chain");
-              } else {
-                if (!isInserted) {
-                  insertAllPhantomChildren(velesElementNode);
-                  isInserted = true;
-                }
-                velesElementNode.html.remove();
-              }
+              velesElementNode.html.remove();
             }
           }
-        );
+        });
       } else {
         insertAllPhantomChildren(oldVelesElementNode);
         oldVelesElementNode.html.remove();
       }
     } else {
-      if (
-        "executedVelesNode" in oldVelesElementNode &&
-        oldVelesElementNode.phantom
-      ) {
+      if ("executedVelesNode" in oldVelesElementNode && oldVelesElementNode.phantom) {
         let isInserted = false;
-        oldVelesElementNode.childComponents.forEach(
-          (childComponentofPhantom) => {
-            if ("executedVelesNode" in childComponentofPhantom) {
+        oldVelesElementNode.childComponents.forEach((childComponentofPhantom) => {
+          if ("executedVelesNode" in childComponentofPhantom) {
+            if (!isInserted) {
+              childComponentofPhantom.html.before(newVelesElementNode.html);
+              isInserted = true;
+            }
+            childComponentofPhantom.html.remove();
+          } else {
+            const velesElementNode = getExecutedComponentVelesNode(childComponentofPhantom);
+
+            if (!velesElementNode) {
+              console.error("can't find HTML tree in a component chain");
+            } else {
               if (!isInserted) {
-                childComponentofPhantom.html.before(newVelesElementNode.html);
+                velesElementNode.html.before(newVelesElementNode.html);
                 isInserted = true;
               }
-              childComponentofPhantom.html.remove();
-            } else {
-              const velesElementNode = getExecutedComponentVelesNode(
-                childComponentofPhantom
-              );
-
-              if (!velesElementNode) {
-                console.error("can't find HTML tree in a component chain");
-              } else {
-                if (!isInserted) {
-                  velesElementNode.html.before(newVelesElementNode.html);
-                  isInserted = true;
-                }
-                velesElementNode.html.remove();
-              }
+              velesElementNode.html.remove();
             }
           }
-        );
+        });
       } else {
         try {
           if (parentVelesElementRendered.portal) {
             parentVelesElementRendered.portal.replaceChild(
               newVelesElementNode.html,
-              oldVelesElementNode.html
+              oldVelesElementNode.html,
             );
           } else {
             parentVelesElementRendered.html.replaceChild(
               newVelesElementNode.html,
-              oldVelesElementNode.html
+              oldVelesElementNode.html,
             );
           }
         } catch (e) {
@@ -220,18 +191,15 @@ function updateUseValueSelector<T>({
     // we need to update `childComponents` so that after the update
     // if the parent node is removed from DOM, it calls correct unmount
     // callbacks
-    parentVelesElementRendered.childComponents =
-      parentVelesElementRendered.childComponents.map((childComponent) =>
-        childComponent === node.executedVersion
-          ? newRenderedNode
-          : childComponent
-      );
+    parentVelesElementRendered.childComponents = parentVelesElementRendered.childComponents.map(
+      (childComponent) =>
+        childComponent === node.executedVersion ? newRenderedNode : childComponent,
+    );
 
     if (parentVelesElement?.childComponents) {
-      parentVelesElement.childComponents =
-        parentVelesElement.childComponents.map((childComponent) =>
-          childComponent === node ? newNode : childComponent
-        );
+      parentVelesElement.childComponents = parentVelesElement.childComponents.map(
+        (childComponent) => (childComponent === node ? newNode : childComponent),
+      );
     }
 
     // we call unmount handlers right after we replace it
@@ -254,10 +222,9 @@ function updateUseValueSelector<T>({
     // and added back into their respective unmount listeners if it is still viable
     newNode._privateMethods._addUnmountHandler(() => {
       newTrackingSelectorElement._isActive = false;
-      trackers.trackingSelectorElements =
-        trackers.trackingSelectorElements.filter(
-          (el) => el !== newTrackingSelectorElement
-        );
+      trackers.trackingSelectorElements = trackers.trackingSelectorElements.filter(
+        (el) => el !== newTrackingSelectorElement,
+      );
     });
   } else {
     console.log("parent node was not found");
@@ -287,10 +254,9 @@ function addUseValueMountHandler<T>({
       trackers.trackingSelectorElements.push(trackingSelectorElement);
       trackingSelectorElement.node._privateMethods._addUnmountHandler(() => {
         trackingSelectorElement._isActive = false;
-        trackers.trackingSelectorElements =
-          trackers.trackingSelectorElements.filter(
-            (el) => trackingSelectorElement !== el
-          );
+        trackers.trackingSelectorElements = trackers.trackingSelectorElements.filter(
+          (el) => trackingSelectorElement !== el,
+        );
       });
     } else {
       const newTrackingSelectorElements: TrackingSelectorElement[] = [];
@@ -308,15 +274,12 @@ function addUseValueMountHandler<T>({
         if (newTrackingSelectorElement.node === trackingSelectorElement.node) {
           newTrackingSelectorElement._isActive = true;
           trackers.trackingSelectorElements.push(newTrackingSelectorElement);
-          newTrackingSelectorElement.node._privateMethods._addUnmountHandler(
-            () => {
-              newTrackingSelectorElement._isActive = false;
-              trackers.trackingSelectorElements =
-                trackers.trackingSelectorElements.filter(
-                  (el) => trackingSelectorElement !== el
-                );
-            }
-          );
+          newTrackingSelectorElement.node._privateMethods._addUnmountHandler(() => {
+            newTrackingSelectorElement._isActive = false;
+            trackers.trackingSelectorElements = trackers.trackingSelectorElements.filter(
+              (el) => trackingSelectorElement !== el,
+            );
+          });
         } else {
           // otherwise it means the node was replaced, because the selector result is different
           // the new node will be executed with this function as well, so nothing to do here

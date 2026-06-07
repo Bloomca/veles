@@ -11,10 +11,7 @@ import type {
 } from "./types";
 
 function getExecutedComponentVelesNode(
-  component:
-    | ExecutedVelesComponent
-    | ExecutedVelesElement
-    | ExecutedVelesStringElement
+  component: ExecutedVelesComponent | ExecutedVelesElement | ExecutedVelesStringElement,
 ): ExecutedVelesElement | ExecutedVelesStringElement {
   if ("executedVelesStringElement" in component) {
     return component;
@@ -38,7 +35,7 @@ function getExecutedComponentVelesNode(
 // all components are executed at the right order (from top leaves to children)
 function renderTree(
   component: VelesComponentObject | VelesElement | VelesStringElement,
-  { parentVelesElement }: { parentVelesElement?: ExecutedVelesElement } = {}
+  { parentVelesElement }: { parentVelesElement?: ExecutedVelesElement } = {},
 ): ExecutedVelesComponent | ExecutedVelesElement | ExecutedVelesStringElement {
   if ("velesStringElement" in component) {
     const executedString: ExecutedVelesStringElement = {
@@ -134,9 +131,8 @@ function renderTree(
     if (component.portal) {
       executedNode.portal = component.portal;
     }
-    executedNode.childComponents = component.childComponents.map(
-      (childComponent) =>
-        renderTree(childComponent, { parentVelesElement: executedNode })
+    executedNode.childComponents = component.childComponents.map((childComponent) =>
+      renderTree(childComponent, { parentVelesElement: executedNode }),
     );
     if (component.needExecutedVersion) {
       component.executedVersion = executedNode;
@@ -160,50 +156,46 @@ function insertNode({
   if (velesElement.phantom) {
     let lastInsertedNode: HTMLElement | Text | null = null;
 
-    (velesElement as ExecutedVelesElement).childComponents.forEach(
-      (childComponentofPhantom) => {
-        if ("executedVelesNode" in childComponentofPhantom) {
-          if (lastInsertedNode) {
-            lastInsertedNode.after(childComponentofPhantom.html);
-          } else {
-            if (adjacentNode) {
-              adjacentNode.after(childComponentofPhantom.html);
-            } else {
-              parentVelesElement.html.prepend(childComponentofPhantom.html);
-            }
-          }
-          childComponentofPhantom.parentVelesElement = parentVelesElement;
-          lastInsertedNode = childComponentofPhantom.html;
-        } else if ("executedVelesStringElement" in childComponentofPhantom) {
-          if (lastInsertedNode) {
-            lastInsertedNode.after(childComponentofPhantom.html);
-          } else {
-            if (adjacentNode) {
-              adjacentNode.after(childComponentofPhantom.html);
-            } else {
-              parentVelesElement.html.prepend(childComponentofPhantom.html);
-            }
-          }
-          childComponentofPhantom.parentVelesElement = parentVelesElement;
-          lastInsertedNode = childComponentofPhantom.html;
+    (velesElement as ExecutedVelesElement).childComponents.forEach((childComponentofPhantom) => {
+      if ("executedVelesNode" in childComponentofPhantom) {
+        if (lastInsertedNode) {
+          lastInsertedNode.after(childComponentofPhantom.html);
         } else {
-          const executedNode = getExecutedComponentVelesNode(
-            childComponentofPhantom
-          );
-          if (lastInsertedNode) {
-            lastInsertedNode.after(executedNode.html);
+          if (adjacentNode) {
+            adjacentNode.after(childComponentofPhantom.html);
           } else {
-            if (adjacentNode) {
-              adjacentNode.after(executedNode.html);
-            } else {
-              parentVelesElement.html.prepend(executedNode.html);
-            }
+            parentVelesElement.html.prepend(childComponentofPhantom.html);
           }
-          executedNode.parentVelesElement = parentVelesElement;
-          lastInsertedNode = executedNode.html;
         }
+        childComponentofPhantom.parentVelesElement = parentVelesElement;
+        lastInsertedNode = childComponentofPhantom.html;
+      } else if ("executedVelesStringElement" in childComponentofPhantom) {
+        if (lastInsertedNode) {
+          lastInsertedNode.after(childComponentofPhantom.html);
+        } else {
+          if (adjacentNode) {
+            adjacentNode.after(childComponentofPhantom.html);
+          } else {
+            parentVelesElement.html.prepend(childComponentofPhantom.html);
+          }
+        }
+        childComponentofPhantom.parentVelesElement = parentVelesElement;
+        lastInsertedNode = childComponentofPhantom.html;
+      } else {
+        const executedNode = getExecutedComponentVelesNode(childComponentofPhantom);
+        if (lastInsertedNode) {
+          lastInsertedNode.after(executedNode.html);
+        } else {
+          if (adjacentNode) {
+            adjacentNode.after(executedNode.html);
+          } else {
+            parentVelesElement.html.prepend(executedNode.html);
+          }
+        }
+        executedNode.parentVelesElement = parentVelesElement;
+        lastInsertedNode = executedNode.html;
       }
-    );
+    });
     velesElement.parentVelesElement = parentVelesElement;
 
     return lastInsertedNode;
@@ -221,22 +213,17 @@ function insertNode({
 
 function getMountedNodeExecutedVersion(
   node: VelesComponentObject | VelesElement,
-  errorMessage?: string
+  errorMessage?: string,
 ): ExecutedVelesComponent | ExecutedVelesElement {
   if (!node.executedVersion) {
-    throw new Error(
-      errorMessage || "Expected node to have executedVersion by this point"
-    );
+    throw new Error(errorMessage || "Expected node to have executedVersion by this point");
   }
 
   return node.executedVersion;
 }
 
 function callMountHandlers(
-  component:
-    | ExecutedVelesComponent
-    | ExecutedVelesElement
-    | ExecutedVelesStringElement
+  component: ExecutedVelesComponent | ExecutedVelesElement | ExecutedVelesStringElement,
 ): void {
   component._privateMethods._callMountHandlers();
   if ("executedVelesStringElement" in component) {
@@ -248,26 +235,19 @@ function callMountHandlers(
   }
 
   if ("executedVelesNode" in component) {
-    component.childComponents.forEach((childComponent) =>
-      callMountHandlers(childComponent)
-    );
+    component.childComponents.forEach((childComponent) => callMountHandlers(childComponent));
   }
 }
 
 function callUnmountHandlers(
-  component:
-    | ExecutedVelesComponent
-    | ExecutedVelesElement
-    | ExecutedVelesStringElement
+  component: ExecutedVelesComponent | ExecutedVelesElement | ExecutedVelesStringElement,
 ): void {
   if ("executedVelesStringElement" in component) {
     // pass
   } else if ("executedVelesComponent" in component) {
     callUnmountHandlers(component.tree);
   } else if ("executedVelesNode" in component) {
-    component.childComponents.forEach((childComponent) =>
-      callUnmountHandlers(childComponent)
-    );
+    component.childComponents.forEach((childComponent) => callUnmountHandlers(childComponent));
   }
 
   component._privateMethods._callUnmountHandlers();
