@@ -66,9 +66,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "applicationsomethinghello"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("applicationsomethinghello");
   });
 
   test("can render components alongside regular nodes when it is in the middle", () => {
@@ -93,9 +91,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello application goodbye"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("hello application goodbye");
   });
 
   test("can render components alongside regular nodes when it is in the end", () => {
@@ -119,9 +115,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello,goodbye application"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("hello,goodbye application");
   });
 
   test("can render components alongside Fragment nodes when it is first", () => {
@@ -144,9 +138,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "applicationhello,goodbye"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("applicationhello,goodbye");
   });
 
   test("can render components alongside Fragment nodes when it is in the middle", () => {
@@ -169,9 +161,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello,applicationgoodbye"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("hello,applicationgoodbye");
   });
 
   test("can render components alongside Fragment nodes when it is in the end", () => {
@@ -185,17 +175,12 @@ describe("new renderer engine", () => {
       htmlElement: document.body,
       component: createElement("div", {
         "data-testid": "container",
-        children: [
-          createElement(Fragment, { children: ["hello", ","] }),
-          createElement(App),
-        ],
+        children: [createElement(Fragment, { children: ["hello", ","] }), createElement(App)],
       }),
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello,application"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("hello,application");
   });
 
   it("can render nested components", () => {
@@ -215,19 +200,12 @@ describe("new renderer engine", () => {
       htmlElement: document.body,
       component: createElement("div", {
         "data-testid": "container",
-        children: [
-          createElement(Fragment, { children: ["hello", ","] }),
-          createElement(App),
-        ],
+        children: [createElement(Fragment, { children: ["hello", ","] }), createElement(App)],
       }),
     });
 
-    expect(screen.getByTestId("app").textContent).toBe(
-      "applicationnested text"
-    );
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello,applicationnested text"
-    );
+    expect(screen.getByTestId("app").textContent).toBe("applicationnested text");
+    expect(screen.getByTestId("container").textContent).toBe("hello,applicationnested text");
   });
 
   it("can render multiple nested components without regular node wrappers", () => {
@@ -244,17 +222,12 @@ describe("new renderer engine", () => {
       htmlElement: document.body,
       component: createElement("div", {
         "data-testid": "container",
-        children: [
-          createElement(Fragment, { children: ["hello", ","] }),
-          createElement(App),
-        ],
+        children: [createElement(Fragment, { children: ["hello", ","] }), createElement(App)],
       }),
     });
 
     expect(screen.getByTestId("nested").textContent).toBe("nested text");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello,nested text"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("hello,nested text");
   });
 
   it("can render nested components returning Fragment directly", () => {
@@ -263,26 +236,18 @@ describe("new renderer engine", () => {
     }
     function NestedComponent() {
       return createElement(Fragment, {
-        children: [
-          "nested text",
-          createElement("div", { children: "something" }),
-        ],
+        children: ["nested text", createElement("div", { children: "something" })],
       });
     }
     cleanup = attachComponent({
       htmlElement: document.body,
       component: createElement("div", {
         "data-testid": "container",
-        children: [
-          createElement(Fragment, { children: ["hello", ","] }),
-          createElement(App),
-        ],
+        children: [createElement(Fragment, { children: ["hello", ","] }), createElement(App)],
       }),
     });
 
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello,nested textsomething"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("hello,nested textsomething");
   });
 
   it("supports passing down props", () => {
@@ -310,7 +275,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("container").textContent).toBe(
-      "hello,nested textsomethingvalue is 5"
+      "hello,nested textsomethingvalue is 5",
     );
   });
 
@@ -335,9 +300,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "hello,applicationtest"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("hello,applicationtest");
   });
 
   test("supports components inside Fragment in the beginning", () => {
@@ -361,9 +324,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe("application");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "applicationhello,test"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("applicationhello,test");
   });
 
   test("supports components inside Fragment in the middle", () => {
@@ -385,12 +346,7 @@ describe("new renderer engine", () => {
         "data-testid": "container",
         children: [
           createElement(Fragment, {
-            children: [
-              "hello",
-              createElement(App),
-              createElement(AnotherApp),
-              ",",
-            ],
+            children: ["hello", createElement(App), createElement(AnotherApp), ","],
           }),
           "test",
         ],
@@ -399,9 +355,7 @@ describe("new renderer engine", () => {
 
     expect(screen.getByTestId("app").textContent).toBe("application");
     expect(screen.getByTestId("app2").textContent).toBe("another line");
-    expect(screen.getByTestId("container").textContent).toBe(
-      "helloapplicationanother line,test"
-    );
+    expect(screen.getByTestId("container").textContent).toBe("helloapplicationanother line,test");
   });
 
   test("supports several components as children", () => {
@@ -440,7 +394,7 @@ describe("new renderer engine", () => {
     });
 
     expect(screen.getByTestId("app").textContent).toBe(
-      "first componentsecond componentthird component"
+      "first componentsecond componentthird component",
     );
   });
 });

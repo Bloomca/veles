@@ -62,7 +62,5 @@ Combines several states into a single tuple state.
 ```jsx
 const name$ = createState("Seva");
 const lastName$ = createState("Zaikov");
-const fullName$ = name$
-  .combine(lastName$)
-  .map(([name, lastName]) => `${name} ${lastName}`);
+const fullName$ = name$.combine(lastName$).map(([name, lastName]) => `${name} ${lastName}`);
 ```

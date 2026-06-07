@@ -49,7 +49,7 @@ describe("assign style attribute", () => {
           createElement("div", {
             "data-testid": "target",
             style: hasStyle$.attribute((hasStyle) =>
-              hasStyle ? "color: red; background-color: blue;" : undefined
+              hasStyle ? "color: red; background-color: blue;" : undefined,
             ),
           }),
         ],
@@ -149,7 +149,7 @@ describe("assign style attribute", () => {
                     color: "red",
                     "background-color": "blue",
                   }
-                : undefined
+                : undefined,
             ),
           }),
         ],
@@ -196,7 +196,7 @@ describe("assign style attribute", () => {
                 : {
                     "border-color": "green",
                     "margin-top": "4px",
-                  }
+                  },
             ),
           }),
         ],

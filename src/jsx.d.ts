@@ -27,11 +27,7 @@ export namespace JSX {
   export type DOMCSSProperties = {
     [key in keyof Omit<
       CSSStyleDeclaration,
-      | "item"
-      | "setProperty"
-      | "removeProperty"
-      | "getPropertyValue"
-      | "getPropertyPriority"
+      "item" | "setProperty" | "removeProperty" | "getPropertyValue" | "getPropertyPriority"
     >]?: string | number | null | undefined;
   };
   export type AllCSSProperties = {
@@ -41,23 +37,12 @@ export namespace JSX {
     cssText?: string | null;
   }
 
-  export interface SVGAttributes<Target extends EventTarget = SVGElement>
-    extends HTMLAttributes<Target> {
-    accentHeight?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    accumulate?:
-      | "none"
-      | "sum"
-      | undefined
-      | AttributeHelper<"none" | "sum" | undefined>;
-    additive?:
-      | "replace"
-      | "sum"
-      | undefined
-      | AttributeHelper<"replace" | "sum" | undefined>;
+  export interface SVGAttributes<
+    Target extends EventTarget = SVGElement,
+  > extends HTMLAttributes<Target> {
+    accentHeight?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    accumulate?: "none" | "sum" | undefined | AttributeHelper<"none" | "sum" | undefined>;
+    additive?: "replace" | "sum" | undefined | AttributeHelper<"replace" | "sum" | undefined>;
     alignmentBaseline?:
       | "auto"
       | "baseline"
@@ -120,26 +105,10 @@ export namespace JSX {
           | "inherit"
           | undefined
         >;
-    allowReorder?:
-      | "no"
-      | "yes"
-      | undefined
-      | AttributeHelper<"no" | "yes" | undefined>;
-    "allow-reorder"?:
-      | "no"
-      | "yes"
-      | undefined
-      | AttributeHelper<"no" | "yes" | undefined>;
-    alphabetic?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    amplitude?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    allowReorder?: "no" | "yes" | undefined | AttributeHelper<"no" | "yes" | undefined>;
+    "allow-reorder"?: "no" | "yes" | undefined | AttributeHelper<"no" | "yes" | undefined>;
+    alphabetic?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    amplitude?: number | string | undefined | AttributeHelper<number | string | undefined>;
     /** @deprecated See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/arabic-form */
     arabicForm?:
       | "initial"
@@ -147,9 +116,7 @@ export namespace JSX {
       | "terminal"
       | "isolated"
       | undefined
-      | AttributeHelper<
-          "initial" | "medial" | "terminal" | "isolated" | undefined
-        >;
+      | AttributeHelper<"initial" | "medial" | "terminal" | "isolated" | undefined>;
     /** @deprecated See https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/arabic-form */
     "arabic-form"?:
       | "initial"
@@ -157,108 +124,30 @@ export namespace JSX {
       | "terminal"
       | "isolated"
       | undefined
-      | AttributeHelper<
-          "initial" | "medial" | "terminal" | "isolated" | undefined
-        >;
-    ascent?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+      | AttributeHelper<"initial" | "medial" | "terminal" | "isolated" | undefined>;
+    ascent?: number | string | undefined | AttributeHelper<number | string | undefined>;
     attributeName?: string | undefined | AttributeHelper<string | undefined>;
     attributeType?: string | undefined | AttributeHelper<string | undefined>;
-    autoReverse?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    azimuth?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    baseFrequency?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    baselineShift?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "baseline-shift"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    baseProfile?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    bbox?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    begin?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    bias?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    by?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    calcMode?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    capHeight?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "cap-height"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    clip?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    autoReverse?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    azimuth?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    baseFrequency?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    baselineShift?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "baseline-shift"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    baseProfile?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    bbox?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    begin?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    bias?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    by?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    calcMode?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    capHeight?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "cap-height"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    clip?: number | string | undefined | AttributeHelper<number | string | undefined>;
     clipPath?: string | undefined | AttributeHelper<string | undefined>;
     "clip-path"?: string | undefined | AttributeHelper<string | undefined>;
-    clipPathUnits?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    clipRule?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "clip-rule"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    colorInterpolation?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    clipPathUnits?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    clipRule?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "clip-rule"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    colorInterpolation?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "color-interpolation"?:
       | number
       | string
@@ -278,163 +167,59 @@ export namespace JSX {
       | "inherit"
       | undefined
       | AttributeHelper<"auto" | "sRGB" | "linearRGB" | "inherit" | undefined>;
-    colorProfile?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "color-profile"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    colorRendering?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "color-rendering"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    contentScriptType?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    colorProfile?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "color-profile"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    colorRendering?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "color-rendering"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    contentScriptType?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "content-script-type"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    contentStyleType?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    contentStyleType?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "content-style-type"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    cursor?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    cx?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    cy?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    cursor?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    cx?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    cy?: number | string | undefined | AttributeHelper<number | string | undefined>;
     d?: string | undefined | AttributeHelper<string | undefined>;
-    decelerate?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    descent?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    diffuseConstant?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    direction?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    display?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    divisor?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    dominantBaseline?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    decelerate?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    descent?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    diffuseConstant?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    direction?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    display?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    divisor?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    dominantBaseline?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "dominant-baseline"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    dur?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    dx?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    dy?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    edgeMode?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    elevation?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    enableBackground?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    dur?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    dx?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    dy?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    edgeMode?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    elevation?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    enableBackground?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "enable-background"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    end?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    exponent?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    end?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    exponent?: number | string | undefined | AttributeHelper<number | string | undefined>;
     externalResourcesRequired?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
     fill?: string | undefined | AttributeHelper<string | undefined>;
-    fillOpacity?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "fill-opacity"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    fillOpacity?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "fill-opacity"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     fillRule?:
       | "nonzero"
       | "evenodd"
@@ -448,143 +233,35 @@ export namespace JSX {
       | undefined
       | AttributeHelper<"nonzero" | "evenodd" | "inherit" | undefined>;
     filter?: string | undefined | AttributeHelper<string | undefined>;
-    filterRes?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    filterUnits?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    floodColor?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "flood-color"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    floodOpacity?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "flood-opacity"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    focusable?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    filterRes?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    filterUnits?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    floodColor?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "flood-color"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    floodOpacity?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "flood-opacity"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    focusable?: number | string | undefined | AttributeHelper<number | string | undefined>;
     fontFamily?: string | undefined | AttributeHelper<string | undefined>;
     "font-family"?: string | undefined | AttributeHelper<string | undefined>;
-    fontSize?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "font-size"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    fontSizeAdjust?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "font-size-adjust"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    fontStretch?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "font-stretch"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    fontStyle?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "font-style"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    fontVariant?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "font-variant"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    fontWeight?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "font-weight"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    format?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    from?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    fx?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    fy?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    g1?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    g2?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    glyphName?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "glyph-name"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    fontSize?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "font-size"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    fontSizeAdjust?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "font-size-adjust"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    fontStretch?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "font-stretch"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    fontStyle?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "font-style"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    fontVariant?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "font-variant"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    fontWeight?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "font-weight"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    format?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    from?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    fx?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    fy?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    g1?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    g2?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    glyphName?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "glyph-name"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     glyphOrientationHorizontal?:
       | number
       | string
@@ -605,503 +282,126 @@ export namespace JSX {
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    glyphRef?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    gradientTransform?:
-      | string
-      | undefined
-      | AttributeHelper<string | undefined>;
+    glyphRef?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    gradientTransform?: string | undefined | AttributeHelper<string | undefined>;
     gradientUnits?: string | undefined | AttributeHelper<string | undefined>;
-    hanging?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    horizAdvX?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "horiz-adv-x"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    horizOriginX?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "horiz-origin-x"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    ideographic?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    imageRendering?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "image-rendering"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    in2?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    hanging?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    horizAdvX?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "horiz-adv-x"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    horizOriginX?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "horiz-origin-x"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    ideographic?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    imageRendering?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "image-rendering"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    in2?: number | string | undefined | AttributeHelper<number | string | undefined>;
     in?: string | undefined | AttributeHelper<string | undefined>;
-    intercept?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    k1?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    k2?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    k3?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    k4?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    k?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    kernelMatrix?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    kernelUnitLength?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    kerning?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    keyPoints?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    keySplines?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    keyTimes?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    lengthAdjust?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    letterSpacing?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "letter-spacing"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    lightingColor?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "lighting-color"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    limitingConeAngle?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    local?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    intercept?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    k1?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    k2?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    k3?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    k4?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    k?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    kernelMatrix?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    kernelUnitLength?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    kerning?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    keyPoints?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    keySplines?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    keyTimes?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    lengthAdjust?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    letterSpacing?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "letter-spacing"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    lightingColor?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "lighting-color"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    limitingConeAngle?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    local?: number | string | undefined | AttributeHelper<number | string | undefined>;
     markerEnd?: string | undefined | AttributeHelper<string | undefined>;
     "marker-end"?: string | undefined | AttributeHelper<string | undefined>;
-    markerHeight?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    markerHeight?: number | string | undefined | AttributeHelper<number | string | undefined>;
     markerMid?: string | undefined | AttributeHelper<string | undefined>;
     "marker-mid"?: string | undefined | AttributeHelper<string | undefined>;
     markerStart?: string | undefined | AttributeHelper<string | undefined>;
     "marker-start"?: string | undefined | AttributeHelper<string | undefined>;
-    markerUnits?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    markerWidth?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    markerUnits?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    markerWidth?: number | string | undefined | AttributeHelper<number | string | undefined>;
     mask?: string | undefined | AttributeHelper<string | undefined>;
-    maskContentUnits?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    maskUnits?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    mathematical?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    mode?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    numOctaves?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    offset?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    opacity?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    operator?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    order?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    orient?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    orientation?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    origin?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    overflow?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    overlinePosition?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    maskContentUnits?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    maskUnits?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    mathematical?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    mode?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    numOctaves?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    offset?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    opacity?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    operator?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    order?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    orient?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    orientation?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    origin?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    overflow?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    overlinePosition?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "overline-position"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    overlineThickness?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    overlineThickness?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "overline-thickness"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    paintOrder?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "paint-order"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    panose1?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "panose-1"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    pathLength?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    patternContentUnits?:
-      | string
-      | undefined
-      | AttributeHelper<string | undefined>;
-    patternTransform?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    paintOrder?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "paint-order"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    panose1?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "panose-1"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    pathLength?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    patternContentUnits?: string | undefined | AttributeHelper<string | undefined>;
+    patternTransform?: number | string | undefined | AttributeHelper<number | string | undefined>;
     patternUnits?: string | undefined | AttributeHelper<string | undefined>;
-    pointerEvents?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "pointer-events"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    pointerEvents?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "pointer-events"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     points?: string | undefined | AttributeHelper<string | undefined>;
-    pointsAtX?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    pointsAtY?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    pointsAtZ?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    preserveAlpha?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    preserveAspectRatio?:
-      | string
-      | undefined
-      | AttributeHelper<string | undefined>;
-    primitiveUnits?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    r?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    radius?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    refX?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    refY?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    renderingIntent?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "rendering-intent"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    repeatCount?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "repeat-count"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    repeatDur?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "repeat-dur"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    requiredExtensions?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    requiredFeatures?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    restart?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    pointsAtX?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    pointsAtY?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    pointsAtZ?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    preserveAlpha?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    preserveAspectRatio?: string | undefined | AttributeHelper<string | undefined>;
+    primitiveUnits?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    r?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    radius?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    refX?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    refY?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    renderingIntent?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "rendering-intent"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    repeatCount?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "repeat-count"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    repeatDur?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "repeat-dur"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    requiredExtensions?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    requiredFeatures?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    restart?: number | string | undefined | AttributeHelper<number | string | undefined>;
     result?: string | undefined | AttributeHelper<string | undefined>;
-    rotate?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    rx?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    ry?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    scale?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    seed?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    shapeRendering?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "shape-rendering"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    slope?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    spacing?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    specularConstant?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    specularExponent?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    speed?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    rotate?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    rx?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    ry?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    scale?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    seed?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    shapeRendering?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "shape-rendering"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    slope?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    spacing?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    specularConstant?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    specularExponent?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    speed?: number | string | undefined | AttributeHelper<number | string | undefined>;
     spreadMethod?: string | undefined | AttributeHelper<string | undefined>;
-    startOffset?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    stdDeviation?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    stemh?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    stemv?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    stitchTiles?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    startOffset?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    stdDeviation?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    stemh?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    stemv?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    stitchTiles?: number | string | undefined | AttributeHelper<number | string | undefined>;
     stopColor?: string | undefined | AttributeHelper<string | undefined>;
     "stop-color"?: string | undefined | AttributeHelper<string | undefined>;
-    stopOpacity?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "stop-opacity"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    stopOpacity?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "stop-opacity"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     strikethroughPosition?:
       | number
       | string
@@ -1122,27 +422,11 @@ export namespace JSX {
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    string?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    string?: number | string | undefined | AttributeHelper<number | string | undefined>;
     stroke?: string | undefined | AttributeHelper<string | undefined>;
-    strokeDasharray?:
-      | string
-      | number
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "stroke-dasharray"?:
-      | string
-      | number
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    strokeDashoffset?:
-      | string
-      | number
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    strokeDasharray?: string | number | undefined | AttributeHelper<number | string | undefined>;
+    "stroke-dasharray"?: string | number | undefined | AttributeHelper<number | string | undefined>;
+    strokeDashoffset?: string | number | undefined | AttributeHelper<number | string | undefined>;
     "stroke-dashoffset"?:
       | string
       | number
@@ -1176,298 +460,82 @@ export namespace JSX {
       | "inherit"
       | undefined
       | AttributeHelper<"miter" | "round" | "bevel" | "inherit" | undefined>;
-    strokeMiterlimit?:
-      | string
-      | number
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    strokeMiterlimit?: string | number | undefined | AttributeHelper<number | string | undefined>;
     "stroke-miterlimit"?:
       | string
       | number
       | undefined
       | AttributeHelper<number | string | undefined>;
-    strokeOpacity?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "stroke-opacity"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    strokeWidth?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "stroke-width"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    surfaceScale?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    systemLanguage?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    tableValues?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    targetX?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    targetY?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    strokeOpacity?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "stroke-opacity"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    strokeWidth?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "stroke-width"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    surfaceScale?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    systemLanguage?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    tableValues?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    targetX?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    targetY?: number | string | undefined | AttributeHelper<number | string | undefined>;
     textAnchor?: string | undefined | AttributeHelper<string | undefined>;
     "text-anchor"?: string | undefined | AttributeHelper<string | undefined>;
-    textDecoration?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "text-decoration"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    textLength?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    textRendering?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    to?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    textDecoration?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "text-decoration"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    textLength?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    textRendering?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    to?: number | string | undefined | AttributeHelper<number | string | undefined>;
     transform?: string | undefined | AttributeHelper<string | undefined>;
-    u1?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    u2?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    underlinePosition?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    u1?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    u2?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    underlinePosition?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "underline-position"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    underlineThickness?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    underlineThickness?: number | string | undefined | AttributeHelper<number | string | undefined>;
     "underline-thickness"?:
       | number
       | string
       | undefined
       | AttributeHelper<number | string | undefined>;
-    unicode?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    unicodeBidi?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "unicode-bidi"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    unicodeRange?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "unicode-range"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    unitsPerEm?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "units-per-em"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    vAlphabetic?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "v-alphabetic"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    unicode?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    unicodeBidi?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "unicode-bidi"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    unicodeRange?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "unicode-range"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    unitsPerEm?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "units-per-em"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    vAlphabetic?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "v-alphabetic"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     values?: string | undefined | AttributeHelper<string | undefined>;
-    vectorEffect?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "vector-effect"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    vectorEffect?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "vector-effect"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     version?: string | undefined | AttributeHelper<string | undefined>;
-    vertAdvY?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "vert-adv-y"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    vertOriginX?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "vert-origin-x"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    vertOriginY?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "vert-origin-y"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    vHanging?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "v-hanging"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    vIdeographic?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "v-ideographic"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    vertAdvY?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "vert-adv-y"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    vertOriginX?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "vert-origin-x"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    vertOriginY?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "vert-origin-y"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    vHanging?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "v-hanging"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    vIdeographic?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "v-ideographic"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     viewBox?: string | undefined | AttributeHelper<string | undefined>;
-    viewTarget?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    visibility?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    vMathematical?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "v-mathematical"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    widths?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    wordSpacing?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "word-spacing"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    writingMode?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "writing-mode"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    x1?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    x2?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    x?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    viewTarget?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    visibility?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    vMathematical?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "v-mathematical"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    widths?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    wordSpacing?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "word-spacing"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    writingMode?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "writing-mode"?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    x1?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    x2?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    x?: number | string | undefined | AttributeHelper<number | string | undefined>;
     xChannelSelector?: string | undefined | AttributeHelper<string | undefined>;
-    xHeight?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    "x-height"?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    xHeight?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    "x-height"?: number | string | undefined | AttributeHelper<number | string | undefined>;
     xlinkActuate?: string | undefined | AttributeHelper<string | undefined>;
     "xlink:actuate"?: SVGAttributes["xlinkActuate"];
     xlinkArcrole?: string | undefined | AttributeHelper<string | undefined>;
@@ -1490,88 +558,58 @@ export namespace JSX {
     xmlnsXlink?: string | undefined | AttributeHelper<string | undefined>;
     xmlSpace?: string | undefined | AttributeHelper<string | undefined>;
     "xml:space"?: string | undefined | AttributeHelper<string | undefined>;
-    y1?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    y2?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    y?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    y1?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    y2?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    y?: number | string | undefined | AttributeHelper<number | string | undefined>;
     yChannelSelector?: string | undefined | AttributeHelper<string | undefined>;
-    z?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    z?: number | string | undefined | AttributeHelper<number | string | undefined>;
     zoomAndPan?: string | undefined | AttributeHelper<string | undefined>;
   }
 
   export type TargetedEvent<
     Target extends EventTarget = EventTarget,
-    TypedEvent extends Event = Event
+    TypedEvent extends Event = Event,
   > = Omit<TypedEvent, "currentTarget" | "target"> & {
     readonly currentTarget: Target;
     readonly target: Target;
   };
 
-  export type TargetedAnimationEvent<Target extends EventTarget> =
-    TargetedEvent<Target, AnimationEvent>;
-  export type TargetedClipboardEvent<Target extends EventTarget> =
-    TargetedEvent<Target, ClipboardEvent>;
-  export type TargetedCompositionEvent<Target extends EventTarget> =
-    TargetedEvent<Target, CompositionEvent>;
-  export type TargetedDragEvent<Target extends EventTarget> = TargetedEvent<
+  export type TargetedAnimationEvent<Target extends EventTarget> = TargetedEvent<
     Target,
-    DragEvent
+    AnimationEvent
   >;
-  export type TargetedFocusEvent<Target extends EventTarget> = TargetedEvent<
+  export type TargetedClipboardEvent<Target extends EventTarget> = TargetedEvent<
     Target,
-    FocusEvent
+    ClipboardEvent
   >;
-  export type TargetedInputEvent<Target extends EventTarget> = TargetedEvent<
+  export type TargetedCompositionEvent<Target extends EventTarget> = TargetedEvent<
     Target,
-    InputEvent
+    CompositionEvent
   >;
+  export type TargetedDragEvent<Target extends EventTarget> = TargetedEvent<Target, DragEvent>;
+  export type TargetedFocusEvent<Target extends EventTarget> = TargetedEvent<Target, FocusEvent>;
+  export type TargetedInputEvent<Target extends EventTarget> = TargetedEvent<Target, InputEvent>;
   export type TargetedKeyboardEvent<Target extends EventTarget> = TargetedEvent<
     Target,
     KeyboardEvent
   >;
-  export type TargetedMouseEvent<Target extends EventTarget> = TargetedEvent<
-    Target,
-    MouseEvent
-  >;
+  export type TargetedMouseEvent<Target extends EventTarget> = TargetedEvent<Target, MouseEvent>;
   export type TargetedPointerEvent<Target extends EventTarget> = TargetedEvent<
     Target,
     PointerEvent
   >;
-  export type TargetedSubmitEvent<Target extends EventTarget> = TargetedEvent<
+  export type TargetedSubmitEvent<Target extends EventTarget> = TargetedEvent<Target, SubmitEvent>;
+  export type TargetedTouchEvent<Target extends EventTarget> = TargetedEvent<Target, TouchEvent>;
+  export type TargetedTransitionEvent<Target extends EventTarget> = TargetedEvent<
     Target,
-    SubmitEvent
+    TransitionEvent
   >;
-  export type TargetedTouchEvent<Target extends EventTarget> = TargetedEvent<
+  export type TargetedUIEvent<Target extends EventTarget> = TargetedEvent<Target, UIEvent>;
+  export type TargetedWheelEvent<Target extends EventTarget> = TargetedEvent<Target, WheelEvent>;
+  export type TargetedPictureInPictureEvent<Target extends EventTarget> = TargetedEvent<
     Target,
-    TouchEvent
+    PictureInPictureEvent
   >;
-  export type TargetedTransitionEvent<Target extends EventTarget> =
-    TargetedEvent<Target, TransitionEvent>;
-  export type TargetedUIEvent<Target extends EventTarget> = TargetedEvent<
-    Target,
-    UIEvent
-  >;
-  export type TargetedWheelEvent<Target extends EventTarget> = TargetedEvent<
-    Target,
-    WheelEvent
-  >;
-  export type TargetedPictureInPictureEvent<Target extends EventTarget> =
-    TargetedEvent<Target, PictureInPictureEvent>;
 
   export type EventHandler<E extends TargetedEvent> = {
     bivarianceHack(event: E): void;
@@ -1583,17 +621,16 @@ export namespace JSX {
   export type ClipboardEventHandler<Target extends EventTarget> = EventHandler<
     TargetedClipboardEvent<Target>
   >;
-  export type CompositionEventHandler<Target extends EventTarget> =
-    EventHandler<TargetedCompositionEvent<Target>>;
+  export type CompositionEventHandler<Target extends EventTarget> = EventHandler<
+    TargetedCompositionEvent<Target>
+  >;
   export type DragEventHandler<Target extends EventTarget> = EventHandler<
     TargetedDragEvent<Target>
   >;
   export type FocusEventHandler<Target extends EventTarget> = EventHandler<
     TargetedFocusEvent<Target>
   >;
-  export type GenericEventHandler<Target extends EventTarget> = EventHandler<
-    TargetedEvent<Target>
-  >;
+  export type GenericEventHandler<Target extends EventTarget> = EventHandler<TargetedEvent<Target>>;
   export type InputEventHandler<Target extends EventTarget> = EventHandler<
     TargetedInputEvent<Target>
   >;
@@ -1615,17 +652,15 @@ export namespace JSX {
   export type TransitionEventHandler<Target extends EventTarget> = EventHandler<
     TargetedTransitionEvent<Target>
   >;
-  export type UIEventHandler<Target extends EventTarget> = EventHandler<
-    TargetedUIEvent<Target>
-  >;
+  export type UIEventHandler<Target extends EventTarget> = EventHandler<TargetedUIEvent<Target>>;
   export type WheelEventHandler<Target extends EventTarget> = EventHandler<
     TargetedWheelEvent<Target>
   >;
-  export type PictureInPictureEventHandler<Target extends EventTarget> =
-    EventHandler<TargetedPictureInPictureEvent<Target>>;
+  export type PictureInPictureEventHandler<Target extends EventTarget> = EventHandler<
+    TargetedPictureInPictureEvent<Target>
+  >;
 
-  export interface DOMAttributes<Target extends EventTarget>
-    extends VelesDOMAttributes {
+  export interface DOMAttributes<Target extends EventTarget> extends VelesDOMAttributes {
     // Image Events
     onLoad?:
       | GenericEventHandler<Target>
@@ -2395,9 +1430,7 @@ export namespace JSX {
      * Indicates whether inputting text could trigger display of one or more predictions of the user's intended value for an input and specifies how predictions would be
      * presented if they are made.
      */
-    "aria-autocomplete"?: AttributeHelperish<
-      "none" | "inline" | "list" | "both" | undefined
-    >;
+    "aria-autocomplete"?: AttributeHelperish<"none" | "inline" | "list" | "both" | undefined>;
     /**
      * Defines a string value that labels the current element, which is intended to be converted into Braille.
      * @see aria-label.
@@ -2506,9 +1539,7 @@ export namespace JSX {
      * Indicates the entered value does not conform to the format expected by the application.
      * @see aria-errormessage.
      */
-    "aria-invalid"?: AttributeHelperish<
-      Booleanish | "grammar" | "spelling" | undefined
-    >;
+    "aria-invalid"?: AttributeHelperish<Booleanish | "grammar" | "spelling" | undefined>;
     /** Indicates keyboard shortcuts that an author has implemented to activate or give focus to an element. */
     "aria-keyshortcuts"?: AttributeHelperish<string | undefined>;
     /**
@@ -2524,9 +1555,7 @@ export namespace JSX {
     /** Defines the hierarchical level of an element within a structure. */
     "aria-level"?: AttributeHelperish<number | undefined>;
     /** Indicates that an element will be updated, and describes the types of updates the user agents, assistive technologies, and user can expect from the live region. */
-    "aria-live"?: AttributeHelperish<
-      "off" | "assertive" | "polite" | undefined
-    >;
+    "aria-live"?: AttributeHelperish<"off" | "assertive" | "polite" | undefined>;
     /** Indicates whether an element is modal when displayed. */
     "aria-modal"?: AttributeHelperish<Booleanish | undefined>;
     /** Indicates whether a text box accepts multiple lines of input or only a single line. */
@@ -2534,9 +1563,7 @@ export namespace JSX {
     /** Indicates that the user may select more than one item from the current selectable descendants. */
     "aria-multiselectable"?: AttributeHelperish<Booleanish | undefined>;
     /** Indicates whether the element's orientation is horizontal, vertical, or unknown/ambiguous. */
-    "aria-orientation"?: AttributeHelperish<
-      "horizontal" | "vertical" | undefined
-    >;
+    "aria-orientation"?: AttributeHelperish<"horizontal" | "vertical" | undefined>;
     /**
      * Identifies an element (or elements) in order to define a visual, functional, or contextual parent/child relationship
      * between DOM elements where the DOM hierarchy cannot be used to represent the relationship.
@@ -2619,9 +1646,7 @@ export namespace JSX {
      */
     "aria-setsize"?: AttributeHelperish<number | undefined>;
     /** Indicates if items in a table or grid are sorted in ascending or descending order. */
-    "aria-sort"?: AttributeHelperish<
-      "none" | "ascending" | "descending" | "other" | undefined
-    >;
+    "aria-sort"?: AttributeHelperish<"none" | "ascending" | "descending" | "other" | undefined>;
     /** Defines the maximum allowed value for a range widget. */
     "aria-valuemax"?: AttributeHelperish<number | undefined>;
     /** Defines the minimum allowed value for a range widget. */
@@ -2778,9 +1803,7 @@ export namespace JSX {
   type AriaRole = WAIAriaRole | DPubAriaRole;
 
   export interface HTMLAttributes<RefType extends EventTarget = EventTarget>
-    extends ClassAttributes<RefType>,
-      DOMAttributes<RefType>,
-      AriaAttributes {
+    extends ClassAttributes<RefType>, DOMAttributes<RefType>, AriaAttributes {
     // Standard HTML Attributes
     accept?: string | undefined | AttributeHelper<string | undefined>;
     acceptCharset?: string | undefined | AttributeHelper<string | undefined>;
@@ -2789,14 +1812,8 @@ export namespace JSX {
     accesskey?: HTMLAttributes["accessKey"];
     action?: string | undefined | AttributeHelper<string | undefined>;
     allow?: string | undefined | AttributeHelper<string | undefined>;
-    allowFullScreen?:
-      | boolean
-      | undefined
-      | AttributeHelper<boolean | undefined>;
-    allowTransparency?:
-      | boolean
-      | undefined
-      | AttributeHelper<boolean | undefined>;
+    allowFullScreen?: boolean | undefined | AttributeHelper<boolean | undefined>;
+    allowTransparency?: boolean | undefined | AttributeHelper<boolean | undefined>;
     alt?: string | undefined | AttributeHelper<string | undefined>;
     as?: string | undefined | AttributeHelper<string | undefined>;
     async?: boolean | undefined | AttributeHelper<boolean | undefined>;
@@ -2808,21 +1825,9 @@ export namespace JSX {
     autoFocus?: boolean | undefined | AttributeHelper<boolean | undefined>;
     autoPlay?: boolean | undefined | AttributeHelper<boolean | undefined>;
     autoplay?: boolean | undefined | AttributeHelper<boolean | undefined>;
-    capture?:
-      | boolean
-      | string
-      | undefined
-      | AttributeHelper<string | undefined>;
-    cellPadding?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<string | undefined>;
-    cellSpacing?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<string | undefined>;
+    capture?: boolean | string | undefined | AttributeHelper<string | undefined>;
+    cellPadding?: number | string | undefined | AttributeHelper<string | undefined>;
+    cellSpacing?: number | string | undefined | AttributeHelper<string | undefined>;
     charSet?: string | undefined | AttributeHelper<string | undefined>;
     charset?: string | undefined | AttributeHelper<string | undefined>;
     challenge?: string | undefined | AttributeHelper<string | undefined>;
@@ -2840,9 +1845,7 @@ export namespace JSX {
       | "plaintext-only"
       | "inherit"
       | undefined
-      | AttributeHelper<
-          Booleanish | "" | "inherit" | "plaintext-only" | undefined
-        >;
+      | AttributeHelper<Booleanish | "" | "inherit" | "plaintext-only" | undefined>;
     contenteditable?: HTMLAttributes["contentEditable"];
     /** @deprecated See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contextmenu */
     contextMenu?: string | undefined | AttributeHelper<string | undefined>;
@@ -2860,17 +1863,9 @@ export namespace JSX {
     defaultChecked?: boolean | undefined | AttributeHelper<boolean | undefined>;
     defaultValue?: string | undefined | AttributeHelper<string | undefined>;
     defer?: boolean | undefined | AttributeHelper<boolean | undefined>;
-    dir?:
-      | "auto"
-      | "rtl"
-      | "ltr"
-      | undefined
-      | AttributeHelper<"auto" | "rtl" | "ltr" | undefined>;
+    dir?: "auto" | "rtl" | "ltr" | undefined | AttributeHelper<"auto" | "rtl" | "ltr" | undefined>;
     disabled?: boolean | undefined | AttributeHelper<boolean | undefined>;
-    disableRemotePlayback?:
-      | boolean
-      | undefined
-      | AttributeHelper<boolean | undefined>;
+    disableRemotePlayback?: boolean | undefined | AttributeHelper<boolean | undefined>;
     download?: any | undefined;
     decoding?:
       | "sync"
@@ -2891,14 +1886,7 @@ export namespace JSX {
       | "send"
       | undefined
       | AttributeHelper<
-          | "enter"
-          | "done"
-          | "go"
-          | "next"
-          | "previous"
-          | "search"
-          | "send"
-          | undefined
+          "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | undefined
         >;
     elementTiming?: string | undefined | AttributeHelper<string | undefined>;
     elementtiming?: HTMLAttributes["elementTiming"];
@@ -2915,22 +1903,10 @@ export namespace JSX {
     formnovalidate?: boolean | undefined | AttributeHelper<boolean | undefined>;
     formTarget?: string | undefined | AttributeHelper<string | undefined>;
     formtarget?: string | undefined | AttributeHelper<string | undefined>;
-    frameBorder?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    frameborder?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    frameBorder?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    frameborder?: number | string | undefined | AttributeHelper<number | string | undefined>;
     headers?: string | undefined | AttributeHelper<string | undefined>;
-    height?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    height?: number | string | undefined | AttributeHelper<number | string | undefined>;
     hidden?:
       | boolean
       | "hidden"
@@ -2958,11 +1934,7 @@ export namespace JSX {
     label?: string | undefined | AttributeHelper<string | undefined>;
     lang?: string | undefined | AttributeHelper<string | undefined>;
     list?: string | undefined | AttributeHelper<string | undefined>;
-    loading?:
-      | "eager"
-      | "lazy"
-      | undefined
-      | AttributeHelper<"eager" | "lazy" | undefined>;
+    loading?: "eager" | "lazy" | undefined | AttributeHelper<"eager" | "lazy" | undefined>;
     loop?: boolean | undefined | AttributeHelper<boolean | undefined>;
     low?: number | undefined | AttributeHelper<number | undefined>;
     manifest?: string | undefined | AttributeHelper<string | undefined>;
@@ -3067,11 +2039,7 @@ export namespace JSX {
     srcLang?: string | undefined | AttributeHelper<string | undefined>;
     srclang?: string | undefined | AttributeHelper<string | undefined>;
     start?: number | undefined | AttributeHelper<number | undefined>;
-    step?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    step?: number | string | undefined | AttributeHelper<number | string | undefined>;
     style?:
       | string
       | CSSProperties
@@ -3091,16 +2059,8 @@ export namespace JSX {
       | number
       | undefined
       | AttributeHelper<string | string[] | number | undefined>;
-    volume?:
-      | string
-      | number
-      | undefined
-      | AttributeHelper<string | number | undefined>;
-    width?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    volume?: string | number | undefined | AttributeHelper<string | number | undefined>;
+    width?: number | string | undefined | AttributeHelper<number | string | undefined>;
     wmode?: string | undefined | AttributeHelper<string | undefined>;
     wrap?: string | undefined | AttributeHelper<string | undefined>;
 
@@ -3113,15 +2073,7 @@ export namespace JSX {
       | "words"
       | "characters"
       | undefined
-      | AttributeHelper<
-          | "off"
-          | "none"
-          | "on"
-          | "sentences"
-          | "words"
-          | "characters"
-          | undefined
-        >;
+      | AttributeHelper<"off" | "none" | "on" | "sentences" | "words" | "characters" | undefined>;
     autoCapitalize?:
       | "off"
       | "none"
@@ -3130,19 +2082,8 @@ export namespace JSX {
       | "words"
       | "characters"
       | undefined
-      | AttributeHelper<
-          | "off"
-          | "none"
-          | "on"
-          | "sentences"
-          | "words"
-          | "characters"
-          | undefined
-        >;
-    disablePictureInPicture?:
-      | boolean
-      | undefined
-      | AttributeHelper<boolean | undefined>;
+      | AttributeHelper<"off" | "none" | "on" | "sentences" | "words" | "characters" | undefined>;
+    disablePictureInPicture?: boolean | undefined | AttributeHelper<boolean | undefined>;
     results?: number | undefined | AttributeHelper<number | undefined>;
     translate?: boolean | undefined | AttributeHelper<boolean | undefined>;
 
@@ -3171,7 +2112,7 @@ export namespace JSX {
 
   export type DetailedHTMLProps<
     HA extends HTMLAttributes<RefType>,
-    RefType extends EventTarget = EventTarget
+    RefType extends EventTarget = EventTarget,
   > = HA;
 
   export interface HTMLMarqueeElement extends HTMLElement {
@@ -3189,51 +2130,20 @@ export namespace JSX {
       | "down"
       | undefined
       | AttributeHelper<"left" | "right" | "up" | "down" | undefined>;
-    height?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    hspace?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    loop?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    scrollAmount?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    scrollDelay?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    height?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    hspace?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    loop?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    scrollAmount?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    scrollDelay?: number | string | undefined | AttributeHelper<number | string | undefined>;
     trueSpeed?: boolean | undefined | AttributeHelper<boolean | undefined>;
-    vspace?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
-    width?:
-      | number
-      | string
-      | undefined
-      | AttributeHelper<number | string | undefined>;
+    vspace?: number | string | undefined | AttributeHelper<number | string | undefined>;
+    width?: number | string | undefined | AttributeHelper<number | string | undefined>;
   }
 
-  export interface MathMLAttributes<Target extends EventTarget = MathMLElement>
-    extends HTMLAttributes<Target> {
-    dir?:
-      | "ltr"
-      | "rtl"
-      | undefined
-      | AttributeHelper<"ltr" | "rtl" | undefined>;
+  export interface MathMLAttributes<
+    Target extends EventTarget = MathMLElement,
+  > extends HTMLAttributes<Target> {
+    dir?: "ltr" | "rtl" | undefined | AttributeHelper<"ltr" | "rtl" | undefined>;
     displaystyle?: boolean | undefined | AttributeHelper<boolean | undefined>;
     /** @deprecated This feature is non-standard. See https://developer.mozilla.org/en-US/docs/Web/MathML/Global_attributes/href  */
     href?: string | undefined | AttributeHelper<string | undefined>;
@@ -3271,11 +2181,7 @@ export namespace JSX {
   }
 
   export interface HTMLMathElement extends MathMLElement {
-    display?:
-      | "block"
-      | "inline"
-      | undefined
-      | AttributeHelper<"block" | "inline" | undefined>;
+    display?: "block" | "inline" | undefined | AttributeHelper<"block" | "inline" | undefined>;
   }
 
   export interface HTMLMEncloseElement extends MathMLElement {
@@ -3427,10 +2333,7 @@ export namespace JSX {
     /** @deprecated See https://developer.mozilla.org/en-US/docs/Web/MathML/Element/mstyle#scriptminsize */
     scriptminsize?: string | undefined | AttributeHelper<string | undefined>;
     /** @deprecated See https://developer.mozilla.org/en-US/docs/Web/MathML/Element/mstyle#scriptsizemultiplier */
-    scriptsizemultiplier?:
-      | string
-      | undefined
-      | AttributeHelper<string | undefined>;
+    scriptsizemultiplier?: string | undefined | AttributeHelper<string | undefined>;
   }
 
   export interface HTMLMSubElement extends MathMLElement {
@@ -3459,9 +2362,7 @@ export namespace JSX {
       | "center"
       | "top"
       | undefined
-      | AttributeHelper<
-          "axis" | "baseline" | "bottom" | "center" | "top" | undefined
-        >;
+      | AttributeHelper<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
     /** Non-standard attribute See https://developer.mozilla.org/en-US/docs/Web/MathML/Element/mtable#columnalign */
     columnalign?:
       | "center"
@@ -3495,9 +2396,7 @@ export namespace JSX {
       | "center"
       | "top"
       | undefined
-      | AttributeHelper<
-          "axis" | "baseline" | "bottom" | "center" | "top" | undefined
-        >;
+      | AttributeHelper<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
     /** Non-standard attribute See https://developer.mozilla.org/en-US/docs/Web/MathML/Element/mtable#rowlines */
     rowlines?:
       | "dashed"
@@ -3529,9 +2428,7 @@ export namespace JSX {
       | "center"
       | "top"
       | undefined
-      | AttributeHelper<
-          "axis" | "baseline" | "bottom" | "center" | "top" | undefined
-        >;
+      | AttributeHelper<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
   }
 
   export interface HTMLMTextElement extends MathMLElement {}
@@ -3552,9 +2449,7 @@ export namespace JSX {
       | "center"
       | "top"
       | undefined
-      | AttributeHelper<
-          "axis" | "baseline" | "bottom" | "center" | "top" | undefined
-        >;
+      | AttributeHelper<"axis" | "baseline" | "bottom" | "center" | "top" | undefined>;
   }
 
   export interface HTMLMUnderElement extends MathMLElement {

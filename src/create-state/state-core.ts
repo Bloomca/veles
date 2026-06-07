@@ -5,10 +5,7 @@ type CoreValue<T> = T | typeof emptyValue;
 
 type Subscriber<T> = (value: T, prevValue: CoreValue<T>) => void;
 
-type EqualityFn<T> = (
-  currentValue: CoreValue<T>,
-  newValue: CoreValue<T>,
-) => boolean;
+type EqualityFn<T> = (currentValue: CoreValue<T>, newValue: CoreValue<T>) => boolean;
 
 type CoreOptions<T> = {
   // internal value, don't set it directly
@@ -55,9 +52,7 @@ class StateCore<T> {
     this._subscribers.push(cb);
 
     return () => {
-      this._subscribers = this._subscribers.filter(
-        (currentCb) => currentCb !== cb,
-      );
+      this._subscribers = this._subscribers.filter((currentCb) => currentCb !== cb);
     };
   }
 
@@ -81,10 +76,7 @@ class StateCore<T> {
     this.set(newValue);
   }
 
-  map<V>(
-    fn: (value: T) => V,
-    options: { equality?: EqualityFn<V> } = {},
-  ): StateCore<V> {
+  map<V>(fn: (value: T) => V, options: { equality?: EqualityFn<V> } = {}): StateCore<V> {
     const result = new StateCore<V>(emptyValue, {
       parents: [this],
       compute: () => fn(this.get() as T),
@@ -125,8 +117,7 @@ class StateCore<T> {
     let result!: StateCore<V>;
     result = new StateCore<V>(initialValue, {
       parents: [this],
-      compute: (): V =>
-        fn(result._value as V, this.get() as T, this._prevValue),
+      compute: (): V => fn(result._value as V, this.get() as T, this._prevValue),
       dirty: true,
       equality: options.equality,
     });
@@ -149,9 +140,7 @@ class StateCore<T> {
     const result = new StateCore(emptyValue, {
       parents: [this, ...sources],
       compute: () => {
-        const values = [this.get()].concat(
-          sources.map((source) => source.get()),
-        );
+        const values = [this.get()].concat(sources.map((source) => source.get()));
 
         if (values.some((value) => value === emptyValue)) {
           return emptyValue;

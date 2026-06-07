@@ -1,10 +1,7 @@
 import { parseChildren } from "./parse-children";
 import { assignAttributes } from "./assign-attributes";
 import { parseComponent } from "./parse-component";
-import {
-  getExecutedComponentVelesNode,
-  getMountedNodeExecutedVersion,
-} from "../_utils";
+import { getExecutedComponentVelesNode, getMountedNodeExecutedVersion } from "../_utils";
 
 import type {
   VelesComponentObject,
@@ -18,24 +15,18 @@ import type { JSX } from "../jsx";
 
 function createElement<Tag extends keyof JSX.IntrinsicElements>(
   element: Tag,
-  props?: VelesBaseProps & JSX.IntrinsicElements[Tag]
+  props?: VelesBaseProps & JSX.IntrinsicElements[Tag],
 ): VelesElement;
 function createElement<Props extends object>(
   element: ComponentFunction<Props>,
-  props?: Props
+  props?: Props,
 ): VelesComponentObject;
 function createElement(
   element: string | ComponentFunction<any>,
-  props: Record<string, any> = {}
+  props: Record<string, any> = {},
 ): VelesElement | VelesComponentObject {
   if (typeof element === "string") {
-    const {
-      children,
-      ref,
-      phantom = false,
-      portal = null,
-      ...otherProps
-    } = props;
+    const { children, ref, phantom = false, portal = null, ...otherProps } = props;
 
     const newElement = document.createElement(element);
     const velesNode = {} as VelesElement;
@@ -91,11 +82,9 @@ function createElement(
         velesNode.childComponents.forEach((childComponent) => {
           if ("velesNode" in childComponent) {
             if (childComponent.phantom) {
-              childComponent.childComponents.forEach(
-                (fragmentChildComponent) => {
-                  portal.append(fragmentChildComponent.html);
-                }
-              );
+              childComponent.childComponents.forEach((fragmentChildComponent) => {
+                portal.append(fragmentChildComponent.html);
+              });
             } else {
               portal.append(childComponent.html);
             }
@@ -105,33 +94,31 @@ function createElement(
             const componentNode = getExecutedComponentVelesNode(
               getMountedNodeExecutedVersion(
                 childComponent,
-                "Portal child component is not mounted"
-              )
+                "Portal child component is not mounted",
+              ),
             );
             appendComponentToPortal(componentNode, portal);
           }
         });
       });
 
-      velesNode._privateMethods._addUnmountHandler(
-        function removeNodeOnUnmount() {
-          velesNode.childComponents.forEach((childComponent) => {
-            if ("velesNode" in childComponent) {
-              childComponent.html.remove();
-            } else if ("velesStringElement" in childComponent) {
-              childComponent.html.remove();
-            } else {
-              const componentNode = getExecutedComponentVelesNode(
-                getMountedNodeExecutedVersion(
-                  childComponent,
-                  "Portal child component is not mounted"
-                )
-              );
-              cleanupComponentFromPortal(componentNode);
-            }
-          });
-        }
-      );
+      velesNode._privateMethods._addUnmountHandler(function removeNodeOnUnmount() {
+        velesNode.childComponents.forEach((childComponent) => {
+          if ("velesNode" in childComponent) {
+            childComponent.html.remove();
+          } else if ("velesStringElement" in childComponent) {
+            childComponent.html.remove();
+          } else {
+            const componentNode = getExecutedComponentVelesNode(
+              getMountedNodeExecutedVersion(
+                childComponent,
+                "Portal child component is not mounted",
+              ),
+            );
+            cleanupComponentFromPortal(componentNode);
+          }
+        });
+      });
     }
 
     // assign all the DOM attributes, including event listeners
@@ -145,21 +132,17 @@ function createElement(
   }
 
   // otherwise we use the API wrong, so we throw an error
-  throw new Error(
-    "Veles createElement expects a valid DOM string or another component"
-  );
+  throw new Error("Veles createElement expects a valid DOM string or another component");
 }
 
 function appendComponentToPortal(
   componentNode: ExecutedVelesElement | ExecutedVelesStringElement,
-  portal: HTMLElement
+  portal: HTMLElement,
 ) {
   if ("executedVelesNode" in componentNode && componentNode.phantom) {
     componentNode.childComponents.forEach((fragmentChildComponent) => {
       if ("executedVelesComponent" in fragmentChildComponent) {
-        const childComponentNode = getExecutedComponentVelesNode(
-          fragmentChildComponent
-        );
+        const childComponentNode = getExecutedComponentVelesNode(fragmentChildComponent);
         appendComponentToPortal(childComponentNode, portal);
       } else {
         portal.append(fragmentChildComponent.html);
@@ -172,14 +155,12 @@ function appendComponentToPortal(
 }
 
 function cleanupComponentFromPortal(
-  componentNode: ExecutedVelesElement | ExecutedVelesStringElement
+  componentNode: ExecutedVelesElement | ExecutedVelesStringElement,
 ) {
   if ("executedVelesNode" in componentNode && componentNode.phantom) {
     componentNode.childComponents.forEach((fragmentChildComponent) => {
       if ("executedVelesComponent" in fragmentChildComponent) {
-        const childComponentNode = getExecutedComponentVelesNode(
-          fragmentChildComponent
-        );
+        const childComponentNode = getExecutedComponentVelesNode(fragmentChildComponent);
         cleanupComponentFromPortal(childComponentNode);
       } else {
         fragmentChildComponent.html.remove();

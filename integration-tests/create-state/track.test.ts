@@ -1,13 +1,7 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import {
-  attachComponent,
-  createElement,
-  createState,
-  onUnmount,
-  createRef,
-} from "../../src";
+import { attachComponent, createElement, createState, onUnmount, createRef } from "../../src";
 
 describe("track-value", () => {
   let cleanup: Function | undefined;
@@ -38,7 +32,7 @@ describe("track-value", () => {
             },
           }),
           value$.render((value) =>
-            createElement("div", { children: [`current value is ${value}`] })
+            createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
       });
@@ -79,7 +73,7 @@ describe("track-value", () => {
             },
           }),
           value$.render((value) =>
-            createElement("div", { children: [`current value is ${value}`] })
+            createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
       });
@@ -148,7 +142,7 @@ describe("track-value", () => {
             },
           }),
           value$.render((value) =>
-            createElement("div", { children: [`current value is ${value}`] })
+            createElement("div", { children: [`current value is ${value}`] }),
           ),
         ],
       });
@@ -253,8 +247,7 @@ describe("track-value", () => {
 
       user$.track(emailSpy, {
         skipFirstCall: true,
-        comparator: (prevValue, nextValue) =>
-          prevValue.email === nextValue.email,
+        comparator: (prevValue, nextValue) => prevValue.email === nextValue.email,
       });
 
       return createElement("div", {

@@ -13,8 +13,7 @@ function createContext<T>() {
   // unique context id
   const contextId = contextIdCounter++;
   function addContext(value: T) {
-    const currentContextObject =
-      publicContextStack[publicContextStack.length - 1];
+    const currentContextObject = publicContextStack[publicContextStack.length - 1];
 
     if (!currentContextObject) {
       // either executed outside of the rendering framework

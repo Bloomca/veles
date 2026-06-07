@@ -45,7 +45,7 @@ function assignDomAttribute({
     if (enumeratedConfig) {
       htmlElement.setAttribute(
         attributeName,
-        value ? enumeratedConfig.trueValue : enumeratedConfig.falseValue
+        value ? enumeratedConfig.trueValue : enumeratedConfig.falseValue,
       );
       return;
     }
@@ -92,8 +92,7 @@ function assignStyle({
     return;
   }
 
-  const hasPreviousStyleObject =
-    previousValue != null && typeof previousValue === "object";
+  const hasPreviousStyleObject = previousValue != null && typeof previousValue === "object";
 
   if (!hasPreviousStyleObject) {
     htmlElement.style.cssText = "";

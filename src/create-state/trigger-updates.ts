@@ -16,13 +16,10 @@ function triggerUpdates<T>({
   trackers: StateTrackers;
   get: () => T;
 }) {
-  const newTrackingSelectorElements: StateTrackers["trackingSelectorElements"] =
-    [];
+  const newTrackingSelectorElements: StateTrackers["trackingSelectorElements"] = [];
   // subscriptions can update dynamically while we execute callbacks, so we need
   // to copy the original array first.
-  const existingTrackingSelectorElements = [
-    ...trackers.trackingSelectorElements,
-  ];
+  const existingTrackingSelectorElements = [...trackers.trackingSelectorElements];
 
   existingTrackingSelectorElements.forEach((selectorTrackingElement) => {
     // parent updates can unmount nested selectors during the same update tick.

@@ -27,7 +27,7 @@ You might think that passing direct object values is the way to go, e.g. somethi
 
 ```jsx
 function Component({ task }) {
-    return <div>{task.name}</div>
+  return <div>{task.name}</div>;
 }
 ```
 
@@ -35,9 +35,8 @@ But in general for dynamic content you want to avoid it as much as possible and 
 
 ```jsx
 function Component({ task$ }) {
- return <div>{task$.renderSelected(task => task.name)}</div>
+  return <div>{task$.renderSelected((task) => task.name)}</div>;
 }
 ```
 
 This way the only thing which will change is that specific text node. You can pass the state to each component, and they will subscribe only in places where it is relevant, and this way all DOM updates will be minimal and only when something changes. Essentially this means that when something changes in a parent component, it does not always mean that children will need to be re-rendered as well; updates are often can be localized.
-

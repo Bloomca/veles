@@ -37,11 +37,7 @@ export type ExecutedVelesElement = {
 
   // every element except the most top one should have one
   parentVelesElement?: ExecutedVelesElement;
-  childComponents: (
-    | ExecutedVelesElement
-    | ExecutedVelesComponent
-    | ExecutedVelesStringElement
-  )[];
+  childComponents: (ExecutedVelesElement | ExecutedVelesComponent | ExecutedVelesStringElement)[];
 
   // not intended to be used directly
   _privateMethods: {
@@ -108,10 +104,7 @@ export type VelesComponent = {
 export type ExecutedVelesComponent = {
   executedVelesComponent: true;
 
-  tree:
-    | ExecutedVelesElement
-    | ExecutedVelesComponent
-    | ExecutedVelesStringElement;
+  tree: ExecutedVelesElement | ExecutedVelesComponent | ExecutedVelesStringElement;
 
   // not intended to be used directly
   _privateMethods: {
@@ -123,12 +116,7 @@ export type ExecutedVelesComponent = {
 };
 
 // all supported child options
-type velesChild =
-  | string
-  | number
-  | VelesElement
-  | VelesComponentObject
-  | VelesStringElement;
+type velesChild = string | number | VelesElement | VelesComponentObject | VelesStringElement;
 type VelesMaybeChild = velesChild | undefined | null;
 export type VelesChildren = VelesMaybeChild | VelesMaybeChild[];
 
@@ -157,16 +145,12 @@ export type ComponentAPI = {
 
 export type ComponentFunction<Props extends object = VelesElementProps> = (
   props: Props,
-  componentAPI: ComponentAPI
+  componentAPI: ComponentAPI,
 ) => VelesElement | VelesComponentObject | VelesStringElement | string | null;
 
 export type AttributeHelper<T> = {
   velesAttribute: true;
-  getValue: (
-    htmlElement: HTMLElement,
-    attributeName: string,
-    node: VelesElement
-  ) => T;
+  getValue: (htmlElement: HTMLElement, attributeName: string, node: VelesElement) => T;
 };
 
 export type VelesComponentObject = {

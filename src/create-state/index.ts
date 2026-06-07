@@ -1,9 +1,5 @@
 import { identity } from "../_utils";
-import {
-  hasCurrentLifecycleContext,
-  onUnmount,
-  onMount,
-} from "../hooks/lifecycle";
+import { hasCurrentLifecycleContext, onUnmount, onMount } from "../hooks/lifecycle";
 import { createElement } from "../create-element/create-element";
 import { createTextElement } from "../create-element/create-text-element";
 import { triggerUpdates } from "./trigger-updates";
@@ -12,18 +8,9 @@ import { updateUseAttributeValue } from "./update-useattribute-value";
 import { getCurrentContext } from "../context";
 import { StateCore, createCoreEquality, emptyValue } from "./state-core";
 
-import type {
-  VelesElement,
-  VelesComponentObject,
-  VelesStringElement,
-} from "../types";
+import type { VelesElement, VelesComponentObject, VelesStringElement } from "../types";
 
-import type {
-  State,
-  TrackingIterator,
-  StateTrackers,
-  TrackingSelectorElement,
-} from "./types";
+import type { State, TrackingIterator, StateTrackers, TrackingSelectorElement } from "./types";
 
 const STATE_CORE_PROPERTY = "__velesStateCore";
 
@@ -50,25 +37,19 @@ function autoDisposeStateOnUnmount<T>(state: State<T>) {
 type RenderSelectedSignature<T> = {
   (
     selector: undefined,
-    cb?: (
-      value: T,
-    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    cb?: (value: T) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (value1: T, value2: T) => boolean,
   ): VelesElement | VelesComponentObject | VelesStringElement;
   <F>(
     selector: (value: T) => F,
-    cb?: (
-      value: F,
-    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    cb?: (value: F) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator?: (value1: F, value2: F) => boolean,
   ): VelesElement | VelesComponentObject | VelesStringElement;
 };
 
 function createStateFromCore<T>(
   core: StateCore<T>,
-  subscribeCallback?: (
-    set: ReturnType<typeof createState<T>>["set"],
-  ) => Function,
+  subscribeCallback?: (set: ReturnType<typeof createState<T>>["set"]) => Function,
 ): State<T> {
   // all subscription types we track
   const trackers: StateTrackers = {
@@ -88,9 +69,7 @@ function createStateFromCore<T>(
 
   const renderSelected: RenderSelectedSignature<T> = ((
     selector: ((value: T) => unknown) | undefined,
-    cb?: (
-      value: unknown,
-    ) => VelesElement | VelesComponentObject | string | undefined | null,
+    cb?: (value: unknown) => VelesElement | VelesComponentObject | string | undefined | null,
     comparator: (value1: unknown, value2: unknown) => boolean = identity,
   ) => {
     const currentValue = core.get() as T;
@@ -253,11 +232,7 @@ function createStateFromCore<T>(
       trackingParams.savedContext = currentContext;
 
       const wrapperComponent = createElement((_props, componentAPI) => {
-        const children: [
-          VelesElement | VelesComponentObject,
-          string,
-          State<Element>,
-        ][] = [];
+        const children: [VelesElement | VelesComponentObject, string, State<Element>][] = [];
         const elementsByKey: {
           [key: string]: {
             elementState: State<Element>;
@@ -267,9 +242,7 @@ function createStateFromCore<T>(
           };
         } = {};
         const stateValue = core.get() as T;
-        const elements = options.selector
-          ? options.selector(stateValue)
-          : stateValue;
+        const elements = options.selector ? options.selector(stateValue) : stateValue;
 
         if (!Array.isArray(elements)) {
           console.error("renderEach received non-array value");
@@ -319,8 +292,7 @@ function createStateFromCore<T>(
         onMount(() => {
           componentAPI.onUnmount(() => {
             trackers.trackingIterators = trackers.trackingIterators.filter(
-              (currentTrackingParams) =>
-                currentTrackingParams !== trackingParams,
+              (currentTrackingParams) => currentTrackingParams !== trackingParams,
             );
           });
         });
@@ -337,8 +309,7 @@ function createStateFromCore<T>(
       trackingParams.wrapperComponent = wrapperComponent;
 
       if (options.selector) {
-        trackingParams.selector =
-          options.selector as unknown as (value: unknown) => any[];
+        trackingParams.selector = options.selector as unknown as (value: unknown) => any[];
       }
 
       return wrapperComponent;
@@ -370,10 +341,7 @@ function createStateFromCore<T>(
     ) => {
       const filteredCore = core.filter(
         (value, prevValue) =>
-          predicate(
-            value,
-            prevValue === emptyValue ? undefined : (prevValue as T),
-          ),
+          predicate(value, prevValue === emptyValue ? undefined : (prevValue as T)),
         {
           equality: createCoreEquality(options.equality),
         },
@@ -390,11 +358,7 @@ function createStateFromCore<T>(
     ) => {
       const scannedCore = core.scan(
         (acc, value, prevValue) =>
-          reducer(
-            acc,
-            value,
-            prevValue === emptyValue ? undefined : (prevValue as T),
-          ),
+          reducer(acc, value, prevValue === emptyValue ? undefined : (prevValue as T)),
         initialValue,
         {
           equality: createCoreEquality(options.equality),
@@ -407,9 +371,7 @@ function createStateFromCore<T>(
       const stateCores = states.map((state) => getStateCore(state));
       const combinedCore = core.combine(...stateCores);
 
-      return autoDisposeStateOnUnmount(
-        createStateFromCore(combinedCore as any),
-      );
+      return autoDisposeStateOnUnmount(createStateFromCore(combinedCore as any));
     },
     attribute: (cb?: (value: T) => any) => {
       const originalValue = core.get() as T;
@@ -418,11 +380,7 @@ function createStateFromCore<T>(
 
       const attributeHelper = {
         velesAttribute: true as const,
-        getValue(
-          htmlElement: HTMLElement,
-          attributeName: string,
-          node: VelesElement,
-        ) {
+        getValue(htmlElement: HTMLElement, attributeName: string, node: VelesElement) {
           // save it to the attribute array
           // read that array on `_triggerUpdates`
           // and change inline
@@ -482,9 +440,7 @@ function createStateFromCore<T>(
     getPrevious: () => {
       const previousValue = core.getPrevious();
 
-      return previousValue === emptyValue
-        ? undefined
-        : (previousValue as undefined | T);
+      return previousValue === emptyValue ? undefined : (previousValue as undefined | T);
     },
     set: (newValue: T): void => {
       core.set(newValue);
@@ -519,9 +475,7 @@ function createStateFromCore<T>(
  */
 function createState<T>(
   initialValue: T,
-  subscribeCallback?: (
-    set: ReturnType<typeof createState<T>>["set"],
-  ) => Function,
+  subscribeCallback?: (set: ReturnType<typeof createState<T>>["set"]) => Function,
 ): State<T> {
   const core = new StateCore<T>(initialValue);
   return createStateFromCore(core, subscribeCallback);

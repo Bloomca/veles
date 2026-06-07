@@ -44,10 +44,4 @@ function hasCurrentLifecycleContext() {
   return Boolean(currentContext);
 }
 
-export {
-  addContext,
-  popContext,
-  onMount,
-  onUnmount,
-  hasCurrentLifecycleContext,
-};
+export { addContext, popContext, onMount, onUnmount, hasCurrentLifecycleContext };

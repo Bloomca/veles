@@ -1,12 +1,6 @@
 import { screen } from "@testing-library/dom";
 
-import {
-  attachComponent,
-  createElement,
-  createState,
-  onUnmount,
-  Fragment,
-} from "../src";
+import { attachComponent, createElement, createState, onUnmount, Fragment } from "../src";
 
 describe("attachComponent", () => {
   test("attaches component tree correctly", () => {

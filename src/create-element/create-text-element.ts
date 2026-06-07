@@ -5,9 +5,7 @@
 
 import type { VelesStringElement } from "../types";
 
-export function createTextElement(
-  text: string | undefined | null
-): VelesStringElement {
+export function createTextElement(text: string | undefined | null): VelesStringElement {
   const mountHandlers: Function[] = [];
   const unmountHandlers: Function[] = [];
   return {

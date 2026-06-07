@@ -68,16 +68,10 @@ function App() {
   return (
     <div>
       <div>
-        <input
-          type="text"
-          value={task$.attribute()}
-          onInput={(e) => task$.set(e.target.value)}
-        />
+        <input type="text" value={task$.attribute()} onInput={(e) => task$.set(e.target.value)} />
         <button
           onClick={() => {
-            tasks$.update((tasks) =>
-              tasks.concat({ id: idCounter++, title: task$.get() })
-            );
+            tasks$.update((tasks) => tasks.concat({ id: idCounter++, title: task$.get() }));
           }}
         >
           Add task
@@ -92,7 +86,7 @@ function App() {
           </ul>
         ) : (
           <div>No tasks added yet</div>
-        )
+        ),
       )}
     </div>
   );

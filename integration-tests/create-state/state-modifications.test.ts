@@ -24,9 +24,7 @@ describe("state modifications", () => {
       const x = new StateCore(1);
       const y = x.map((value) => ({ parity: value % 2 }), {
         equality: (current, next) =>
-          current !== emptyValue &&
-          next !== emptyValue &&
-          current.parity === next.parity,
+          current !== emptyValue && next !== emptyValue && current.parity === next.parity,
       });
       const firstValue = y.get();
       const spy = vi.fn();

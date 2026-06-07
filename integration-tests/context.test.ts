@@ -1,13 +1,7 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import {
-  attachComponent,
-  createElement,
-  createState,
-  createContext,
-  type State,
-} from "../src";
+import { attachComponent, createElement, createState, createContext, type State } from "../src";
 
 describe("Context", () => {
   let cleanup: Function | undefined;
@@ -46,9 +40,7 @@ describe("Context", () => {
       component: createElement(App),
     });
 
-    expect(screen.getByTestId("contextContent").textContent).toBe(
-      "context value is 5",
-    );
+    expect(screen.getByTestId("contextContent").textContent).toBe("context value is 5");
   });
 
   test("nested components have access to the Context if added with Context.addContext()", () => {
@@ -78,9 +70,7 @@ describe("Context", () => {
       component: createElement(App),
     });
 
-    expect(screen.getByTestId("contextContent").textContent).toBe(
-      "context value is 5",
-    );
+    expect(screen.getByTestId("contextContent").textContent).toBe("context value is 5");
   });
 
   test("conditionally rendered components have access to Context", async () => {
@@ -95,9 +85,7 @@ describe("Context", () => {
             "data-testid": "button",
             onClick: () => show$.update((value) => !value),
           }),
-          show$.render((shouldShow) =>
-            shouldShow ? createElement(NestedComponent) : null,
-          ),
+          show$.render((shouldShow) => (shouldShow ? createElement(NestedComponent) : null)),
         ],
       });
     }
@@ -137,9 +125,8 @@ describe("Context", () => {
         children: [
           createElement("div", {
             "data-testid": "container",
-            children: items$.renderEach(
-              { key: "id" },
-              ({ elementState: element$ }) => createElement(Item, { element$ }),
+            children: items$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+              createElement(Item, { element$ }),
             ),
           }),
         ],
@@ -227,11 +214,7 @@ describe("Context", () => {
       }),
     });
 
-    expect(screen.getByTestId("contextContent").textContent).toBe(
-      "context value is 5",
-    );
-    expect(screen.getByTestId("doubleContextContent").textContent).toBe(
-      "context value is 6",
-    );
+    expect(screen.getByTestId("contextContent").textContent).toBe("context value is 5");
+    expect(screen.getByTestId("doubleContextContent").textContent).toBe("context value is 6");
   });
 });

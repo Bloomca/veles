@@ -8,11 +8,10 @@ import { createElement } from "./create-element";
 
 import type { VelesElement, VelesComponentObject } from "./types";
 
-
 /**
  * Attach Veles component tree to a regular HTML node.
  * Right now it will wrap the app into an additional `<div>` tag.
- * 
+ *
  * It returns a function which when executed, will remove the Veles
  * tree from DOM and remove all subscriptions.
  */

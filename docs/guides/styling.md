@@ -23,7 +23,7 @@ If you want to make it conditional, use the `attribute()` API:
 
 ```jsx
 function Button({ active$ }) {
-  return <button class={active$.attribute(isActive => isActive ? 'active' : '')}>Save</button>;
+  return <button class={active$.attribute((isActive) => (isActive ? "active" : ""))}>Save</button>;
 }
 ```
 
@@ -58,11 +58,7 @@ If you want to make it dynamic, you can utilize the `attribute()` API as well:
 
 ```jsx
 function Component({ value$ }) {
-  return (
-    <div
-      style={value$.attribute(value => ({ width: `${value}px`}))}
-    />
-  );
+  return <div style={value$.attribute((value) => ({ width: `${value}px` }))} />;
 }
 ```
 
