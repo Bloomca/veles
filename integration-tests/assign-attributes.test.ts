@@ -11,6 +11,122 @@ describe("assign-attributes", () => {
     cleanup = undefined;
   });
 
+  test("updates the live input value when a reactive value changes", async () => {
+    const user = userEvent.setup();
+
+    function StateComponent() {
+      const name$ = createState("");
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "resetButton",
+            onClick: () => name$.set(""),
+          }),
+          createElement("input", {
+            type: "text",
+            "data-testid": "nameInput",
+            name: "name",
+            value: name$.attribute(),
+            onInput: (e) => name$.set((e.target as HTMLInputElement).value),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    const btn = screen.getByTestId("resetButton");
+    const input = screen.getByTestId("nameInput") as HTMLInputElement;
+
+    await user.type(input, "Veles");
+    expect(input).toHaveValue("Veles");
+
+    await user.click(btn);
+    expect(input).toHaveValue("");
+  });
+
+  test("updates the live textarea value when a reactive value changes", async () => {
+    const user = userEvent.setup();
+
+    function StateComponent() {
+      const bio$ = createState("");
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "resetButton",
+            onClick: () => bio$.set(""),
+          }),
+          createElement("textarea", {
+            "data-testid": "bioInput",
+            name: "bio",
+            value: bio$.attribute(),
+            onInput: (e) => bio$.set((e.target as HTMLTextAreaElement).value),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    const btn = screen.getByTestId("resetButton");
+    const textarea = screen.getByTestId("bioInput") as HTMLTextAreaElement;
+
+    await user.type(textarea, "Veles textarea");
+    expect(textarea).toHaveValue("Veles textarea");
+
+    await user.click(btn);
+    expect(textarea).toHaveValue("");
+  });
+
+  test("updates the live select value when a reactive value changes", async () => {
+    const user = userEvent.setup();
+
+    function StateComponent() {
+      const difficulty$ = createState("easy");
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "resetButton",
+            onClick: () => difficulty$.set("easy"),
+          }),
+          createElement("select", {
+            "data-testid": "difficultySelect",
+            name: "difficulty",
+            value: difficulty$.attribute(),
+            onChange: (e) => difficulty$.set((e.target as HTMLSelectElement).value),
+            children: [
+              createElement("option", { value: "easy", children: "Easy" }),
+              createElement("option", { value: "normal", children: "Normal" }),
+              createElement("option", { value: "hard", children: "Hard" }),
+            ],
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(StateComponent),
+    });
+
+    const btn = screen.getByTestId("resetButton");
+    const select = screen.getByTestId("difficultySelect") as HTMLSelectElement;
+
+    expect(select).toHaveValue("easy");
+
+    await user.selectOptions(select, "hard");
+    expect(select).toHaveValue("hard");
+
+    await user.click(btn);
+    expect(select).toHaveValue("easy");
+  });
+
   // basic test to make sure event handlers are supported
   test("supports state updates", async () => {
     const user = userEvent.setup();

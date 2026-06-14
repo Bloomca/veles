@@ -1,3 +1,5 @@
+const FORM_VALUE_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
+
 const ENUMERATED_BOOLEAN_ATTRIBUTES: {
   [attributeName: string]: {
     trueValue: string;
@@ -33,13 +35,29 @@ function assignDomAttribute({
   value: any;
   previousValue?: any;
 }) {
+  const normalizedAttributeName = attributeName.toLowerCase();
+
+  if (normalizedAttributeName === "value" && isFormValueElement(htmlElement)) {
+    assignFormValueProperty(htmlElement, value);
+    return;
+  }
+
+  if (normalizedAttributeName === "checked" && htmlElement.tagName === "INPUT") {
+    assignBooleanProperty(htmlElement as HTMLInputElement, "checked", value);
+    return;
+  }
+
+  if (normalizedAttributeName === "selected" && htmlElement.tagName === "OPTION") {
+    assignBooleanProperty(htmlElement as HTMLOptionElement, "selected", value);
+    return;
+  }
+
   if (attributeName === "style") {
     assignStyle({ value, previousValue, htmlElement });
     return;
   }
 
   if (typeof value === "boolean") {
-    const normalizedAttributeName = attributeName.toLowerCase();
     const enumeratedConfig = ENUMERATED_BOOLEAN_ATTRIBUTES[normalizedAttributeName];
 
     if (enumeratedConfig) {
@@ -70,6 +88,49 @@ function assignDomAttribute({
   }
 
   htmlElement.setAttribute(attributeName, value);
+}
+
+function isFormValueElement(
+  htmlElement: HTMLElement,
+): htmlElement is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement {
+  return FORM_VALUE_TAGS.has(htmlElement.tagName);
+}
+
+function assignFormValueProperty(
+  htmlElement: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  value: any,
+) {
+  if (htmlElement.tagName === "SELECT" && Array.isArray(value)) {
+    const selectedValues = new Set(value.map(String));
+
+    Array.from((htmlElement as HTMLSelectElement).options).forEach((option) => {
+      const shouldSelect = selectedValues.has(option.value);
+
+      if (option.selected !== shouldSelect) {
+        option.selected = shouldSelect;
+      }
+    });
+
+    return;
+  }
+
+  const normalizedValue = value == null ? "" : String(value);
+
+  if (htmlElement.value !== normalizedValue) {
+    htmlElement.value = normalizedValue;
+  }
+}
+
+function assignBooleanProperty<T extends "checked" | "selected">(
+  htmlElement: { [Property in T]: boolean },
+  propertyName: T,
+  value: any,
+) {
+  const normalizedValue = Boolean(value);
+
+  if (htmlElement[propertyName] !== normalizedValue) {
+    htmlElement[propertyName] = normalizedValue;
+  }
 }
 
 function assignStyle({
