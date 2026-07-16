@@ -7,6 +7,27 @@ import type {
   VelesElementProps,
 } from "../types";
 
+type ParsedChild =
+  | string
+  | number
+  | VelesElement
+  | VelesComponentObject
+  | VelesStringElement
+  | undefined
+  | null;
+
+function flattenChildren(children: unknown): ParsedChild[] {
+  const flattenedChildren: ParsedChild[] = [];
+
+  function append(child: unknown) {
+    if (Array.isArray(child)) child.forEach(append);
+    else flattenedChildren.push(child as ParsedChild);
+  }
+
+  append(children);
+  return flattenedChildren;
+}
+
 function parseChildren({
   children,
   htmlElement,
@@ -27,7 +48,7 @@ function parseChildren({
   // when they are executed
   let lastInsertedNode: null | HTMLElement | Text | VelesComponentObject = null;
 
-  (Array.isArray(children) ? children : [children]).forEach((childComponent) => {
+  flattenChildren(children).forEach((childComponent) => {
     if (typeof childComponent === "string") {
       const textNode = createTextElement(childComponent);
       htmlElement.append(textNode.html);
