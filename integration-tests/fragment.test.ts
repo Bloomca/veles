@@ -2,6 +2,7 @@ import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
 import { attachComponent, createElement, Fragment, createState } from "../src";
+import type { VelesChildren } from "../src/types";
 
 describe("<Fragment>", () => {
   let cleanup: Function | undefined;
@@ -9,6 +10,33 @@ describe("<Fragment>", () => {
   afterEach(() => {
     cleanup?.();
     cleanup = undefined;
+  });
+
+  test("flattens child arrays passed through a wrapper component", () => {
+    const visible$ = createState(false);
+
+    function Wrapper({ children }: { children?: VelesChildren }) {
+      return createElement(Fragment, {
+        children: [children, visible$.render(() => null)] as unknown as VelesChildren,
+      });
+    }
+
+    function App() {
+      return createElement(Wrapper, {
+        children: [
+          createElement("span", { "data-testid": "first-child", children: "First" }),
+          createElement("span", { "data-testid": "second-child", children: "Second" }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("first-child").textContent).toBe("First");
+    expect(screen.getByTestId("second-child").textContent).toBe("Second");
   });
 
   test("supports <Fragment> components rendering correctly", () => {
