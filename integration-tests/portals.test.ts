@@ -56,6 +56,66 @@ describe("portals", () => {
     checkCleanup();
   });
 
+  test("does not leave a placeholder element in the source tree", () => {
+    function Application() {
+      return createElement("main", {
+        "data-testid": "sourceTree",
+        children: createElement(Portal, {
+          portalNode: portalContainer,
+          children: "portal content",
+        }),
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: appContainer,
+      component: createElement(Application),
+    });
+
+    expect(screen.getByTestId("portal").textContent).toBe("portal content");
+    expect(screen.getByTestId("sourceTree").innerHTML).toBe("");
+
+    checkCleanup();
+  });
+
+  test("supports switching a direct portal to local content", () => {
+    const renderInPortal$ = createState(true);
+
+    function Application() {
+      return createElement("main", {
+        "data-testid": "sourceTree",
+        children: renderInPortal$.render((renderInPortal) =>
+          renderInPortal
+            ? createElement("section", {
+                portal: portalContainer,
+                children: "portal content",
+              })
+            : createElement("section", {
+                "data-testid": "localContent",
+                children: "local content",
+              }),
+        ),
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: appContainer,
+      component: createElement(Application),
+    });
+
+    expect(screen.getByTestId("sourceTree").innerHTML).toBe("");
+    expect(screen.getByTestId("portal").textContent).toBe("portal content");
+
+    renderInPortal$.set(false);
+
+    expect(screen.getByTestId("portal")).toBeEmptyDOMElement();
+    expect(screen.getByTestId("sourceTree").innerHTML).toBe(
+      '<section data-testid="localContent">local content</section>',
+    );
+
+    checkCleanup();
+  });
+
   test("can render portal using <Portal> component", () => {
     cleanup = attachComponent({
       htmlElement: appContainer,

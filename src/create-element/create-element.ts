@@ -52,6 +52,9 @@ function createElement(
     velesNode.childComponents = childComponents;
     velesNode.phantom = phantom;
     velesNode.portal = portal;
+    if (portal) {
+      velesNode.portalAnchor = document.createTextNode("");
+    }
 
     // these handlers are used to start tracking `render` only when the node
     // is actually mounted in the DOM

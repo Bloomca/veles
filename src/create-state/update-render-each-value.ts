@@ -3,6 +3,7 @@ import {
   renderTree,
   callUnmountHandlers,
   getExecutedComponentVelesNode,
+  getExecutedVelesNodeSourceNode,
   getMountedNodeExecutedVersion,
 } from "../_utils";
 import { addPublicContext, popPublicContext } from "../context";
@@ -197,15 +198,16 @@ function updateUseValueIteratorValue<T>({
             "Existing iterator node is expected to be mounted",
           ),
         );
+        const existingElementSourceNode = getExecutedVelesNodeSourceNode(existingElementNode);
         // the element is in the same relative position
         if (existingElement.indexValue + offset === index) {
-          currentElement = existingElementNode.html;
+          currentElement = existingElementSourceNode;
           return;
         }
 
         if (existingElement.indexValue + offset > index) {
           if (currentElement) {
-            currentElement.after(existingElementNode.html);
+            currentElement.after(existingElementSourceNode);
             // we adjust the offset of the item right after the one
             // we repositioned
             positioningOffset[existingElement.indexValue + 1] = -1;
@@ -218,17 +220,19 @@ function updateUseValueIteratorValue<T>({
                   | ExecutedVelesComponent
                   | ExecutedVelesElement,
               );
-              firstRenderedVelesNode.html.before(existingElementNode.html);
+              getExecutedVelesNodeSourceNode(firstRenderedVelesNode).before(
+                existingElementSourceNode,
+              );
             } else {
               // TODO: handle this properly
             }
           }
 
-          currentElement = existingElementNode.html;
+          currentElement = existingElementSourceNode;
           offset = offset + 1;
         } else {
           if (currentElement) {
-            currentElement.after(existingElementNode.html);
+            currentElement.after(existingElementSourceNode);
             positioningOffset[existingElement.indexValue + 1] = 1;
           } else {
             // this means we at position 0
@@ -239,13 +243,15 @@ function updateUseValueIteratorValue<T>({
                   | ExecutedVelesComponent
                   | ExecutedVelesElement,
               );
-              firstRenderedVelesNode.html.before(existingElementNode.html);
+              getExecutedVelesNodeSourceNode(firstRenderedVelesNode).before(
+                existingElementSourceNode,
+              );
             } else {
               // TODO: handle this properly
             }
           }
 
-          currentElement = existingElementNode.html;
+          currentElement = existingElementSourceNode;
           offset = offset - 1;
         }
       } else {
@@ -256,10 +262,11 @@ function updateUseValueIteratorValue<T>({
         );
 
         const newNodeVelesElement = getExecutedComponentVelesNode(newNodeExecutedVersion);
+        const newNodeSourceNode = getExecutedVelesNodeSourceNode(newNodeVelesElement);
         newNodeVelesElement.parentVelesElement = parentVelesElement;
 
         if (currentElement) {
-          currentElement.after(newNodeVelesElement.html);
+          currentElement.after(newNodeSourceNode);
         } else {
           // this basically means we at the position 0
           const firstRenderedElement = renderedElements[0]?.[0];
@@ -267,14 +274,14 @@ function updateUseValueIteratorValue<T>({
             const firstRenderedVelesNode = getExecutedComponentVelesNode(
               firstRenderedElement.executedVersion as ExecutedVelesComponent | ExecutedVelesElement,
             );
-            firstRenderedVelesNode.html.before(newNodeVelesElement.html);
+            getExecutedVelesNodeSourceNode(firstRenderedVelesNode).before(newNodeSourceNode);
           } else {
-            anchor.html.before(newNodeVelesElement.html);
+            anchor.html.before(newNodeSourceNode);
           }
         }
 
         offset = offset + 1;
-        currentElement = newNodeVelesElement.html;
+        currentElement = newNodeSourceNode;
         newElementsCount = newElementsCount + 1;
 
         callMountHandlers(newNodeExecutedVersion);
@@ -298,7 +305,7 @@ function updateUseValueIteratorValue<T>({
 
           const oldRenderedVelesNode = getExecutedComponentVelesNode(oldNodeExecutedVersion);
 
-          oldRenderedVelesNode.html.remove();
+          getExecutedVelesNodeSourceNode(oldRenderedVelesNode).remove();
           callUnmountHandlers(oldNodeExecutedVersion);
 
           if ("executedVelesNode" in wrapperVelesElementNode) {
