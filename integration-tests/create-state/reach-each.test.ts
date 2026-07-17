@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/dom";
 import userEvent from "@testing-library/user-event";
 
-import { attachComponent, createElement, createState, onUnmount } from "../../src";
+import { attachComponent, createElement, createState, Fragment, onUnmount } from "../../src";
 
 import type { State } from "../../src";
 
@@ -83,10 +83,10 @@ describe("state.renderEach", () => {
     });
 
     const listElement = screen.getByTestId("listComponent");
-    expect(listElement.childNodes.length).toBe(3);
-    const firstListElement = listElement.childNodes[0];
-    const secondListElement = listElement.childNodes[1];
-    const thirdListElement = listElement.childNodes[2];
+    expect(listElement.children.length).toBe(3);
+    const firstListElement = listElement.children[0];
+    const secondListElement = listElement.children[1];
+    const thirdListElement = listElement.children[2];
     expect(textSpy).toHaveBeenCalledTimes(3);
 
     expect(firstListElement.textContent).toBe(item1.text);
@@ -95,11 +95,11 @@ describe("state.renderEach", () => {
 
     await user.click(screen.getByTestId("updateFirstItem"));
     expect(unmountSpy).not.toHaveBeenCalled();
-    expect(listElement.childNodes[0].textContent).toBe("updated first value");
+    expect(listElement.children[0].textContent).toBe("updated first value");
     expect(textSpy).toHaveBeenCalledTimes(4);
 
     await user.click(screen.getByTestId("updateArrayButton"));
-    expect(listElement.childNodes.length).toBe(4);
+    expect(listElement.children.length).toBe(4);
     expect(unmountSpy).toHaveBeenCalledTimes(1);
     expect(textSpy).toHaveBeenCalledTimes(7);
   });
@@ -178,10 +178,10 @@ describe("state.renderEach", () => {
     });
 
     const listElement = screen.getByTestId("listComponent");
-    expect(listElement.childNodes.length).toBe(3);
-    const firstListElement = listElement.childNodes[0];
-    const secondListElement = listElement.childNodes[1];
-    const thirdListElement = listElement.childNodes[2];
+    expect(listElement.children.length).toBe(3);
+    const firstListElement = listElement.children[0];
+    const secondListElement = listElement.children[1];
+    const thirdListElement = listElement.children[2];
 
     expect(firstListElement.textContent).toBe(item1.text);
     expect(secondListElement.textContent).toBe(item3.text);
@@ -191,11 +191,11 @@ describe("state.renderEach", () => {
 
     await user.click(screen.getByTestId("updateFirstItem"));
     expect(unmountSpy).not.toHaveBeenCalled();
-    expect(listElement.childNodes[0].textContent).toBe("updated first value");
+    expect(listElement.children[0].textContent).toBe("updated first value");
     expect(textSpy).toHaveBeenCalledTimes(4);
 
     await user.click(screen.getByTestId("updateArrayButton"));
-    expect(listElement.childNodes.length).toBe(4);
+    expect(listElement.children.length).toBe(4);
     expect(unmountSpy).toHaveBeenCalledTimes(1);
     expect(textSpy).toHaveBeenCalledTimes(7);
   });
@@ -259,7 +259,7 @@ describe("state.renderEach", () => {
     expect(textSpy).toHaveBeenCalledTimes(5);
     expect(indexSpy).toHaveBeenCalledTimes(5);
     const container = screen.getByTestId("container");
-    const children = container.childNodes;
+    const children = container.children;
     expect(children.length).toBe(5);
     expect(children[0].textContent).toBe("0.first item");
     expect(children[1].textContent).toBe("1.second item");
@@ -311,12 +311,123 @@ describe("state.renderEach", () => {
     });
 
     const list = screen.getByTestId("list");
-    expect(list.childNodes.length).toBe(0);
+    expect(list.children.length).toBe(0);
 
     await user.click(screen.getByTestId("button"));
 
-    expect(list.childNodes.length).toBe(1);
-    expect(list.childNodes[0].textContent).toBe("first item");
+    expect(list.children.length).toBe(1);
+    expect(list.children[0].textContent).toBe("first item");
+  });
+
+  test("inserts the first item at the empty iterator's original position", () => {
+    type Item = { id: number; text: string };
+    const items$ = createState<Item[]>([]);
+
+    function App() {
+      return createElement("main", {
+        "data-testid": "container",
+        children: [
+          createElement("i", { children: "before" }),
+          items$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+            createElement("b", {
+              children: element$.renderSelected((element) => element.text),
+            }),
+          ),
+          createElement("i", { children: "after" }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const container = screen.getByTestId("container");
+    expect(container.innerHTML).toBe("<i>before</i><i>after</i>");
+
+    items$.set([{ id: 1, text: "item" }]);
+
+    expect(container.innerHTML).toBe("<i>before</i><b>item</b><i>after</i>");
+
+    items$.set([]);
+    expect(container.innerHTML).toBe("<i>before</i><i>after</i>");
+
+    items$.set([{ id: 2, text: "second item" }]);
+    expect(container.innerHTML).toBe("<i>before</i><b>second item</b><i>after</i>");
+  });
+
+  test("renders Fragment-rooted iterator items without a phantom element", () => {
+    type Item = { id: number; text: string };
+    const items$ = createState<Item[]>([{ id: 1, text: "item" }]);
+
+    function App() {
+      return createElement("ul", {
+        "data-testid": "list",
+        children: items$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+          createElement(Fragment, {
+            children: createElement("li", {
+              children: element$.renderSelected((element) => element.text),
+            }),
+          }),
+        ),
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("list").innerHTML).toBe("<li>item</li>");
+  });
+
+  test("supports numeric zero as a renderEach key", () => {
+    type Item = { id: number; text: string };
+    const items$ = createState<Item[]>([{ id: 0, text: "zero" }]);
+
+    function App() {
+      return createElement("ul", {
+        "data-testid": "list",
+        children: items$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+          createElement("li", {
+            children: element$.renderSelected((element) => element.text),
+          }),
+        ),
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("list").innerHTML).toBe("<li>zero</li>");
+  });
+
+  test.each(["constructor", "__proto__", "toString"])("supports %s as a renderEach key", (key) => {
+    type Item = { id: string; text: string };
+    const items$ = createState<Item[]>([]);
+
+    function App() {
+      return createElement("ul", {
+        "data-testid": "list",
+        children: items$.renderEach({ key: "id" }, ({ elementState: element$ }) =>
+          createElement("li", {
+            children: element$.renderSelected((element) => element.text),
+          }),
+        ),
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    items$.set([{ id: key, text: key }]);
+
+    expect(screen.getByTestId("list").innerHTML).toBe(`<li>${key}</li>`);
   });
 
   test("renderEach supports removing last element and adding a new one", async () => {
@@ -356,17 +467,17 @@ describe("state.renderEach", () => {
     });
 
     const list = screen.getByTestId("list");
-    expect(list.childNodes.length).toBe(1);
-    expect(list.childNodes[0].textContent).toBe("first item");
+    expect(list.children.length).toBe(1);
+    expect(list.children[0].textContent).toBe("first item");
 
     await user.click(screen.getByTestId("removeButton"));
 
-    expect(list.childNodes.length).toBe(0);
+    expect(list.children.length).toBe(0);
 
     await user.click(screen.getByTestId("addButton"));
 
-    expect(list.childNodes.length).toBe(1);
-    expect(list.childNodes[0].textContent).toBe("second item");
+    expect(list.children.length).toBe(1);
+    expect(list.children[0].textContent).toBe("second item");
   });
 
   test("renderEach does not update until mounted", async () => {
@@ -438,12 +549,12 @@ describe("state.renderEach", () => {
     expect(indexSpy).toHaveBeenCalledTimes(0);
 
     const container = screen.getByTestId("container");
-    const children = container.childNodes;
+    const children = container.children;
 
     items$.set([item4, item2, item3, item1]);
 
     // empty Text node
-    expect(children.length).toBe(1);
+    expect(container.childNodes.length).toBe(1);
 
     expect(textSpy).toHaveBeenCalledTimes(0);
     expect(indexSpy).toHaveBeenCalledTimes(0);
@@ -473,7 +584,7 @@ describe("state.renderEach", () => {
     await user.click(screen.getByTestId("button"));
 
     // empty Text node
-    expect(children.length).toBe(1);
+    expect(container.childNodes.length).toBe(1);
 
     items$.set([item4, item5, item3, { ...item1, text: "1st item" }, item2, item6]);
 
@@ -496,7 +607,7 @@ describe("state.renderEach", () => {
     await user.click(screen.getByTestId("button"));
 
     // empty Text node
-    expect(children.length).toBe(1);
+    expect(container.childNodes.length).toBe(1);
 
     items$.set([item3, item6]);
 
