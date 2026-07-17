@@ -171,6 +171,25 @@ describe("state modifications", () => {
   });
 
   describe("glitch-free push-pull", () => {
+    test("does not emit an intermediate value in a deep, uneven diamond graph", () => {
+      const source = new StateCore(1);
+      const short = source.map((value) => value + 100);
+      const long = source
+        .map((value) => value * 2)
+        .map((value) => value * 3)
+        .map((value) => value * 5);
+      const combined = short.combine(long);
+
+      expect(combined.get()).toEqual([101, 30]);
+
+      const emissions: [number, number][] = [];
+      combined.on((value) => emissions.push(value as [number, number]));
+
+      source.set(2);
+
+      expect(emissions).toEqual([[102, 60]]);
+    });
+
     test("does not emit inconsistent intermediate states in a diamond graph", () => {
       const a = new StateCore(1);
       const b = a.map((value) => value * 2);
