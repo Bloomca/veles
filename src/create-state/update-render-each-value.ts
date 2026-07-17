@@ -10,10 +10,12 @@ import { addPublicContext, popPublicContext } from "../context";
 import type {
   ExecutedVelesComponent,
   ExecutedVelesElement,
+  ExecutedVelesStringElement,
   VelesComponentObject,
   VelesElement,
+  VelesStringElement,
 } from "../types";
-import type { TrackingIterator, State, createState as createStateType } from "./types";
+import type { IteratorKey, TrackingIterator, State, createState as createStateType } from "./types";
 
 function updateUseValueIteratorValue<T>({
   value,
@@ -24,8 +26,16 @@ function updateUseValueIteratorValue<T>({
   trackingIterator: TrackingIterator;
   createState: typeof createStateType;
 }) {
-  const { cb, key, renderedElements, elementsByKey, wrapperComponent, selector, savedContext } =
-    trackingIterator;
+  const {
+    anchor,
+    cb,
+    key,
+    renderedElements,
+    elementsByKey,
+    wrapperComponent,
+    selector,
+    savedContext,
+  } = trackingIterator;
   if (!wrapperComponent) {
     console.error("there is no wrapper component for the iterator");
     return;
@@ -47,22 +57,25 @@ function updateUseValueIteratorValue<T>({
   // but I don't know how to have correct type inferring here
   // so we check manually
   if (Array.isArray(elements)) {
-    const newRenderedElements: [VelesElement | VelesComponentObject, string, State<unknown>][] = [];
-    const newElementsByKey: {
-      [key: string]: {
+    const newRenderedElements: [
+      VelesElement | VelesComponentObject,
+      IteratorKey,
+      State<unknown>,
+    ][] = [];
+    const newElementsByKey = new Map<
+      IteratorKey,
+      {
         elementState: State<unknown>;
         indexState: State<number>;
         indexValue: number;
         node: VelesElement | VelesComponentObject;
-      };
-    } = {};
+      }
+    >();
 
-    const renderedExistingElements: {
-      [calculatedKey: string]: boolean;
-    } = {};
+    const renderedExistingElements = new Set<IteratorKey>();
 
     elements.forEach((element, index) => {
-      let calculatedKey: string = "";
+      let calculatedKey: IteratorKey | null = null;
       if (
         typeof key === "string" &&
         typeof element === "object" &&
@@ -76,7 +89,7 @@ function updateUseValueIteratorValue<T>({
         // ignore for now
       }
 
-      if (!calculatedKey) {
+      if (calculatedKey == null) {
         return;
       }
 
@@ -99,10 +112,10 @@ function updateUseValueIteratorValue<T>({
       // not rendered anymore, and remove them from DOM and trigger `onUnmount`
       // for them.
 
-      const existingElement = elementsByKey[calculatedKey];
+      const existingElement = elementsByKey.get(calculatedKey);
 
       if (existingElement) {
-        renderedExistingElements[calculatedKey] = true;
+        renderedExistingElements.add(calculatedKey);
         const currentValue = existingElement.elementState.get();
         if (currentValue !== element) {
           existingElement.elementState.set(element);
@@ -117,12 +130,12 @@ function updateUseValueIteratorValue<T>({
           calculatedKey,
           existingElement.elementState,
         ]);
-        newElementsByKey[calculatedKey] = {
+        newElementsByKey.set(calculatedKey, {
           elementState: existingElement.elementState,
           indexState: existingElement.indexState,
           indexValue: index,
           node: existingElement.node,
-        };
+        });
       } else {
         const elementState = createState(element);
         const indexState = createState(index);
@@ -135,19 +148,23 @@ function updateUseValueIteratorValue<T>({
         popPublicContext();
 
         newRenderedElements.push([node, calculatedKey, elementState]);
-        newElementsByKey[calculatedKey] = {
+        newElementsByKey.set(calculatedKey, {
           elementState,
           indexState,
           indexValue: index,
           node,
-        };
+        });
       }
     });
 
     // to replace old wrapper's children to make sure they are removed correctly
     // on `render` unmount
-    const newChildRenderedComponents: (ExecutedVelesComponent | ExecutedVelesElement)[] = [];
-    const newChildComponents: (VelesComponentObject | VelesElement)[] = [];
+    const newChildRenderedComponents: (
+      | ExecutedVelesComponent
+      | ExecutedVelesElement
+      | ExecutedVelesStringElement
+    )[] = [];
+    const newChildComponents: (VelesComponentObject | VelesElement | VelesStringElement)[] = [];
 
     const positioningOffset: { [key: number]: number } = {};
 
@@ -172,7 +189,7 @@ function updateUseValueIteratorValue<T>({
 
       const [newNode, calculatedKey, _newState] = newRenderedElement;
 
-      const existingElement = elementsByKey[calculatedKey];
+      const existingElement = elementsByKey.get(calculatedKey);
       if (existingElement) {
         const existingElementNode = getExecutedComponentVelesNode(
           getMountedNodeExecutedVersion(
@@ -252,9 +269,7 @@ function updateUseValueIteratorValue<T>({
             );
             firstRenderedVelesNode.html.before(newNodeVelesElement.html);
           } else {
-            // TODO: handle the case when there were 0 rendered elements
-            // right now this thing assumes there were no
-            parentVelesElement.html.prepend(newNodeVelesElement.html);
+            anchor.html.before(newNodeVelesElement.html);
           }
         }
 
@@ -273,7 +288,7 @@ function updateUseValueIteratorValue<T>({
       // `childComponents` of our `wrapperComponent`, and also from the DOM
       renderedElements.forEach(([oldNode, calculatedKey]) => {
         // the element is still in DOM
-        if (renderedExistingElements[calculatedKey] === true) {
+        if (renderedExistingElements.has(calculatedKey)) {
           return;
         } else {
           const oldNodeExecutedVersion = getMountedNodeExecutedVersion(
@@ -303,6 +318,14 @@ function updateUseValueIteratorValue<T>({
         }
       });
     }
+
+    // Keep the iterator anchor as the last child so an empty iterator retains
+    // its DOM position and subsequent items can be inserted before it.
+    if (!anchor.executedVersion) {
+      throw new Error("Iterator anchor is expected to be mounted");
+    }
+    newChildRenderedComponents.push(anchor.executedVersion);
+    newChildComponents.push(anchor);
 
     // We need to update `childComponents` of `wrapperVelesElementNode` to have the latest info
     // otherwise it will not be removed completely if it needs to be unmounted.

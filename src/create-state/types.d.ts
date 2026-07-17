@@ -10,6 +10,7 @@ type StateEquality<ValueType> = (value1: ValueType, value2: ValueType) => boolea
 
 type StateLike<ValueType> = State<ValueType>;
 type ArrayElement<T> = T extends ReadonlyArray<infer Element> ? Element : never;
+export type IteratorKey = string | number;
 
 export type State<ValueType> = {
   track(
@@ -51,7 +52,7 @@ export type State<ValueType> = {
   renderEach<Element extends ArrayElement<ValueType> = ArrayElement<ValueType>>(
     options: ValueType extends ReadonlyArray<any>
       ? {
-          key: string | ((options: { element: Element; index: number }) => string);
+          key: string | ((options: { element: Element; index: number }) => IteratorKey);
           selector?: undefined;
         }
       : never,
@@ -65,7 +66,7 @@ export type State<ValueType> = {
     Element extends ArrayElement<SelectorValueType> = ArrayElement<SelectorValueType>,
   >(
     options: {
-      key: string | ((options: { element: Element; index: number }) => string);
+      key: string | ((options: { element: Element; index: number }) => IteratorKey);
       selector: (value: ValueType) => SelectorValueType;
     },
     cb: (props: {
@@ -140,21 +141,23 @@ export type TrackingAttribute = {
 };
 
 export type TrackingIterator = {
+  anchor: VelesStringElement;
   cb: (props: {
     elementState: State<any>;
     indexState: State<number>;
   }) => VelesElement | VelesComponentObject;
   selector?: (value: unknown) => any[];
-  renderedElements: [VelesElement | VelesComponentObject, string, State<unknown>][];
-  key: string | ((options: { element: unknown; index: number }) => string);
-  elementsByKey: {
-    [key: string]: {
+  renderedElements: [VelesElement | VelesComponentObject, IteratorKey, State<unknown>][];
+  key: string | ((options: { element: unknown; index: number }) => IteratorKey);
+  elementsByKey: Map<
+    IteratorKey,
+    {
       elementState: State<unknown>;
       indexState: State<number>;
       indexValue: number;
       node: VelesElement | VelesComponentObject;
-    };
-  };
+    }
+  >;
   wrapperComponent: VelesElement | VelesComponentObject;
   savedContext: ComponentContext;
 };

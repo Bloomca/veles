@@ -157,15 +157,15 @@ describe("Context", () => {
     });
 
     const listElement = screen.getByTestId("container");
-    expect(listElement.childNodes.length).toBe(2);
-    expect(listElement.childNodes[0].textContent).toBe("first item 3");
-    expect(listElement.childNodes[1].textContent).toBe("second item 6");
+    expect(listElement.children.length).toBe(2);
+    expect(listElement.children[0].textContent).toBe("first item 3");
+    expect(listElement.children[1].textContent).toBe("second item 6");
 
     items$.set([item1, item2, item3]);
-    expect(listElement.childNodes.length).toBe(3);
-    expect(listElement.childNodes[0].textContent).toBe("first item 3");
-    expect(listElement.childNodes[1].textContent).toBe("second item 6");
-    expect(listElement.childNodes[2].textContent).toBe("third item 9");
+    expect(listElement.children.length).toBe(3);
+    expect(listElement.children[0].textContent).toBe("first item 3");
+    expect(listElement.children[1].textContent).toBe("second item 6");
+    expect(listElement.children[2].textContent).toBe("third item 9");
   });
 
   it("another Context overrides same value for children correctly", () => {

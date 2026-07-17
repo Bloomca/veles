@@ -10,7 +10,13 @@ import { StateCore, createCoreEquality, emptyValue } from "./state-core";
 
 import type { VelesElement, VelesComponentObject, VelesStringElement } from "../types";
 
-import type { State, TrackingIterator, StateTrackers, TrackingSelectorElement } from "./types";
+import type {
+  IteratorKey,
+  State,
+  TrackingIterator,
+  StateTrackers,
+  TrackingSelectorElement,
+} from "./types";
 
 const STATE_CORE_PROPERTY = "__velesStateCore";
 
@@ -219,7 +225,7 @@ function createStateFromCore<T>(
      */
     renderEach<Element>(
       options: {
-        key: string | ((options: { element: any; index: number }) => string);
+        key: string | ((options: { element: any; index: number }) => IteratorKey);
         selector?: (value: T) => Element[];
       },
       cb: (props: {
@@ -232,15 +238,19 @@ function createStateFromCore<T>(
       trackingParams.savedContext = currentContext;
 
       const wrapperComponent = createElement((_props, componentAPI) => {
-        const children: [VelesElement | VelesComponentObject, string, State<Element>][] = [];
-        const elementsByKey: {
-          [key: string]: {
+        const children: [VelesElement | VelesComponentObject, IteratorKey, State<Element>][] = [];
+        const anchor = createTextElement("");
+        anchor.needExecutedVersion = true;
+        trackingParams.anchor = anchor;
+        const elementsByKey = new Map<
+          IteratorKey,
+          {
             elementState: State<Element>;
             indexState: State<number>;
             indexValue: number;
             node: VelesElement | VelesComponentObject;
-          };
-        } = {};
+          }
+        >();
         const stateValue = core.get() as T;
         const elements = options.selector ? options.selector(stateValue) : stateValue;
 
@@ -252,14 +262,14 @@ function createStateFromCore<T>(
         (elements as Element[]).forEach((element, index) => {
           // we calculate a key for each element. This key determines whether we render the element from scratch, or do nothing
           // when the element updates
-          let calculatedKey: string = "";
+          let calculatedKey: IteratorKey | null = null;
           if (
             typeof options.key === "string" &&
             typeof element === "object" &&
             element !== null &&
             options.key in element
           ) {
-            calculatedKey = (element as Record<string, string>)[options.key];
+            calculatedKey = (element as Record<string, IteratorKey>)[options.key];
           } else if (typeof options.key === "function") {
             calculatedKey = options.key({ element, index });
           } else {
@@ -269,19 +279,19 @@ function createStateFromCore<T>(
           const elementState = createState(element);
           const indexState = createState(index);
 
-          if (!calculatedKey) {
+          if (calculatedKey == null) {
             return;
           }
 
           let node = cb({ elementState, indexState });
           node.needExecutedVersion = true;
 
-          elementsByKey[calculatedKey] = {
+          elementsByKey.set(calculatedKey, {
             node,
             indexState,
             indexValue: index,
             elementState,
-          };
+          });
 
           children.push([node, calculatedKey, elementState]);
         });
@@ -298,7 +308,7 @@ function createStateFromCore<T>(
         });
         return createElement("div", {
           phantom: true,
-          children: children.map((child) => child[0]),
+          children: [...children.map((child) => child[0]), anchor],
         });
       });
 
