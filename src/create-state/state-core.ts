@@ -67,13 +67,16 @@ class StateCore<T> {
     const prevValue = this._value;
     this._prevValue = prevValue;
     this._value = newValue;
-    this.notifySubscribers(newValue, prevValue);
 
     this._children.forEach((child) => {
       child._dirty = true;
     });
 
     this.flush();
+
+    // technically, we can notify subscribers earlier, but then synchronous reading
+    // would return stale state values.
+    this.notifySubscribers(newValue, prevValue);
   }
 
   update(fn: (currentValue: CoreValue<T>) => T) {

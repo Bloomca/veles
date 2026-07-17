@@ -171,6 +171,21 @@ describe("state modifications", () => {
   });
 
   describe("glitch-free push-pull", () => {
+    test("allows source subscribers to synchronously read the latest derived value", () => {
+      const source = new StateCore(1);
+      const doubled = source.map((value) => value * 2);
+
+      expect(doubled.get()).toBe(2);
+
+      const reads: number[] = [];
+      source.on(() => reads.push(doubled.get() as number));
+
+      source.set(2);
+
+      expect(reads).toEqual([4]);
+      expect(doubled.get()).toBe(4);
+    });
+
     test("does not emit an intermediate value in a deep, uneven diamond graph", () => {
       const source = new StateCore(1);
       const short = source.map((value) => value + 100);
