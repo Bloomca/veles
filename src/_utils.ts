@@ -157,43 +157,18 @@ function insertNode({
     let lastInsertedNode: HTMLElement | Text | null = null;
 
     (velesElement as ExecutedVelesElement).childComponents.forEach((childComponentofPhantom) => {
-      if ("executedVelesNode" in childComponentofPhantom) {
-        if (lastInsertedNode) {
-          lastInsertedNode.after(childComponentofPhantom.html);
-        } else {
-          if (adjacentNode) {
-            adjacentNode.after(childComponentofPhantom.html);
-          } else {
-            parentVelesElement.html.prepend(childComponentofPhantom.html);
-          }
-        }
-        childComponentofPhantom.parentVelesElement = parentVelesElement;
-        lastInsertedNode = childComponentofPhantom.html;
-      } else if ("executedVelesStringElement" in childComponentofPhantom) {
-        if (lastInsertedNode) {
-          lastInsertedNode.after(childComponentofPhantom.html);
-        } else {
-          if (adjacentNode) {
-            adjacentNode.after(childComponentofPhantom.html);
-          } else {
-            parentVelesElement.html.prepend(childComponentofPhantom.html);
-          }
-        }
-        childComponentofPhantom.parentVelesElement = parentVelesElement;
-        lastInsertedNode = childComponentofPhantom.html;
-      } else {
-        const executedNode = getExecutedComponentVelesNode(childComponentofPhantom);
-        if (lastInsertedNode) {
-          lastInsertedNode.after(executedNode.html);
-        } else {
-          if (adjacentNode) {
-            adjacentNode.after(executedNode.html);
-          } else {
-            parentVelesElement.html.prepend(executedNode.html);
-          }
-        }
-        executedNode.parentVelesElement = parentVelesElement;
-        lastInsertedNode = executedNode.html;
+      const executedNode =
+        "executedVelesComponent" in childComponentofPhantom
+          ? getExecutedComponentVelesNode(childComponentofPhantom)
+          : childComponentofPhantom;
+      const lastInsertedChildNode = insertNode({
+        velesElement: executedNode,
+        adjacentNode: lastInsertedNode ?? adjacentNode,
+        parentVelesElement,
+      });
+
+      if (lastInsertedChildNode) {
+        lastInsertedNode = lastInsertedChildNode;
       }
     });
     velesElement.parentVelesElement = parentVelesElement;

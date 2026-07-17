@@ -81,6 +81,35 @@ describe("<Fragment>", () => {
     );
   });
 
+  test("flattens nested <Fragment> components recursively", () => {
+    function App() {
+      return createElement("main", {
+        "data-testid": "container",
+        children: [
+          "before",
+          createElement(Fragment, {
+            children: [
+              createElement("span", { children: "outer" }),
+              createElement(Fragment, {
+                children: createElement("b", { children: "inner" }),
+              }),
+            ],
+          }),
+          "after",
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("container").innerHTML).toBe(
+      "before<span>outer</span><b>inner</b>after",
+    );
+  });
+
   test("supports updating children in <Fragment> components correctly", async () => {
     const user = userEvent.setup();
     function App() {
