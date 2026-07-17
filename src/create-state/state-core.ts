@@ -1,4 +1,7 @@
 import { MinHeap } from "./min-heap";
+import { runWithStateScheduler } from "./state-scheduler";
+
+import type { StateScheduler } from "./state-scheduler";
 
 // explicit symbol for empty value, so it is 100% unique
 const emptyValue = Symbol("veles-state-core-empty");
@@ -21,8 +24,6 @@ type CoreOptions<T> = {
 };
 
 const defaultEquality: EqualityFn<any> = (value1, value2) => value1 === value2;
-
-type PendingNotification = { node: StateCore<any>; value: any; prevValue: any };
 
 class StateCore<T> {
   private _value: CoreValue<T>;
@@ -66,24 +67,20 @@ class StateCore<T> {
   set(newValue: T) {
     if (this._equality(this._value, newValue)) return;
 
-    const prevValue = this._value;
-    this._prevValue = prevValue;
-    this._value = newValue;
+    runWithStateScheduler((scheduler) => {
+      const prevValue = this._value;
+      this._prevValue = prevValue;
+      this._value = newValue;
 
-    this._children.forEach((child) => {
-      child._dirty = true;
-    });
+      // Schedule the directly updated state before its derived children. The
+      // scheduler only starts notification after the graph has been recomputed.
+      this.scheduleNotification(scheduler, newValue, prevValue);
 
-    const pendingNotifications = this.flush();
+      this._children.forEach((child) => {
+        child._dirty = true;
+      });
 
-    // technically, we can notify subscribers earlier, but then synchronous reading
-    // would return stale state values.
-    this.notifySubscribers(newValue, prevValue);
-
-    // we intentionally process derived notifications after direct subscribers to
-    // the signal
-    pendingNotifications.forEach(({ node, value, prevValue }) => {
-      node.notifySubscribers(value, prevValue);
+      this.flush(scheduler);
     });
   }
 
@@ -216,9 +213,7 @@ class StateCore<T> {
     return { changed };
   }
 
-  private flush(): PendingNotification[] {
-    const pendingNotifications: PendingNotification[] = [];
-
+  private flush(scheduler: StateScheduler) {
     /**
      * We utilize a min-heap to ensure that we don't trigger notifications
      * before all the previous necessary work is done. Otherwise it can
@@ -269,18 +264,28 @@ class StateCore<T> {
 
       if (!changed) continue;
 
-      pendingNotifications.push({
-        node: child,
-        prevValue: child._prevValue,
-        value,
-      });
+      child.scheduleNotification(scheduler, value, child._prevValue);
       child._children.forEach((grandchild) => {
         grandchild._dirty = true;
         enqueue(grandchild);
       });
     }
+  }
 
-    return pendingNotifications;
+  private scheduleNotification(
+    scheduler: StateScheduler,
+    value: CoreValue<T>,
+    previousValue: CoreValue<T>,
+  ) {
+    scheduler.scheduleNotification({
+      key: this,
+      rank: this._rank,
+      value,
+      previousValue,
+      notify: (notificationValue, notificationPreviousValue) => {
+        this.notifySubscribers(notificationValue, notificationPreviousValue);
+      },
+    });
   }
 
   private notifySubscribers(value: CoreValue<T>, prevValue: CoreValue<T>) {

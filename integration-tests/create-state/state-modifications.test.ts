@@ -202,6 +202,42 @@ describe("state modifications", () => {
       expect(quadrupled.get()).toBe(8);
     });
 
+    test("coalesces derived notifications when a subscriber updates another source", () => {
+      const source = new StateCore(1);
+      const trigger = new StateCore(false);
+      const doubled = source.map((value) => value * 2);
+      const combined = trigger.combine(doubled);
+
+      expect(combined.get()).toEqual([false, 2]);
+
+      const emissions: Array<[boolean, number]> = [];
+      source.on(() => trigger.set(true));
+      combined.on((value) => emissions.push(value as [boolean, number]));
+
+      source.set(2);
+
+      expect(emissions).toEqual([[true, 4]]);
+      expect(combined.get()).toEqual([true, 4]);
+    });
+
+    test("does not deliver an older derived notification after a reentrant update", () => {
+      const source = new StateCore(1);
+      const doubled = source.map((value) => value * 2);
+
+      expect(doubled.get()).toBe(2);
+
+      const emissions: number[] = [];
+      source.on((value) => {
+        if (value === 2) source.set(3);
+      });
+      doubled.on((value) => emissions.push(value));
+
+      source.set(2);
+
+      expect(emissions).toEqual([6]);
+      expect(doubled.get()).toBe(6);
+    });
+
     test("does not emit an intermediate value in a deep, uneven diamond graph", () => {
       const source = new StateCore(1);
       const short = source.map((value) => value + 100);
