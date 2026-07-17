@@ -185,5 +185,43 @@ describe("state modifications", () => {
       expect(emissions).toHaveLength(1);
       expect(emissions[0]).toEqual([4, 6]);
     });
+
+    test("schedules a dirty parent outside the current flush queue", () => {
+      const choices = new StateCore(["first"]);
+      const disabled = new StateCore(false);
+      const canAdd = choices.map((items) => items.length < 10);
+      const combined = disabled.combine(canAdd);
+      const subscriber = vi.fn();
+
+      combined.on(subscriber);
+      disabled.set(true);
+
+      expect(subscriber).toHaveBeenCalledOnce();
+      expect(subscriber).toHaveBeenCalledWith([true, true], emptyValue);
+    });
+
+    test("notifies and invalidates descendants when scheduling a deep dirty parent", () => {
+      const source = new StateCore(1);
+      const first = source.map((value) => value * 2);
+      const second = first.map((value) => value + 1);
+      const combined = source.combine(second);
+      const descendant = second.map((value) => value * 10);
+      const secondSubscriber = vi.fn();
+      const descendantSubscriber = vi.fn();
+
+      expect(combined.get()).toEqual([1, 3]);
+      expect(descendant.get()).toBe(30);
+      second.on(secondSubscriber);
+      descendant.on(descendantSubscriber);
+
+      source.set(2);
+
+      expect(secondSubscriber).toHaveBeenCalledOnce();
+      expect(secondSubscriber).toHaveBeenCalledWith(5, 3);
+      expect(descendantSubscriber).toHaveBeenCalledOnce();
+      expect(descendantSubscriber).toHaveBeenCalledWith(50, 30);
+      expect(combined.get()).toEqual([2, 5]);
+      expect(descendant.get()).toBe(50);
+    });
   });
 });

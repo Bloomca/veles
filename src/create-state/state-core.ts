@@ -210,7 +210,22 @@ class StateCore<T> {
 
       if (!child._dirty) continue;
 
-      if (child.hasDirtyParents()) {
+      // in case a child has dirty parents, we need to recompute them
+      // first (potentially recursively). If that happens, we need to
+      // process them first, and then process this child node again.
+      let shouldRescheduleChild = false;
+      child._parents.forEach((parentNode) => {
+        if (parentNode._dirty) {
+          if (!queued.has(parentNode)) {
+            queue.push(parentNode);
+            queued.add(parentNode);
+          }
+
+          shouldRescheduleChild = true;
+        }
+      });
+
+      if (shouldRescheduleChild) {
         queue.push(child);
         queued.add(child);
         continue;
@@ -230,18 +245,6 @@ class StateCore<T> {
         }
       });
     }
-  }
-
-  private hasDirtyParents() {
-    let hasDirtyParent = false;
-
-    this._parents.forEach((parent) => {
-      if (parent._dirty) {
-        hasDirtyParent = true;
-      }
-    });
-
-    return hasDirtyParent;
   }
 
   private notifySubscribers(value: CoreValue<T>, prevValue: CoreValue<T>) {
