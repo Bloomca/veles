@@ -1,5 +1,9 @@
 const FORM_VALUE_TAGS = new Set(["INPUT", "TEXTAREA", "SELECT"]);
 
+const ATTRIBUTE_ALIASES: Record<string, string> = {
+  htmlfor: "for",
+};
+
 const ENUMERATED_BOOLEAN_ATTRIBUTES: {
   [attributeName: string]: {
     trueValue: string;
@@ -36,6 +40,12 @@ function assignDomAttribute({
   previousValue?: any;
 }) {
   const normalizedAttributeName = attributeName.toLowerCase();
+  const domAttributeName = ATTRIBUTE_ALIASES[normalizedAttributeName] ?? attributeName;
+
+  if (normalizedAttributeName === "dangerouslysetinnerhtml") {
+    assignInnerHTML(htmlElement, value);
+    return;
+  }
 
   if (normalizedAttributeName === "value" && isFormValueElement(htmlElement)) {
     assignFormValueProperty(htmlElement, value);
@@ -52,8 +62,16 @@ function assignDomAttribute({
     return;
   }
 
-  if (attributeName === "style") {
+  if (normalizedAttributeName === "style") {
     assignStyle({ value, previousValue, htmlElement });
+    return;
+  }
+
+  if (
+    typeof value === "boolean" &&
+    (normalizedAttributeName.startsWith("aria-") || normalizedAttributeName.startsWith("data-"))
+  ) {
+    htmlElement.setAttribute(domAttributeName, String(value));
     return;
   }
 
@@ -62,7 +80,7 @@ function assignDomAttribute({
 
     if (enumeratedConfig) {
       htmlElement.setAttribute(
-        attributeName,
+        domAttributeName,
         value ? enumeratedConfig.trueValue : enumeratedConfig.falseValue,
       );
       return;
@@ -72,9 +90,9 @@ function assignDomAttribute({
     // or duplicate the attribute name. A lack of the attribute means
     // the value is `false`.
     if (value) {
-      htmlElement.setAttribute(attributeName, "");
+      htmlElement.setAttribute(domAttributeName, "");
     } else {
-      htmlElement.removeAttribute(attributeName);
+      htmlElement.removeAttribute(domAttributeName);
     }
 
     return;
@@ -83,11 +101,22 @@ function assignDomAttribute({
   // setAttribute stringifies the value, and we don't want to assign null or undefined
   // as a string directly. Setting undefined/null means we don't need the attribute
   if (value == null) {
-    htmlElement.removeAttribute(attributeName);
+    htmlElement.removeAttribute(domAttributeName);
     return;
   }
 
-  htmlElement.setAttribute(attributeName, value);
+  htmlElement.setAttribute(domAttributeName, value);
+}
+
+function assignInnerHTML(htmlElement: HTMLElement, value: any) {
+  if (value == null) {
+    htmlElement.innerHTML = "";
+    return;
+  }
+
+  if (typeof value === "object" && "__html" in value) {
+    htmlElement.innerHTML = value.__html == null ? "" : String(value.__html);
+  }
 }
 
 function isFormValueElement(

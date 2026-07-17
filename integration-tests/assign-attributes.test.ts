@@ -244,6 +244,90 @@ describe("assign-attributes", () => {
     expect(await screen.findByText("current name is empty")).toBeVisible();
   });
 
+  it("assigns dangerouslySetInnerHTML as HTML content", () => {
+    const markup = '<span data-testid="injectedContent"><b>injected</b></span>';
+
+    function App() {
+      return createElement("div", {
+        "data-testid": "container",
+        dangerouslySetInnerHTML: { __html: markup },
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const container = screen.getByTestId("container");
+    expect(container.innerHTML).toBe(markup);
+    expect(container).not.toHaveAttribute("dangerouslysetinnerhtml");
+    expect(screen.getByTestId("injectedContent")).toBeVisible();
+  });
+
+  it("maps htmlFor to the for attribute", () => {
+    function App() {
+      return createElement("div", {
+        children: [
+          createElement("label", {
+            "data-testid": "label",
+            htmlFor: "name",
+            children: "Name",
+          }),
+          createElement("input", { id: "name" }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const label = screen.getByTestId("label") as HTMLLabelElement;
+    expect(label).toHaveAttribute("for", "name");
+    expect(label).not.toHaveAttribute("htmlfor");
+    expect(label.htmlFor).toBe("name");
+  });
+
+  it("stringifies boolean ARIA and data attributes", async () => {
+    const user = userEvent.setup();
+
+    function App() {
+      const hidden$ = createState(false);
+
+      return createElement("div", {
+        children: [
+          createElement("button", {
+            "data-testid": "toggleButton",
+            onClick: () => hidden$.update((hidden) => !hidden),
+          }),
+          createElement("div", {
+            "data-testid": "target",
+            "aria-hidden": hidden$.attribute(),
+            "data-hidden": hidden$.attribute(),
+          }),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    const target = screen.getByTestId("target");
+    const toggleButton = screen.getByTestId("toggleButton");
+
+    expect(target).toHaveAttribute("aria-hidden", "false");
+    expect(target).toHaveAttribute("data-hidden", "false");
+
+    await user.click(toggleButton);
+
+    expect(target).toHaveAttribute("aria-hidden", "true");
+    expect(target).toHaveAttribute("data-hidden", "true");
+  });
+
   it('assignes empty string to attributes with a "true" value', () => {
     function App() {
       return createElement("div", {
