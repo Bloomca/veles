@@ -22,6 +22,8 @@ type CoreOptions<T> = {
 
 const defaultEquality: EqualityFn<any> = (value1, value2) => value1 === value2;
 
+type PendingNotification = { node: StateCore<any>; value: any; prevValue: any };
+
 class StateCore<T> {
   private _value: CoreValue<T>;
   private _prevValue: CoreValue<T> = emptyValue;
@@ -67,13 +69,22 @@ class StateCore<T> {
     const prevValue = this._value;
     this._prevValue = prevValue;
     this._value = newValue;
-    this.notifySubscribers(newValue, prevValue);
 
     this._children.forEach((child) => {
       child._dirty = true;
     });
 
-    this.flush();
+    const pendingNotifications = this.flush();
+
+    // technically, we can notify subscribers earlier, but then synchronous reading
+    // would return stale state values.
+    this.notifySubscribers(newValue, prevValue);
+
+    // we intentionally process derived notifications after direct subscribers to
+    // the signal
+    pendingNotifications.forEach(({ node, value, prevValue }) => {
+      node.notifySubscribers(value, prevValue);
+    });
   }
 
   update(fn: (currentValue: CoreValue<T>) => T) {
@@ -205,7 +216,9 @@ class StateCore<T> {
     return { changed };
   }
 
-  private flush() {
+  private flush(): PendingNotification[] {
+    const pendingNotifications: PendingNotification[] = [];
+
     /**
      * We utilize a min-heap to ensure that we don't trigger notifications
      * before all the previous necessary work is done. Otherwise it can
@@ -256,12 +269,18 @@ class StateCore<T> {
 
       if (!changed) continue;
 
-      child.notifySubscribers(value, child._prevValue);
+      pendingNotifications.push({
+        node: child,
+        prevValue: child._prevValue,
+        value,
+      });
       child._children.forEach((grandchild) => {
         grandchild._dirty = true;
         enqueue(grandchild);
       });
     }
+
+    return pendingNotifications;
   }
 
   private notifySubscribers(value: CoreValue<T>, prevValue: CoreValue<T>) {
