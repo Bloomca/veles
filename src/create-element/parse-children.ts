@@ -90,9 +90,13 @@ function parseChildren({
         childComponent.parentVelesElement = velesNode;
         childComponents.push(childComponent);
       } else if (childComponent.portal) {
-        // portal HTML is inserted in `mount` and `unmount` hooks, so we don't do it here
-        // we still need to update the parent element so that iterating over the tree works
-        // properly to call these callbacks
+        // Portal content is inserted by mount/unmount hooks. Its anchor preserves
+        // the portal's logical position in the source tree.
+        if (!childComponent.portalAnchor) {
+          throw new Error("Portal node is missing its source anchor");
+        }
+        htmlElement.append(childComponent.portalAnchor);
+        lastInsertedNode = childComponent.portalAnchor;
         childComponent.parentVelesElement = velesNode;
         childComponents.push(childComponent);
       } else {

@@ -3,6 +3,7 @@ import {
   callUnmountHandlers,
   renderTree,
   getExecutedComponentVelesNode,
+  getExecutedVelesNodeSourceNode,
 } from "../_utils";
 import { createTextElement } from "../create-element/create-text-element";
 import { addPublicContext, popPublicContext } from "../context";
@@ -101,86 +102,57 @@ function updateUseValueSelector<T>({
       const insertAllPhantomChildren = (
         adjacentNode: ExecutedVelesElement | ExecutedVelesStringElement,
       ) => {
+        const adjacentSourceNode = getExecutedVelesNodeSourceNode(adjacentNode);
         // we need to get ALL the children of it and attach it to this node
         newVelesElementNode.childComponents.forEach((childComponentofPhantom) => {
-          if ("executedVelesNode" in childComponentofPhantom) {
-            adjacentNode.html.before(childComponentofPhantom.html);
-            childComponentofPhantom.parentVelesElement = adjacentNode.parentVelesElement;
-          } else {
-            const velesElementNode = getExecutedComponentVelesNode(childComponentofPhantom);
-
-            if (!velesElementNode) {
-              console.error("can't find HTML tree in a component chain");
-            } else {
-              adjacentNode.html.before(velesElementNode.html);
-              velesElementNode.parentVelesElement = adjacentNode.parentVelesElement;
-            }
-          }
+          const childNode =
+            "executedVelesComponent" in childComponentofPhantom
+              ? getExecutedComponentVelesNode(childComponentofPhantom)
+              : childComponentofPhantom;
+          adjacentSourceNode.before(getExecutedVelesNodeSourceNode(childNode));
+          childNode.parentVelesElement = adjacentNode.parentVelesElement;
         });
       };
       if ("executedVelesNode" in oldVelesElementNode && oldVelesElementNode.phantom) {
         let isInserted = false;
         oldVelesElementNode.childComponents.forEach((childComponentofPhantom) => {
-          if ("executedVelesNode" in childComponentofPhantom) {
-            if (!isInserted) {
-              insertAllPhantomChildren(childComponentofPhantom);
-              isInserted = true;
-            }
-            childComponentofPhantom.html.remove();
-          } else {
-            const velesElementNode = getExecutedComponentVelesNode(childComponentofPhantom);
-
-            if (!velesElementNode) {
-              console.error("can't find HTML tree in a component chain");
-            } else {
-              if (!isInserted) {
-                insertAllPhantomChildren(velesElementNode);
-                isInserted = true;
-              }
-              velesElementNode.html.remove();
-            }
+          const childNode =
+            "executedVelesComponent" in childComponentofPhantom
+              ? getExecutedComponentVelesNode(childComponentofPhantom)
+              : childComponentofPhantom;
+          if (!isInserted) {
+            insertAllPhantomChildren(childNode);
+            isInserted = true;
           }
+          getExecutedVelesNodeSourceNode(childNode).remove();
         });
       } else {
         insertAllPhantomChildren(oldVelesElementNode);
-        oldVelesElementNode.html.remove();
+        getExecutedVelesNodeSourceNode(oldVelesElementNode).remove();
       }
     } else {
       if ("executedVelesNode" in oldVelesElementNode && oldVelesElementNode.phantom) {
         let isInserted = false;
         oldVelesElementNode.childComponents.forEach((childComponentofPhantom) => {
-          if ("executedVelesNode" in childComponentofPhantom) {
-            if (!isInserted) {
-              childComponentofPhantom.html.before(newVelesElementNode.html);
-              isInserted = true;
-            }
-            childComponentofPhantom.html.remove();
-          } else {
-            const velesElementNode = getExecutedComponentVelesNode(childComponentofPhantom);
-
-            if (!velesElementNode) {
-              console.error("can't find HTML tree in a component chain");
-            } else {
-              if (!isInserted) {
-                velesElementNode.html.before(newVelesElementNode.html);
-                isInserted = true;
-              }
-              velesElementNode.html.remove();
-            }
+          const childNode =
+            "executedVelesComponent" in childComponentofPhantom
+              ? getExecutedComponentVelesNode(childComponentofPhantom)
+              : childComponentofPhantom;
+          const childSourceNode = getExecutedVelesNodeSourceNode(childNode);
+          if (!isInserted) {
+            childSourceNode.before(getExecutedVelesNodeSourceNode(newVelesElementNode));
+            isInserted = true;
           }
+          childSourceNode.remove();
         });
       } else {
         try {
+          const newSourceNode = getExecutedVelesNodeSourceNode(newVelesElementNode);
+          const oldSourceNode = getExecutedVelesNodeSourceNode(oldVelesElementNode);
           if (parentVelesElementRendered.portal) {
-            parentVelesElementRendered.portal.replaceChild(
-              newVelesElementNode.html,
-              oldVelesElementNode.html,
-            );
+            parentVelesElementRendered.portal.replaceChild(newSourceNode, oldSourceNode);
           } else {
-            parentVelesElementRendered.html.replaceChild(
-              newVelesElementNode.html,
-              oldVelesElementNode.html,
-            );
+            parentVelesElementRendered.html.replaceChild(newSourceNode, oldSourceNode);
           }
         } catch (e) {
           console.error("failed to update in renderSelected", e);

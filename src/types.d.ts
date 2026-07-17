@@ -10,6 +10,7 @@ export type VelesElement = {
 
   phantom?: boolean;
   portal?: null | HTMLElement;
+  portalAnchor?: Text;
 
   needExecutedVersion?: boolean;
   executedVersion?: ExecutedVelesElement;
@@ -34,6 +35,7 @@ export type ExecutedVelesElement = {
 
   phantom?: boolean;
   portal?: HTMLElement;
+  portalAnchor?: Text;
 
   // every element except the most top one should have one
   parentVelesElement?: ExecutedVelesElement;

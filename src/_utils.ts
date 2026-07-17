@@ -129,7 +129,11 @@ function renderTree(
       executedNode.phantom = component.phantom;
     }
     if (component.portal) {
+      if (!component.portalAnchor) {
+        throw new Error("Portal node is missing its source anchor");
+      }
       executedNode.portal = component.portal;
+      executedNode.portalAnchor = component.portalAnchor;
     }
     executedNode.childComponents = component.childComponents.map((childComponent) =>
       renderTree(childComponent, { parentVelesElement: executedNode }),
@@ -141,6 +145,20 @@ function renderTree(
   }
 
   throw new Error("Unknown component type in renderTree");
+}
+
+function getExecutedVelesNodeSourceNode(
+  node: ExecutedVelesElement | ExecutedVelesStringElement,
+): HTMLElement | Text {
+  if ("executedVelesNode" in node && node.portal) {
+    if (!node.portalAnchor) {
+      throw new Error("Portal node is missing its source anchor");
+    }
+
+    return node.portalAnchor;
+  }
+
+  return node.html;
 }
 
 function insertNode({
@@ -175,14 +193,15 @@ function insertNode({
 
     return lastInsertedNode;
   } else {
+    const sourceNode = getExecutedVelesNodeSourceNode(velesElement);
     if (adjacentNode) {
-      adjacentNode.after(velesElement.html);
+      adjacentNode.after(sourceNode);
     } else {
-      parentVelesElement.html.prepend(velesElement.html);
+      parentVelesElement.html.prepend(sourceNode);
     }
     velesElement.parentVelesElement = parentVelesElement;
 
-    return velesElement.html;
+    return sourceNode;
   }
 }
 
@@ -249,6 +268,7 @@ function unique<T>(arr: T[]): T[] {
 
 export {
   getExecutedComponentVelesNode,
+  getExecutedVelesNodeSourceNode,
   identity,
   callMountHandlers,
   callUnmountHandlers,
