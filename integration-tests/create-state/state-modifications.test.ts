@@ -186,6 +186,22 @@ describe("state modifications", () => {
       expect(doubled.get()).toBe(4);
     });
 
+    test("allows derived subscribers to synchronously read the latest downstream value", () => {
+      const source = new StateCore(1);
+      const doubled = source.map((value) => value * 2);
+      const quadrupled = doubled.map((value) => value * 2);
+
+      expect(quadrupled.get()).toBe(4);
+
+      const reads: number[] = [];
+      doubled.on(() => reads.push(quadrupled.get() as number));
+
+      source.set(2);
+
+      expect(reads).toEqual([8]);
+      expect(quadrupled.get()).toBe(8);
+    });
+
     test("does not emit an intermediate value in a deep, uneven diamond graph", () => {
       const source = new StateCore(1);
       const short = source.map((value) => value + 100);
