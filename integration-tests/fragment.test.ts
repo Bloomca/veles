@@ -110,6 +110,97 @@ describe("<Fragment>", () => {
     );
   });
 
+  test("supports switching from an empty <Fragment> to a regular node", () => {
+    const show$ = createState(false);
+
+    function App() {
+      return createElement("main", {
+        "data-testid": "container",
+        children: [
+          "before",
+          show$.render((show) =>
+            show
+              ? createElement("b", { children: "shown" })
+              : createElement(Fragment, { children: [] }),
+          ),
+          "after",
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("container").innerHTML).toBe("beforeafter");
+
+    show$.set(true);
+
+    expect(screen.getByTestId("container").innerHTML).toBe("before<b>shown</b>after");
+  });
+
+  test("supports switching from an empty <Fragment> to a nonempty <Fragment>", () => {
+    const show$ = createState(false);
+
+    function App() {
+      return createElement("main", {
+        "data-testid": "container",
+        children: [
+          "before",
+          show$.render((show) =>
+            createElement(Fragment, {
+              children: show
+                ? [
+                    createElement("span", { children: "first" }),
+                    createElement("b", { children: "second" }),
+                  ]
+                : [],
+            }),
+          ),
+          "after",
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("container").innerHTML).toBe("beforeafter");
+
+    show$.set(true);
+
+    expect(screen.getByTestId("container").innerHTML).toBe(
+      "before<span>first</span><b>second</b>after",
+    );
+  });
+
+  test("preserves component order after an empty <Fragment>", () => {
+    function FollowingComponent() {
+      return createElement("span", { children: "after" });
+    }
+
+    function App() {
+      return createElement("main", {
+        "data-testid": "container",
+        children: [
+          "before",
+          createElement(Fragment, { children: [] }),
+          createElement(FollowingComponent),
+        ],
+      });
+    }
+
+    cleanup = attachComponent({
+      htmlElement: document.body,
+      component: createElement(App),
+    });
+
+    expect(screen.getByTestId("container").innerHTML).toBe("before<span>after</span>");
+  });
+
   test("supports updating children in <Fragment> components correctly", async () => {
     const user = userEvent.setup();
     function App() {
