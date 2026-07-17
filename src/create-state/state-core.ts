@@ -1,3 +1,5 @@
+import { MinHeap } from "./min-heap";
+
 // explicit symbol for empty value, so it is 100% unique
 const emptyValue = Symbol("veles-state-core-empty");
 
@@ -30,11 +32,14 @@ class StateCore<T> {
   private _children: Set<StateCore<any>> = new Set();
   private _parents: Set<StateCore<any>>;
   private _compute?: () => CoreValue<T>;
+  private _rank: number;
 
   constructor(initialValue: CoreValue<T>, options: CoreOptions<T> = {}) {
     this._value = initialValue;
-    this._parents = new Set(options.parents);
+    const parents = options.parents || [];
+    this._parents = new Set(parents);
     this._compute = options.compute;
+    this._rank = parents.reduce((rank, parent) => Math.max(rank, parent._rank + 1), 0);
     this._dirty = Boolean(options.dirty);
     this._equality = options.equality || defaultEquality;
   }
@@ -201,33 +206,48 @@ class StateCore<T> {
   }
 
   private flush() {
-    const queue = Array.from(this._children);
-    const queued = new Set(queue);
+    /**
+     * We utilize a min-heap to ensure that we don't trigger notifications
+     * before all the previous necessary work is done. Otherwise it can
+     * happen too early, and we'd need to recursively check that every parent
+     * is not dirty and schedule it again.
+     *
+     * Here we achieve this by assinging a rank to each core state, which is
+     * determined by the highest rank of any of the parent + 1.
+     *
+     * After that, we process them at the same rank, ensuring that "short" branches
+     * are not executed before all their parents are done with their recomputation.
+     */
+    const queue = new MinHeap<StateCore<any>>((node1, node2) => node1._rank - node2._rank);
+    const queued = new Set<StateCore<any>>();
+    const enqueue = (node: StateCore<any>) => {
+      if (queued.has(node)) return;
 
-    while (queue.length > 0) {
-      const child = queue.shift()!;
+      queue.push(node);
+      queued.add(node);
+    };
+
+    this._children.forEach(enqueue);
+
+    while (queue.size > 0) {
+      const child = queue.pop()!;
       queued.delete(child);
 
       if (!child._dirty) continue;
 
-      // in case a child has dirty parents, we need to recompute them
-      // first (potentially recursively). If that happens, we need to
-      // process them first, and then process this child node again.
+      // A dirty parent might not have been scheduled by this flush, for example
+      // when a lazily computed state is combined with the state being updated.
+      // Its lower rank ensures it will run before this child after both are queued.
       let shouldRescheduleChild = false;
       child._parents.forEach((parentNode) => {
         if (parentNode._dirty) {
-          if (!queued.has(parentNode)) {
-            queue.push(parentNode);
-            queued.add(parentNode);
-          }
-
+          enqueue(parentNode);
           shouldRescheduleChild = true;
         }
       });
 
       if (shouldRescheduleChild) {
-        queue.push(child);
-        queued.add(child);
+        enqueue(child);
         continue;
       }
 
@@ -239,10 +259,7 @@ class StateCore<T> {
       child.notifySubscribers(value, child._prevValue);
       child._children.forEach((grandchild) => {
         grandchild._dirty = true;
-        if (!queued.has(grandchild)) {
-          queue.push(grandchild);
-          queued.add(grandchild);
-        }
+        enqueue(grandchild);
       });
     }
   }
